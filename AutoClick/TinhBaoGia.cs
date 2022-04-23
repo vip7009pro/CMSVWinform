@@ -22,7 +22,7 @@ namespace AutoClick
         {
 
         }
-
+        //test commit
         public void loadcodelist()
         {
             ProductBLL pro = new ProductBLL();
