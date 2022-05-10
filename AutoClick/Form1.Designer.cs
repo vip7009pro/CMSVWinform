@@ -1108,7 +1108,7 @@
             // 
             this.traNhậpXuấtKiểmToolStripMenuItem1.Image = global::AutoClick.Properties.Resources.file__5_;
             this.traNhậpXuấtKiểmToolStripMenuItem1.Name = "traNhậpXuấtKiểmToolStripMenuItem1";
-            this.traNhậpXuấtKiểmToolStripMenuItem1.Size = new System.Drawing.Size(173, 24);
+            this.traNhậpXuấtKiểmToolStripMenuItem1.Size = new System.Drawing.Size(180, 24);
             this.traNhậpXuấtKiểmToolStripMenuItem1.Text = "Tra Data Kiểm";
             this.traNhậpXuấtKiểmToolStripMenuItem1.Click += new System.EventHandler(this.traNhậpXuấtKiểmToolStripMenuItem1_Click);
             // 
