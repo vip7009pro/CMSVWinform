@@ -91,40 +91,40 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BangGia.cs">
+    <Compile Include="Forms\BangGia.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="BangGia.Designer.cs">
+    <Compile Include="Forms\BangGia.Designer.cs">
       <DependentUpon>BangGia.cs</DependentUpon>
     </Compile>
-    <Compile Include="BangGiaFullBOM.cs">
+    <Compile Include="Forms\BangGiaFullBOM.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="BangGiaFullBOM.Designer.cs">
+    <Compile Include="Forms\BangGiaFullBOM.Designer.cs">
       <DependentUpon>BangGiaFullBOM.cs</DependentUpon>
     </Compile>
-    <Compile Include="BaoGiaConfig.cs">
+    <Compile Include="Forms\BaoGiaConfig.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="BaoGiaConfig.Designer.cs">
+    <Compile Include="Forms\BaoGiaConfig.Designer.cs">
       <DependentUpon>BaoGiaConfig.cs</DependentUpon>
     </Compile>
-    <Compile Include="BEP_Info.cs">
+    <Compile Include="Forms\BEP_Info.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="BEP_Info.Designer.cs">
+    <Compile Include="Forms\BEP_Info.Designer.cs">
       <DependentUpon>BEP_Info.cs</DependentUpon>
     </Compile>
-    <Compile Include="Chart1.cs">
+    <Compile Include="Forms\Chart1.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Chart1.Designer.cs">
+    <Compile Include="Forms\Chart1.Designer.cs">
       <DependentUpon>Chart1.cs</DependentUpon>
     </Compile>
-    <Compile Include="CheckBOMGia.cs">
+    <Compile Include="Forms\CheckBOMGia.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="CheckBOMGia.Designer.cs">
+    <Compile Include="Forms\CheckBOMGia.Designer.cs">
       <DependentUpon>CheckBOMGia.cs</DependentUpon>
     </Compile>
     <Compile Include="CMS_VINADataSet.Designer.cs">
@@ -133,255 +133,255 @@
       <DependentUpon>CMS_VINADataSet.xsd</DependentUpon>
     </Compile>
     <Compile Include="ExtensionMethods.cs" />
-    <Compile Include="Form1.cs">
+    <Compile Include="Forms\Form1.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Form1.Designer.cs">
+    <Compile Include="Forms\Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
-    <Compile Include="Form2.cs">
+    <Compile Include="Forms\Form2.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Form2.Designer.cs">
+    <Compile Include="Forms\Form2.Designer.cs">
       <DependentUpon>Form2.cs</DependentUpon>
     </Compile>
-    <Compile Include="Form3.cs">
+    <Compile Include="Forms\Form3.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Form3.Designer.cs">
+    <Compile Include="Forms\Form3.Designer.cs">
       <DependentUpon>Form3.cs</DependentUpon>
     </Compile>
-    <Compile Include="Form4.cs">
+    <Compile Include="Forms\Form4.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Form4.Designer.cs">
+    <Compile Include="Forms\Form4.Designer.cs">
       <DependentUpon>Form4.cs</DependentUpon>
     </Compile>
     <Compile Include="GradientPanel.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="HomePage.cs">
+    <Compile Include="Forms\HomePage.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="HomePage.Designer.cs">
+    <Compile Include="Forms\HomePage.Designer.cs">
       <DependentUpon>HomePage.cs</DependentUpon>
     </Compile>
-    <Compile Include="InputForm.cs">
+    <Compile Include="Forms\InputForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="InputForm.Designer.cs">
+    <Compile Include="Forms\InputForm.Designer.cs">
       <DependentUpon>InputForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="INSPECTION.cs">
+    <Compile Include="Forms\INSPECTION.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="INSPECTION.Designer.cs">
+    <Compile Include="Forms\INSPECTION.Designer.cs">
       <DependentUpon>INSPECTION.cs</DependentUpon>
     </Compile>
-    <Compile Include="INSPECT_INPUT.cs">
+    <Compile Include="Forms\INSPECT_INPUT.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="INSPECT_INPUT.Designer.cs">
+    <Compile Include="Forms\INSPECT_INPUT.Designer.cs">
       <DependentUpon>INSPECT_INPUT.cs</DependentUpon>
     </Compile>
-    <Compile Include="INSPECT_NG.cs">
+    <Compile Include="Forms\INSPECT_NG.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="INSPECT_NG.Designer.cs">
+    <Compile Include="Forms\INSPECT_NG.Designer.cs">
       <DependentUpon>INSPECT_NG.cs</DependentUpon>
     </Compile>
-    <Compile Include="INSPECT_OUTPUT.cs">
+    <Compile Include="Forms\INSPECT_OUTPUT.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="INSPECT_OUTPUT.Designer.cs">
+    <Compile Include="Forms\INSPECT_OUTPUT.Designer.cs">
       <DependentUpon>INSPECT_OUTPUT.cs</DependentUpon>
     </Compile>
-    <Compile Include="InvoiceForm.cs">
+    <Compile Include="Forms\InvoiceForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="InvoiceForm.Designer.cs">
+    <Compile Include="Forms\InvoiceForm.Designer.cs">
       <DependentUpon>InvoiceForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="KDNhapData.cs">
+    <Compile Include="Forms\KDNhapData.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="KDNhapData.Designer.cs">
+    <Compile Include="Forms\KDNhapData.Designer.cs">
       <DependentUpon>KDNhapData.cs</DependentUpon>
     </Compile>
-    <Compile Include="Material History.cs">
+    <Compile Include="Forms\Material History.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Material History.Designer.cs">
+    <Compile Include="Forms\Material History.Designer.cs">
       <DependentUpon>Material History.cs</DependentUpon>
     </Compile>
-    <Compile Include="MaterialInfo.cs">
+    <Compile Include="Forms\MaterialInfo.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="MaterialInfo.Designer.cs">
+    <Compile Include="Forms\MaterialInfo.Designer.cs">
       <DependentUpon>MaterialInfo.cs</DependentUpon>
     </Compile>
-    <Compile Include="MaterialStock.cs">
+    <Compile Include="Forms\MaterialStock.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="MaterialStock.Designer.cs">
+    <Compile Include="Forms\MaterialStock.Designer.cs">
       <DependentUpon>MaterialStock.cs</DependentUpon>
     </Compile>
-    <Compile Include="NewCodeBom.cs">
+    <Compile Include="Forms\NewCodeBom.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="NewCodeBom.Designer.cs">
+    <Compile Include="Forms\NewCodeBom.Designer.cs">
       <DependentUpon>NewCodeBom.cs</DependentUpon>
     </Compile>
-    <Compile Include="POForm.cs">
+    <Compile Include="Forms\POForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="POForm.Designer.cs">
+    <Compile Include="Forms\POForm.Designer.cs">
       <DependentUpon>POForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="PQCForm2.cs">
+    <Compile Include="Forms\PQCForm2.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="PQCForm2.Designer.cs">
+    <Compile Include="Forms\PQCForm2.Designer.cs">
       <DependentUpon>PQCForm2.cs</DependentUpon>
     </Compile>
-    <Compile Include="PQCForm3.cs">
+    <Compile Include="Forms\PQCForm3.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="PQCForm3.Designer.cs">
+    <Compile Include="Forms\PQCForm3.Designer.cs">
       <DependentUpon>PQCForm3.cs</DependentUpon>
     </Compile>
-    <Compile Include="PQCFrom1.cs">
+    <Compile Include="Forms\PQCFrom1.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="PQCFrom1.Designer.cs">
+    <Compile Include="Forms\PQCFrom1.Designer.cs">
       <DependentUpon>PQCFrom1.cs</DependentUpon>
     </Compile>
-    <Compile Include="ProductionPlan.cs">
+    <Compile Include="Forms\ProductionPlan.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="ProductionPlan.Designer.cs">
+    <Compile Include="Forms\ProductionPlan.Designer.cs">
       <DependentUpon>ProductionPlan.cs</DependentUpon>
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="QCForm.cs">
+    <Compile Include="Forms\QCForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="QCForm.Designer.cs">
+    <Compile Include="Forms\QCForm.Designer.cs">
       <DependentUpon>QCForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="QuotationForm.cs">
+    <Compile Include="Forms\QuotationForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="QuotationForm.Designer.cs">
+    <Compile Include="Forms\QuotationForm.Designer.cs">
       <DependentUpon>QuotationForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="reportForm.cs">
+    <Compile Include="Forms\reportForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="reportForm.Designer.cs">
+    <Compile Include="Forms\reportForm.Designer.cs">
       <DependentUpon>reportForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="reportForm2.cs">
+    <Compile Include="Forms\reportForm2.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="reportForm2.Designer.cs">
+    <Compile Include="Forms\reportForm2.Designer.cs">
       <DependentUpon>reportForm2.cs</DependentUpon>
     </Compile>
-    <Compile Include="SOPForm.cs">
+    <Compile Include="Forms\SOPForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="SOPForm.Designer.cs">
+    <Compile Include="Forms\SOPForm.Designer.cs">
       <DependentUpon>SOPForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="TinhBaoGia.cs">
+    <Compile Include="Forms\TinhBaoGia.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="TinhBaoGia.Designer.cs">
+    <Compile Include="Forms\TinhBaoGia.Designer.cs">
       <DependentUpon>TinhBaoGia.cs</DependentUpon>
     </Compile>
-    <Compile Include="WeekMonthReportForm.cs">
+    <Compile Include="Forms\WeekMonthReportForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="WeekMonthReportForm.Designer.cs">
+    <Compile Include="Forms\WeekMonthReportForm.Designer.cs">
       <DependentUpon>WeekMonthReportForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="YCSX_Manager.cs">
+    <Compile Include="Forms\YCSX_Manager.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="YCSX_Manager.Designer.cs">
+    <Compile Include="Forms\YCSX_Manager.Designer.cs">
       <DependentUpon>YCSX_Manager.cs</DependentUpon>
     </Compile>
-    <EmbeddedResource Include="BangGia.resx">
+    <EmbeddedResource Include="Forms\BangGia.resx">
       <DependentUpon>BangGia.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="BaoGiaConfig.resx">
+    <EmbeddedResource Include="Forms\BaoGiaConfig.resx">
       <DependentUpon>BaoGiaConfig.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="BEP_Info.resx">
+    <EmbeddedResource Include="Forms\BEP_Info.resx">
       <DependentUpon>BEP_Info.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Chart1.resx">
+    <EmbeddedResource Include="Forms\Chart1.resx">
       <DependentUpon>Chart1.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="CheckBOMGia.resx">
+    <EmbeddedResource Include="Forms\CheckBOMGia.resx">
       <DependentUpon>CheckBOMGia.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Form1.resx">
+    <EmbeddedResource Include="Forms\Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Form2.resx">
+    <EmbeddedResource Include="Forms\Form2.resx">
       <DependentUpon>Form2.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Form3.resx">
+    <EmbeddedResource Include="Forms\Form3.resx">
       <DependentUpon>Form3.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Form4.resx">
+    <EmbeddedResource Include="Forms\Form4.resx">
       <DependentUpon>Form4.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="HomePage.resx">
+    <EmbeddedResource Include="Forms\HomePage.resx">
       <DependentUpon>HomePage.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="InputForm.resx">
+    <EmbeddedResource Include="Forms\InputForm.resx">
       <DependentUpon>InputForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="INSPECTION.resx">
+    <EmbeddedResource Include="Forms\INSPECTION.resx">
       <DependentUpon>INSPECTION.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="INSPECT_INPUT.resx">
+    <EmbeddedResource Include="Forms\INSPECT_INPUT.resx">
       <DependentUpon>INSPECT_INPUT.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="INSPECT_NG.resx">
+    <EmbeddedResource Include="Forms\INSPECT_NG.resx">
       <DependentUpon>INSPECT_NG.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="INSPECT_OUTPUT.resx">
+    <EmbeddedResource Include="Forms\INSPECT_OUTPUT.resx">
       <DependentUpon>INSPECT_OUTPUT.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="InvoiceForm.resx">
+    <EmbeddedResource Include="Forms\InvoiceForm.resx">
       <DependentUpon>InvoiceForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Material History.resx">
+    <EmbeddedResource Include="Forms\Material History.resx">
       <DependentUpon>Material History.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="MaterialInfo.resx">
+    <EmbeddedResource Include="Forms\MaterialInfo.resx">
       <DependentUpon>MaterialInfo.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="MaterialStock.resx">
+    <EmbeddedResource Include="Forms\MaterialStock.resx">
       <DependentUpon>MaterialStock.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="NewCodeBom.resx">
+    <EmbeddedResource Include="Forms\NewCodeBom.resx">
       <DependentUpon>NewCodeBom.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="POForm.resx">
+    <EmbeddedResource Include="Forms\POForm.resx">
       <DependentUpon>POForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="PQCForm2.resx">
+    <EmbeddedResource Include="Forms\PQCForm2.resx">
       <DependentUpon>PQCForm2.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="PQCFrom1.resx">
+    <EmbeddedResource Include="Forms\PQCFrom1.resx">
       <DependentUpon>PQCFrom1.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="ProductionPlan.resx">
+    <EmbeddedResource Include="Forms\ProductionPlan.resx">
       <DependentUpon>ProductionPlan.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
@@ -394,28 +394,28 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
-    <EmbeddedResource Include="QCForm.resx">
+    <EmbeddedResource Include="Forms\QCForm.resx">
       <DependentUpon>QCForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="QuotationForm.resx">
+    <EmbeddedResource Include="Forms\QuotationForm.resx">
       <DependentUpon>QuotationForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="reportForm.resx">
+    <EmbeddedResource Include="Forms\reportForm.resx">
       <DependentUpon>reportForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="reportForm2.resx">
+    <EmbeddedResource Include="Forms\reportForm2.resx">
       <DependentUpon>reportForm2.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="SOPForm.resx">
+    <EmbeddedResource Include="Forms\SOPForm.resx">
       <DependentUpon>SOPForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="TinhBaoGia.resx">
+    <EmbeddedResource Include="Forms\TinhBaoGia.resx">
       <DependentUpon>TinhBaoGia.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="WeekMonthReportForm.resx">
+    <EmbeddedResource Include="Forms\WeekMonthReportForm.resx">
       <DependentUpon>WeekMonthReportForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="YCSX_Manager.resx">
+    <EmbeddedResource Include="Forms\YCSX_Manager.resx">
       <DependentUpon>YCSX_Manager.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="AutoClick_1_TemporaryKey.pfx" />
@@ -533,9 +533,7 @@
     <None Include="Resources\basic.png" />
     <None Include="Resources\gai xinh 2.jpg" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Forms\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\Selenium.Chrome.WebDriver.85.0.0\build\Selenium.Chrome.WebDriver.targets" Condition="Exists('..\packages\Selenium.Chrome.WebDriver.85.0.0\build\Selenium.Chrome.WebDriver.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
