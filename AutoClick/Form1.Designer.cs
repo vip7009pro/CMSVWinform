@@ -164,6 +164,7 @@
             this.label5 = new System.Windows.Forms.Label();
             this.textBox7 = new System.Windows.Forms.TextBox();
             this.gradientPanel1 = new AutoClick.GradientPanel();
+            this.button34 = new System.Windows.Forms.Button();
             this.gradientPanel4 = new AutoClick.GradientPanel();
             this.button22 = new System.Windows.Forms.Button();
             this.button21 = new System.Windows.Forms.Button();
@@ -1108,7 +1109,7 @@
             // 
             this.traNhậpXuấtKiểmToolStripMenuItem1.Image = global::AutoClick.Properties.Resources.file__5_;
             this.traNhậpXuấtKiểmToolStripMenuItem1.Name = "traNhậpXuấtKiểmToolStripMenuItem1";
-            this.traNhậpXuấtKiểmToolStripMenuItem1.Size = new System.Drawing.Size(180, 24);
+            this.traNhậpXuấtKiểmToolStripMenuItem1.Size = new System.Drawing.Size(173, 24);
             this.traNhậpXuấtKiểmToolStripMenuItem1.Text = "Tra Data Kiểm";
             this.traNhậpXuấtKiểmToolStripMenuItem1.Click += new System.EventHandler(this.traNhậpXuấtKiểmToolStripMenuItem1_Click);
             // 
@@ -1589,6 +1590,7 @@
             // 
             this.gradientPanel1.ColorBottom = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(255)))), ((int)(((byte)(192)))));
             this.gradientPanel1.ColorTop = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(192)))), ((int)(((byte)(0)))));
+            this.gradientPanel1.Controls.Add(this.button34);
             this.gradientPanel1.Controls.Add(this.gradientPanel4);
             this.gradientPanel1.Controls.Add(this.gradientPanel3);
             this.gradientPanel1.Controls.Add(this.button10);
@@ -1624,6 +1626,17 @@
             this.gradientPanel1.Name = "gradientPanel1";
             this.gradientPanel1.Size = new System.Drawing.Size(791, 184);
             this.gradientPanel1.TabIndex = 31;
+            // 
+            // button34
+            // 
+            this.button34.Location = new System.Drawing.Point(671, 151);
+            this.button34.Name = "button34";
+            this.button34.Size = new System.Drawing.Size(75, 23);
+            this.button34.TabIndex = 22;
+            this.button34.Text = "button34";
+            this.button34.UseVisualStyleBackColor = true;
+            this.button34.Visible = false;
+            this.button34.Click += new System.EventHandler(this.button34_Click);
             // 
             // gradientPanel4
             // 
@@ -2306,6 +2319,7 @@
         private System.Windows.Forms.Button button32;
         private System.Windows.Forms.ToolStripMenuItem tínhBáoGiáToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem tìnhHìnhSXTheoĐầuMáyToolStripMenuItem;
+        private System.Windows.Forms.Button button34;
     }
 }
 

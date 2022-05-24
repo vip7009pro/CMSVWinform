@@ -185,7 +185,7 @@ namespace AutoClick
                         }
                         string PROD_REQUEST_NO = frm1.CreateHeader2() + lastycsxno;
 
-
+                        /*
                         int check_riv = pro.checkRIV_NO(G_CODE, RIV_NO);
                         string checkUSEYN = pro.checkM100UseYN(G_CODE);
 
@@ -202,6 +202,22 @@ namespace AutoClick
                             pro.InsertYCSX(CTR_CD, PROD_REQUEST_DATE, PROD_REQUEST_NO, CODE_50, CODE_03, CODE_55, G_CODE, RIV_NO, PROD_REQUEST_QTY, CUST_CD, EMPL_NO, REMK, EMPL_NO, EMPL_NO, DELIVERY_DT);
                             pro.writeHistory(CTR_CD, EMPL_NO, "YCSX TABLE", "THEM", "THEM YCSX", "0");
                         }
+
+                        */
+                        
+                        string checkUSEYN = pro.checkM100UseYN(G_CODE);
+
+                       
+                        if (checkUSEYN == "N")
+                        {
+                            MessageBox.Show("Code " + G_CODE + " đã bị khóa, có thể ver này không còn được sử dụng");
+                        }
+                        else
+                        {
+                            pro.InsertYCSX(CTR_CD, PROD_REQUEST_DATE, PROD_REQUEST_NO, CODE_50, CODE_03, CODE_55, G_CODE, "A", PROD_REQUEST_QTY, CUST_CD, EMPL_NO, REMK, EMPL_NO, EMPL_NO, DELIVERY_DT);
+                            pro.writeHistory(CTR_CD, EMPL_NO, "YCSX TABLE", "THEM", "THEM YCSX", "0");
+                        }
+
 
                     }
                     else

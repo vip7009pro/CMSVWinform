@@ -395,7 +395,7 @@ namespace AutoClick
             {
                 ProductBLL pro = new ProductBLL();
                 
-                if ((pro.checkBOM2(newcode.old_g_code,newcode.old_g_code.Substring(7,1)) == 0) && !(newcode.old_g_code.Length <8) && newcode.checkBOM()=="")
+                if ((pro.checkBOM2(newcode.old_g_code,"A") == 0) && !(newcode.old_g_code.Length <8) && newcode.checkBOM()=="")
                 {
                     if(newcode.checkInput()=="")
                     {
@@ -432,6 +432,181 @@ namespace AutoClick
                 MessageBox.Show(ex.ToString());
             }
         }
+
+        public void addBOMSXofOldCode()
+        {
+            CMSCODE newcode = new CMSCODE();
+            newcode.cust_cd = comboBox7.SelectedValue.ToString();
+            newcode.project = textBox2.Text;
+            newcode.model = textBox3.Text;
+            newcode.dactinh = comboBox8.SelectedIndex.ToString();
+            newcode.phanloai = comboBox1.SelectedIndex.ToString();
+            newcode.g_name_kd = textBox5.Text;
+            newcode.description = textBox6.Text;
+            newcode.main_material = textBox7.Text;
+            newcode.g_name = textBox8.Text;
+            newcode.length = textBox16.Text;
+            newcode.width = textBox15.Text;
+            newcode.feeding = textBox14.Text;
+            newcode.cavity_hang = textBox13.Text;
+            newcode.cavity_cot = textBox12.Text;
+            newcode.k_c_hang = textBox11.Text;
+            newcode.k_c_cot = textBox10.Text;
+            newcode.k_c_liner_trai = textBox9.Text;
+            newcode.roll_open_direction = comboBox2.SelectedIndex.ToString();
+            newcode.k_c_liner_phai = textBox17.Text;
+            newcode.knife = comboBox4.SelectedIndex.ToString();
+            newcode.knife_lifecycle = textBox19.Text;
+            newcode.knife_price = textBox18.Text;
+            newcode.packing_type = comboBox3.SelectedIndex.ToString();
+            newcode.packing_qty = textBox21.Text;
+            newcode.rpm = textBox22.Text;
+            newcode.pin_distance = textBox23.Text;
+            newcode.process_type = textBox24.Text;
+            newcode.eq1 = comboBox5.Text;
+            newcode.eq2 = comboBox6.Text;
+            newcode.steps = textBox30.Text;
+            newcode.print_times = textBox29.Text;
+            newcode.print_yn = checkBox2.Checked.ToString();
+            newcode.draw_path = textBox1.Text;
+            newcode.use_yn = checkBox1.Checked.ToString();
+            newcode.remark = richTextBox1.Text;
+            newcode.ins_empl = EMPL_NO;
+            newcode.old_g_code = label38.Text;
+            newcode.bom = dataGridView1;
+            newcode.g_code = newcode.old_g_code;
+            try
+            {
+                ProductBLL pro = new ProductBLL();
+
+                if ((pro.checkBOMSXExist(newcode.old_g_code,"A") == 0) && !(newcode.old_g_code.Length < 8) && newcode.checkBOM() == "")
+                {
+                    //if (newcode.checkInput() == "")
+                    if (true)
+                    {
+                        try
+                        {                           
+                            if (pro.checkBOMSXExist(newcode.old_g_code, "A") == 0)
+                            {
+                                newcode.insertOldBOM();                                
+                                pro.insertMaterialfromBOMtoMTable();
+                                MessageBox.Show("Thêm BOM sx hoàn thành cho code:" + newcode.old_g_code);
+                            }
+                            else
+                            {
+                                MessageBox.Show("Lỗi cmnr");
+                            }                            
+                        }
+                        catch (Exception ex)
+                        {
+                            MessageBox.Show("Lỗi M140, BOM2: " + ex.ToString());
+                        }
+
+                    }
+                    else
+                    {
+                        MessageBox.Show("Update đầy đủ thông tin code đang bị trống trước rồi hãy thêm BOM giá, để có thể tính giá");
+                    }
+
+                }
+                else
+                {
+                    MessageBox.Show("Đã có bom tính giá của code này rồi, ko thêm được nữa");
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.ToString());
+            }
+        }
+
+
+
+
+        public void addBOM2ofOldCodeSX()
+        {
+            CMSCODE newcode = new CMSCODE();
+            newcode.cust_cd = comboBox7.SelectedValue.ToString();
+            newcode.project = textBox2.Text;
+            newcode.model = textBox3.Text;
+            newcode.dactinh = comboBox8.SelectedIndex.ToString();
+            newcode.phanloai = comboBox1.SelectedIndex.ToString();
+            newcode.g_name_kd = textBox5.Text;
+            newcode.description = textBox6.Text;
+            newcode.main_material = textBox7.Text;
+            newcode.g_name = textBox8.Text;
+            newcode.length = textBox16.Text;
+            newcode.width = textBox15.Text;
+            newcode.feeding = textBox14.Text;
+            newcode.cavity_hang = textBox13.Text;
+            newcode.cavity_cot = textBox12.Text;
+            newcode.k_c_hang = textBox11.Text;
+            newcode.k_c_cot = textBox10.Text;
+            newcode.k_c_liner_trai = textBox9.Text;
+            newcode.roll_open_direction = comboBox2.SelectedIndex.ToString();
+            newcode.k_c_liner_phai = textBox17.Text;
+            newcode.knife = comboBox4.SelectedIndex.ToString();
+            newcode.knife_lifecycle = textBox19.Text;
+            newcode.knife_price = textBox18.Text;
+            newcode.packing_type = comboBox3.SelectedIndex.ToString();
+            newcode.packing_qty = textBox21.Text;
+            newcode.rpm = textBox22.Text;
+            newcode.pin_distance = textBox23.Text;
+            newcode.process_type = textBox24.Text;
+            newcode.eq1 = comboBox5.Text;
+            newcode.eq2 = comboBox6.Text;
+            newcode.steps = textBox30.Text;
+            newcode.print_times = textBox29.Text;
+            newcode.print_yn = checkBox2.Checked.ToString();
+            newcode.draw_path = textBox1.Text;
+            newcode.use_yn = checkBox1.Checked.ToString();
+            newcode.remark = richTextBox1.Text;
+            newcode.ins_empl = EMPL_NO;
+            newcode.old_g_code = label38.Text;
+            newcode.bom = dataGridView1;
+            try
+            {
+                ProductBLL pro = new ProductBLL();
+
+                if ((pro.checkBOMSXExist(newcode.old_g_code, newcode.old_g_code.Substring(7, 1)) == 0) && !(newcode.old_g_code.Length < 8) && newcode.checkBOM() == "")
+                {
+                    if (newcode.checkInput() == "")
+                    {
+                        try
+                        {
+                            newcode.insertBOM2OldCode();
+                            if (pro.checkBOMSXExist(newcode.old_g_code, newcode.old_g_code.Substring(7, 1)) == 0)
+                            {
+                                newcode.insertOldBOM();
+                            }
+                            //neu chua co bom sx thi them bom sx luon
+                            pro.insertMaterialfromBOMtoMTable();
+                            MessageBox.Show("Thêm BOM tính giá hoàn thành cho code:" + newcode.old_g_code);
+                        }
+                        catch (Exception ex)
+                        {
+                            MessageBox.Show("Lỗi M140, BOM2: " + ex.ToString());
+                        }
+
+                    }
+                    else
+                    {
+                        MessageBox.Show("Update đầy đủ thông tin code đang bị trống trước rồi hãy thêm BOM giá, để có thể tính giá");
+                    }
+
+                }
+                else
+                {
+                    MessageBox.Show("Đã có bom tính giá của code này rồi, ko thêm được nữa");
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.ToString());
+            }
+        }
+
+
 
         public void justCheckBOM()
         {
@@ -601,6 +776,79 @@ namespace AutoClick
                 MessageBox.Show(ex.ToString());
             }
         }
+
+
+        public void updateBOMSXofOldCode()
+        {
+            CMSCODE newcode = new CMSCODE();
+            newcode.cust_cd = comboBox7.SelectedValue.ToString();
+            newcode.project = textBox2.Text;
+            newcode.model = textBox3.Text;
+            newcode.dactinh = comboBox8.SelectedIndex.ToString();
+            newcode.phanloai = comboBox1.SelectedIndex.ToString();
+            newcode.g_name_kd = textBox5.Text;
+            newcode.description = textBox6.Text;
+            newcode.main_material = textBox7.Text;
+            newcode.g_name = textBox8.Text;
+            newcode.length = textBox16.Text;
+            newcode.width = textBox15.Text;
+            newcode.feeding = textBox14.Text;
+            newcode.cavity_hang = textBox13.Text;
+            newcode.cavity_cot = textBox12.Text;
+            newcode.k_c_hang = textBox11.Text;
+            newcode.k_c_cot = textBox10.Text;
+            newcode.k_c_liner_trai = textBox9.Text;
+            newcode.roll_open_direction = comboBox2.SelectedIndex.ToString();
+            newcode.k_c_liner_phai = textBox17.Text;
+            newcode.knife = comboBox4.SelectedIndex.ToString();
+            newcode.knife_lifecycle = textBox19.Text;
+            newcode.knife_price = textBox18.Text;
+            newcode.packing_type = comboBox3.SelectedIndex.ToString();
+            newcode.packing_qty = textBox21.Text;
+            newcode.rpm = textBox22.Text;
+            newcode.pin_distance = textBox23.Text;
+            newcode.process_type = textBox24.Text;
+            newcode.eq1 = comboBox5.Text;
+            newcode.eq2 = comboBox6.Text;
+            newcode.steps = textBox30.Text;
+            newcode.print_times = textBox29.Text;
+            newcode.print_yn = checkBox2.Checked.ToString();
+            newcode.draw_path = textBox1.Text;
+            newcode.use_yn = checkBox1.Checked.ToString();
+            newcode.remark = richTextBox1.Text;
+            newcode.ins_empl = EMPL_NO;
+            newcode.old_g_code = label38.Text;
+            newcode.bom = dataGridView1;
+            try
+            {
+                ProductBLL pro = new ProductBLL();
+                if ((pro.checkBOMSXExist(newcode.old_g_code, "A") != 0) && !(newcode.old_g_code.Length < 8) && newcode.checkBOM() == "")
+                {
+                    try
+                    {
+                        newcode.updateBOMSX();
+                        pro.insertMaterialfromBOMtoMTable();
+                        MessageBox.Show("Update BOM tính giá hoàn thành cho code:" + newcode.old_g_code);
+                        //richTextBox1.Text = newcode.remark;
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show("Lỗi M140, BOM2: " + ex.ToString());
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("Không có bom hãy thêm  mới or chưa chọn code trong list or BOM chưa điền đủ thông tin");
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.ToString());
+            }
+        }
+
+
+
         private void button2_Click(object sender, EventArgs e)
         {
             createNewCode();
@@ -756,8 +1004,9 @@ namespace AutoClick
             checkBox2.Checked = (row.Cells["PRT_YN"].Value.ToString() == "Y" ? true : false);
             checkBox1.Checked = (row.Cells["USE_YN"].Value.ToString() == "Y" ? true : false);
             richTextBox1.Text = row.Cells["REMK"].Value.ToString();
+
             DataTable dt = new DataTable();
-            dt = pro.getFullBOM(row.Cells["G_CODE"].Value.ToString(), row.Cells["REV_NO"].Value.ToString());
+            dt = pro.getFullBOM(row.Cells["G_CODE"].Value.ToString(),"A");
             if(checkBox3.Checked == true)
             {
 
@@ -765,6 +1014,7 @@ namespace AutoClick
             else
             {
                 dataGridView3.DataSource = dt;
+                
             }
             
 
@@ -779,7 +1029,7 @@ namespace AutoClick
                 while (dataGridView1.Rows.Count > 1);
             }
 
-            dt = pro.getFullBOM2(row.Cells["G_CODE"].Value.ToString(), row.Cells["REV_NO"].Value.ToString());
+            dt = pro.getFullBOM2(row.Cells["G_CODE"].Value.ToString(), "A");
 
             /*Them tung dong vao datagridview3*/
 
@@ -964,6 +1214,30 @@ namespace AutoClick
         {
 
         }
+
+        private void button12_Click_1(object sender, EventArgs e)
+        {
+            if (label38.Text.Length == 8)
+            {
+                addBOMSXofOldCode();
+            }
+            else
+            {
+                MessageBox.Show("Chọn code để add bom");
+            }
+        }
+
+        private void button13_Click(object sender, EventArgs e)
+        {
+            if (label38.Text.Length == 8)
+            {
+                updateBOMSXofOldCode();
+            }
+            else
+            {
+                MessageBox.Show("Chọn code để sửa bom");
+            }
+        }
     }
     public class CMSCODE
     {
@@ -1009,9 +1283,7 @@ namespace AutoClick
         public string remark { get; set; }
 
         public string ins_empl { get; set; }
-
         public string old_g_code { get; set; }
-
         public DataGridView bom { get; set; }
 
        
@@ -1090,7 +1362,6 @@ namespace AutoClick
             }
             return checkBOMOK;
 
-
         }
         public string checkInput()
         {
@@ -1154,7 +1425,6 @@ namespace AutoClick
                     dactinh = "9";
                     break;
                 default:
-
                     break;
             }
 
@@ -1626,7 +1896,8 @@ namespace AutoClick
                     {
                         string
                             G_CODE = this.g_code,
-                            RIV_NO = this.g_code.Substring(7,1),
+                            //RIV_NO = this.g_code.Substring(7,1),
+                            RIV_NO = "A",
                             G_SEQ = padding_num(seq),
                             M_CODE = row.Cells["MATCODE"].Value.ToString(),
                             M_QTY = "1",
@@ -1789,7 +2060,8 @@ namespace AutoClick
                     {
                         string
                             G_CODE = this.old_g_code,
-                            RIV_NO = this.old_g_code.Substring(7, 1),
+                            //RIV_NO = this.old_g_code.Substring(7, 1),
+                            RIV_NO ="A",
                             G_SEQ = padding_num(seq),
                             CATEGORY = row.Cells["CATEGORY"].Value.ToString(),
                             M_CODE = row.Cells["MATCODE"].Value.ToString(),
@@ -1839,6 +2111,80 @@ namespace AutoClick
                 MessageBox.Show("Đã xóa BOM tính giá");
             }
         }
+
+
+        public void updateBOMSX()
+        {
+            if (this.bom.Rows.Count > 1)
+            {
+                int seq = 1;
+                ProductBLL pro = new ProductBLL();
+                pro.deleteBOMSX(this.old_g_code);
+
+                foreach (DataGridViewRow row in this.bom.Rows)
+                {
+                    if (!row.IsNewRow)
+                    {
+                        string
+                            G_CODE = this.old_g_code,
+                            //RIV_NO = this.old_g_code.Substring(7, 1),
+                            RIV_NO = "A",
+                            G_SEQ = padding_num(seq),
+                            CATEGORY = row.Cells["CATEGORY"].Value.ToString(),
+                            M_CODE = row.Cells["MATCODE"].Value.ToString(),
+                            M_NAME = row.Cells["MATNAME"].Value.ToString(),
+                            CUST_CD = row.Cells["VENDOR"].Value.ToString(),
+                            CMS_PRICE = row.Cells["CMS_PRICE"].Value.ToString(),
+                            SS_PRICE = row.Cells["SS_PRICE"].Value.ToString(),
+                            SLITTING_PRICE = row.Cells["SLITTING_PRICE"].Value.ToString(),
+                            USAGE = row.Cells["USAGE"].Value.ToString(),
+                            MASTERWIDTH = row.Cells["MASTER_WIDTH"].Value.ToString(),
+                            CUTWIDTH = row.Cells["CUTWIDTH"].Value.ToString(),
+                            ROLL_LENGTH = row.Cells["ROLL_LENGTH"].Value.ToString(),
+                            MAT_THICKNESS = row.Cells["THICKNESS"].Value.ToString(),
+                            M_QTY = row.Cells["M_QTY"].Value.ToString(),
+                            REMK = row.Cells["REMARK"].Value.ToString(),
+                            PROCESS_ORDER = row.Cells["PROCESS_ORDER"].Value.ToString(),
+                            INS_EMPL = this.ins_empl,
+                            UPD_EMPL = this.ins_empl,
+                            META_PAT_CD = "x",
+                            USE_YN = "Y";
+                        int categorynum = 1;
+
+                        if (CATEGORY == "LIEU")
+                        {
+                            categorynum = 1;
+                        }
+                        else if (CATEGORY == "MUC")
+                        {
+                            categorynum = 2;
+                        }
+                        else if (CATEGORY == "CORE")
+                        {
+                            categorynum = 3;
+                        }
+                        else
+                        {
+                            categorynum = 1;
+                        }
+
+                      /* string insertBOMVALUE = $"('002','{G_CODE}','{RIV_NO}','{G_SEQ}','{categorynum}','{M_CODE}','{M_NAME}','{CUST_CD}','SK','{CMS_PRICE}','{SS_PRICE}','{SLITTING_PRICE}','{USAGE}','{MASTERWIDTH}','{CUTWIDTH}','{ROLL_LENGTH}','{MAT_THICKNESS}','{M_QTY}', '{REMK}','{PROCESS_ORDER}',GETDATE(),'{INS_EMPL}',GETDATE(),'{UPD_EMPL}')";
+                        
+                        pro.insertNewBOM(insertBOMVALUE); */
+
+                        string insertBOMVALUE = $"('002','{G_CODE}','{RIV_NO}','{G_SEQ}','{M_CODE}','{M_QTY}','{META_PAT_CD}', '{REMK}','{USE_YN}',GETDATE(),'{INS_EMPL}',GETDATE(),'{UPD_EMPL}')";
+                        pro.insertOldBOM(insertBOMVALUE);
+                        seq++;
+                    }
+                }
+            }
+            else
+            {
+                MessageBox.Show("Đã xóa BOM tính giá");
+            }
+        }
+
+
 
     }
 }

@@ -80,9 +80,11 @@
             this.textBox17 = new System.Windows.Forms.TextBox();
             this.textBox16 = new System.Windows.Forms.TextBox();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
+            this.label43 = new System.Windows.Forms.Label();
+            this.button13 = new System.Windows.Forms.Button();
+            this.button12 = new System.Windows.Forms.Button();
             this.checkBox3 = new System.Windows.Forms.CheckBox();
             this.button7 = new System.Windows.Forms.Button();
-            this.label43 = new System.Windows.Forms.Label();
             this.button10 = new System.Windows.Forms.Button();
             this.button11 = new System.Windows.Forms.Button();
             this.button6 = new System.Windows.Forms.Button();
@@ -718,9 +720,11 @@
             this.groupBox4.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox4.BackColor = System.Drawing.Color.Transparent;
+            this.groupBox4.Controls.Add(this.label43);
+            this.groupBox4.Controls.Add(this.button13);
+            this.groupBox4.Controls.Add(this.button12);
             this.groupBox4.Controls.Add(this.checkBox3);
             this.groupBox4.Controls.Add(this.button7);
-            this.groupBox4.Controls.Add(this.label43);
             this.groupBox4.Controls.Add(this.button10);
             this.groupBox4.Controls.Add(this.button11);
             this.groupBox4.Controls.Add(this.button6);
@@ -741,6 +745,37 @@
             this.groupBox4.TabIndex = 0;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "5. Nguyên phụ liệu";
+            // 
+            // label43
+            // 
+            this.label43.AutoSize = true;
+            this.label43.Font = new System.Drawing.Font("Microsoft Sans Serif", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label43.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(128)))));
+            this.label43.Location = new System.Drawing.Point(782, 21);
+            this.label43.Name = "label43";
+            this.label43.Size = new System.Drawing.Size(22, 31);
+            this.label43.TabIndex = 13;
+            this.label43.Text = ".";
+            // 
+            // button13
+            // 
+            this.button13.Location = new System.Drawing.Point(591, 15);
+            this.button13.Name = "button13";
+            this.button13.Size = new System.Drawing.Size(101, 40);
+            this.button13.TabIndex = 12;
+            this.button13.Text = "Update BOM SX";
+            this.button13.UseVisualStyleBackColor = true;
+            this.button13.Click += new System.EventHandler(this.button13_Click);
+            // 
+            // button12
+            // 
+            this.button12.Location = new System.Drawing.Point(471, 15);
+            this.button12.Name = "button12";
+            this.button12.Size = new System.Drawing.Size(114, 40);
+            this.button12.TabIndex = 11;
+            this.button12.Text = "Thêm BOM SX";
+            this.button12.UseVisualStyleBackColor = true;
+            this.button12.Click += new System.EventHandler(this.button12_Click_1);
             // 
             // checkBox3
             // 
@@ -764,18 +799,6 @@
             this.button7.UseVisualStyleBackColor = false;
             this.button7.Click += new System.EventHandler(this.button7_Click);
             // 
-            // label43
-            // 
-            this.label43.AutoSize = true;
-            this.label43.BackColor = System.Drawing.Color.Transparent;
-            this.label43.Font = new System.Drawing.Font("Microsoft Sans Serif", 30F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label43.ForeColor = System.Drawing.Color.White;
-            this.label43.Location = new System.Drawing.Point(622, 9);
-            this.label43.Name = "label43";
-            this.label43.Size = new System.Drawing.Size(31, 46);
-            this.label43.TabIndex = 3;
-            this.label43.Text = ".";
-            // 
             // button10
             // 
             this.button10.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(0)))), ((int)(((byte)(192)))));
@@ -792,11 +815,11 @@
             // 
             this.button11.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(255)))), ((int)(((byte)(128)))));
             this.button11.ForeColor = System.Drawing.Color.Black;
-            this.button11.Location = new System.Drawing.Point(800, 62);
+            this.button11.Location = new System.Drawing.Point(769, 63);
             this.button11.Name = "button11";
-            this.button11.Size = new System.Drawing.Size(175, 43);
+            this.button11.Size = new System.Drawing.Size(193, 43);
             this.button11.TabIndex = 4;
-            this.button11.Text = "Clone BOM SX sang BOM giá";
+            this.button11.Text = "Clone BOM SX sang bảng bên trái";
             this.button11.UseVisualStyleBackColor = false;
             this.button11.Click += new System.EventHandler(this.button11_Click);
             // 
@@ -1596,11 +1619,13 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn REMARK;
         private System.Windows.Forms.Button button6;
         private System.Windows.Forms.Button button7;
-        private System.Windows.Forms.Label label43;
         private System.Windows.Forms.Button button8;
         private System.Windows.Forms.Button button9;
         private System.Windows.Forms.Button button10;
         private System.Windows.Forms.Button button11;
         private System.Windows.Forms.CheckBox checkBox3;
+        private System.Windows.Forms.Button button13;
+        private System.Windows.Forms.Label label43;
+        private System.Windows.Forms.Button button12;
     }
 }

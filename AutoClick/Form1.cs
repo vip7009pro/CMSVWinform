@@ -1968,7 +1968,7 @@ namespace AutoClick
                                     int check_riv = pro.checkRIV_NO(G_CODE, RIV_NO);
 
                                     string checkUSEYN = pro.checkM100UseYN(G_CODE);
-
+                                    /*
                                     if (check_riv != 1)
                                     {
                                         MessageBox.Show("Code " + G_CODE + " không tồn tại REVISION trong bảng BOM, check lại REVISION hoặc liên hệ RND");
@@ -1982,7 +1982,18 @@ namespace AutoClick
                                         pro.InsertYCSX(CTR_CD, PROD_REQUEST_DATE, PROD_REQUEST_NO, CODE_50, CODE_03, CODE_55, G_CODE, RIV_NO, PROD_REQUEST_QTY, CUST_CD, EMPL_NO, REMK, EMPL_NO, EMPL_NO, DELIVERY_DT);
                                         pro.writeHistory("002", LoginID, "YCSX TABLE", "THEM", "THEM YCSX", "0");
                                     }
-                                   
+                                    */
+
+                                    if (checkUSEYN == "N")
+                                    {
+                                        MessageBox.Show("Code " + G_CODE + " đã bị khóa, có thể ver này không còn được sử dụng");
+                                    }
+                                    else
+                                    {
+                                        pro.InsertYCSX(CTR_CD, PROD_REQUEST_DATE, PROD_REQUEST_NO, CODE_50, CODE_03, CODE_55, G_CODE, "A", PROD_REQUEST_QTY, CUST_CD, EMPL_NO, REMK, EMPL_NO, EMPL_NO, DELIVERY_DT);
+                                        pro.writeHistory(CTR_CD, EMPL_NO, "YCSX TABLE", "THEM", "THEM YCSX", "0");
+                                    }
+
                                 }
                                 else
                                 {
@@ -5179,10 +5190,50 @@ namespace AutoClick
 
         }
 
+        public string process_lot_no_generate(string machine_name)
+        {
+
+            //Machine name lấy khi trỏ vào 1 dòng nào đó trong bảng P500
+
+
+
+            ProductBLL pro = new ProductBLL();
+            DataTable dt = new DataTable();
+            String sDate = DateTime.Now.ToString();
+            DateTime datevalue = (Convert.ToDateTime(sDate.ToString()));
+
+            int dy = datevalue.Day;
+            int mn = datevalue.Month;
+            int yy = datevalue.Year;
+            string in_date = STYMD(yy, mn, dy);
+            //string in_date = STYMD(2022, 04, 27);
+            // getlastest process_lot_no from machine name and in_date
+            string LOT_HEADER = machine_name + CreateHeader2();
+            string NEXT_PROCESS_LOT_NO = machine_name + CreateHeader2();
+            dt = pro.getLastProcessLotNo(machine_name, in_date);
+            if(dt.Rows.Count > 0)
+            {
+                // MessageBox.Show(dt.Rows[0]["PROCESS_LOT_NO"].ToString() + dt.Rows[0]["SEQ_NO"].ToString());
+                NEXT_PROCESS_LOT_NO += String.Format("{0:000}", int.Parse(dt.Rows[0]["SEQ_NO"].ToString()) +1);
+            }
+            else
+            {
+                // MessageBox.Show("Chưa có " + in_date);
+                NEXT_PROCESS_LOT_NO += "001";
+            }
+            //MessageBox.Show(NEXT_PROCESS_LOT_NO);          
+            return NEXT_PROCESS_LOT_NO;
+
+        }
+        private void button34_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show(process_lot_no_generate("SR"));
+        }
+
         private void xóaYêuCầuSảnXuấtHàngLoạtToolStripMenuItem_Click(object sender, EventArgs e)
         {
             
-            if (textBox8.Text == "xoa1")
+            if (textBox8.Text == "xoa")
             {
                 if (MessageBox.Show("Bạn thực sự muốn xóa YCSX?", "Xóa YCSX ?", MessageBoxButtons.OKCancel) == DialogResult.OK)
                 {
@@ -5203,8 +5254,13 @@ namespace AutoClick
                         foreach (var row in selectedRows)
                         {
                             string ycsxno = row.Cells[3].Value.ToString();
-                            dt = pro.DeleteYCSX(ycsxno);
-                            pro.writeHistory("002", LoginID, "YCSX TABLE", "XOA", "XOA YCSX", "0");
+                            dt = pro.checkYCSXO300(ycsxno);
+                            if(dt.Rows.Count ==0)
+                            {
+                                dt = pro.DeleteYCSX(ycsxno);
+                                pro.writeHistory("002", LoginID, "YCSX TABLE", "XOA", "XOA YCSX", "0");
+                            }
+                            
                             startprogress = startprogress + 1;
                             label4.Text = "Progress: " + startprogress + "/" + dataGridView1.SelectedRows.Count;
                             progressBar1.Value = startprogress;
@@ -6424,8 +6480,11 @@ namespace AutoClick
         {
             try
             {
-                    string strConnect = "Data Source=14.160.33.198; Initial Catalog=CMS_VINA;User ID=sa;Password=Cms6886;" + " Pooling=false;";
-                    con = new SqlConnection(strConnect); //khởi tạo connect
+                // string strConnect = "Data Source=14.160.33.198; Initial Catalog=CMS_VINA;User ID=sa;Password=Cms6886;" + " Pooling=false;";
+                //string strConnect = "Data Source=14.160.33.94,3003; Initial Catalog=CMS_VINA;User ID=sa;Password=*11021201$;" + " Pooling=false;";
+                //string strConnect = "Data Source=192.168.1.136,3003; Initial Catalog=CMS_VINA;User ID=sa;Password=*11021201$;" + " Pooling=false;";
+                string strConnect = "Data Source=14.160.33.94,3021; Initial Catalog=CMS_VINA;User ID=sa;Password=*11021201$;" + " Pooling=false;";
+                con = new SqlConnection(strConnect); //khởi tạo connect
                     if (con.State == ConnectionState.Open)//nếu kết nối đang mở thì ta đóng lại
                         con.Close(); // đóng kết nối
                     con.Open();// mở kết nối                   
@@ -6572,6 +6631,17 @@ namespace AutoClick
             result = config.GetData(strQuery);
             return result;
         }
+
+        public DataTable getLastProcessLotNo(string machine, string in_date)
+        {
+            DataTable result = new DataTable();
+            DataConfig config = new DataConfig();
+            //string strQuery = "SELECT G_Code,G_Name FROM M100 where G_Code='" + item + "'";
+            string strQuery = $"SELECT TOP 1 PROCESS_LOT_NO,SUBSTRING(PROCESS_LOT_NO,6,3) AS SEQ_NO, INS_DATE FROM P501 WHERE SUBSTRING(PROCESS_LOT_NO,1,2) = '{machine}' AND PROCESS_IN_DATE = '{in_date}' ORDER BY INS_DATE DESC";
+            result = config.GetData(strQuery);
+            return result;
+        }
+
 
 
         public String getLastG_CODE_SEQ_NO(string dactinh, string phanloai)
@@ -7884,7 +7954,8 @@ namespace AutoClick
         {
             DataTable result = new DataTable();
             DataConfig config = new DataConfig();
-            string strQuery = $"SELECT M140.G_CODE, M100.G_NAME, M100.G_NAME_KD, M140.RIV_NO, M140.M_CODE, M090.M_NAME, M090.WIDTH_CD, M140.M_QTY, M140.INS_EMPL, M140.INS_DATE, M140.UPD_EMPL,M140.UPD_DATE FROM M140 JOIN M100 ON (M140.G_CODE = M100.G_CODE AND M140.RIV_NO = M100.REV_NO) JOIN M090 ON (M090.M_CODE = M140.M_CODE) WHERE M140.G_CODE='{G_CODE}' AND M140.RIV_NO='{RIV_NO}'";
+            string strQuery = $"SELECT M140.G_CODE, M100.G_NAME, M100.G_NAME_KD, M140.RIV_NO, M140.M_CODE, M090.M_NAME, M090.WIDTH_CD, M140.M_QTY, M140.INS_EMPL, M140.INS_DATE, M140.UPD_EMPL,M140.UPD_DATE FROM M140 JOIN M100 ON (M140.G_CODE = M100.G_CODE) JOIN M090 ON (M090.M_CODE = M140.M_CODE) WHERE M140.G_CODE='{G_CODE}' AND M140.RIV_NO='{RIV_NO}'";
+            //MessageBox.Show(strQuery);
             result = config.GetData(strQuery);
             return result;
         }
@@ -8038,7 +8109,8 @@ namespace AutoClick
         {
             DataTable result = new DataTable();
             DataConfig config = new DataConfig();
-            string strQuery = $"INSERT INTO M140 (CTR_CD,G_CODE,RIV_NO,G_SEQ,M_CODE,M_QTY,META_PAT_CD,REMK,USE_YN,INS_DATE,INS_EMPL,UPD_DATE,UPD_EMPL) VALUES " + value;
+            string strQuery = $"INSERT INTO M140 (CTR_CD,G_CODE,RIV_NO,G_SEQ,M_CODE,M_QTY,META_PAT_CD,REMK,USE_YN,INS_DATE,INS_EMPL,UPD_DATE,UPD_EMPL) VALUES " + value;           
+            //MessageBox.Show(strQuery);
             result = config.GetData(strQuery);
             return result;
 
@@ -8062,6 +8134,16 @@ namespace AutoClick
             return result;
 
         }
+        public DataTable deleteBOMSX(string g_code)
+        {
+            DataTable result = new DataTable();
+            DataConfig config = new DataConfig();
+            string strQuery = $"DELETE FROM M140 WHERE G_CODE = '{g_code}'";
+            result = config.GetData(strQuery);
+            return result;
+
+        }
+
 
         public DataTable getMATInfo(string M_NAME)
         {
@@ -8253,6 +8335,17 @@ namespace AutoClick
             DataConfig config = new DataConfig();
             //string strQuery = "SELECT G_Code,G_Name FROM M100 where G_Code='" + item + "'";
             string strQuery = "DELETE FROM P400 WHERE PROD_REQUEST_NO=" + "'" + ycsxno + "'";
+            result = config.GetData(strQuery);
+            return result;
+
+        }
+
+        public DataTable checkYCSXO300(string ycsxno)
+        {
+            DataTable result = new DataTable();
+            DataConfig config = new DataConfig();
+            //string strQuery = "SELECT G_Code,G_Name FROM M100 where G_Code='" + item + "'";
+            string strQuery = $"SELECT TOP 1 * FROM O300 WHERE PROD_REQUEST_NO = '{ycsxno}'";
             result = config.GetData(strQuery);
             return result;
 
