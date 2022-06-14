@@ -21,8 +21,8 @@ namespace AutoClick
 
         private void button3_Click(object sender, EventArgs e)
         {
-            MessageBox.Show(loginIDfrm3);       
-            
+
+
         }
 
         private void comboBox1_TextUpdate(object sender, EventArgs e)
@@ -63,7 +63,6 @@ namespace AutoClick
             comboBox5.Items.Add("SDI");
             comboBox5.Items.Add("ETC");
             comboBox5.Items.Add("SAMPLE");
-
             comboBox6.Items.Add("GC");
             comboBox6.Items.Add("SK");
             comboBox6.Items.Add("KD");
@@ -77,20 +76,21 @@ namespace AutoClick
         }
         public string loginIDfrm3 = "";
 
-        private void button1_Click(object sender, EventArgs e)
+        public void addnewYCSX()
         {
             ProductBLL pro = new ProductBLL();
             DataTable dt = new DataTable();
             Form1 frm1 = new Form1();
-            if (textBox1.Text == null || textBox1.Text == "" || textBox2.Text == "" || textBox3.Text == "" || textBox4.Text == "" || textBox5.Text == "" || comboBox1.Text =="" || comboBox2.Text == "" || comboBox3.Text == "" || comboBox4.Text == "" || comboBox5.Text == "" || comboBox6.Text == "")
+
+            if (textBox1.Text == null || textBox1.Text == "" || textBox2.Text == "" || textBox3.Text == "" || textBox4.Text == "" || textBox5.Text == "" || comboBox1.Text == "" || comboBox2.Text == "" || comboBox3.Text == "" || comboBox4.Text == "" || comboBox5.Text == "" || comboBox6.Text == "")
             {
                 MessageBox.Show("Không để trống 1 ô nào !");
             }
             else
             {
                 try
-                {           
-                    string PROD_REQUEST_DATE, CODE_50="", CODE_55="", G_CODE, RIV_NO, PROD_REQUEST_QTY, CUST_CD, EMPL_NO, REMK, DELIVERY_DT;
+                {
+                    string PROD_REQUEST_DATE, CODE_50 = "", CODE_55 = "", G_CODE, RIV_NO, PROD_REQUEST_QTY, CUST_CD, EMPL_NO, REMK, DELIVERY_DT;
                     string CTR_CD = "002";
                     string CODE_03 = "01";
                     String ngaygiohethong = pro.getsystemDateTime();
@@ -111,7 +111,7 @@ namespace AutoClick
                             CODE_55 = "04";
                             break;
                         default:
-                            break;                           
+                            break;
 
                     }
                     switch (comboBox6.Text)
@@ -139,7 +139,6 @@ namespace AutoClick
                             break;
                         default:
                             break;
-
                     }
 
                     G_CODE = comboBox3.Text;
@@ -148,8 +147,8 @@ namespace AutoClick
                     CUST_CD = comboBox4.Text;
                     EMPL_NO = loginIDfrm3;
                     REMK = textBox4.Text;
-                    DELIVERY_DT = textBox5.Text;                 
-                               
+                    DELIVERY_DT = textBox5.Text;
+
                     dt = pro.getLastYCSXNo();
                     string lastycsxno = "";
                     if (dt.Rows.Count > 0)
@@ -184,41 +183,56 @@ namespace AutoClick
                             lastycsxno = "" + yccuoiint;
                         }
                         string PROD_REQUEST_NO = frm1.CreateHeader2() + lastycsxno;
-
-                        /*
-                        int check_riv = pro.checkRIV_NO(G_CODE, RIV_NO);
                         string checkUSEYN = pro.checkM100UseYN(G_CODE);
 
-                        if (check_riv != 1)
-                        {
-                            MessageBox.Show("Code " + G_CODE + " không tồn tại REVISION trong bảng BOM, check lại REVISION hoặc liên hệ RND");
-                        }
-                        else if(checkUSEYN=="N")
-                        {
-                            MessageBox.Show("Code " + G_CODE + " đã bị khóa, có thể ver này không còn được sử dụng");
-                        }
-                        else
-                        {
-                            pro.InsertYCSX(CTR_CD, PROD_REQUEST_DATE, PROD_REQUEST_NO, CODE_50, CODE_03, CODE_55, G_CODE, RIV_NO, PROD_REQUEST_QTY, CUST_CD, EMPL_NO, REMK, EMPL_NO, EMPL_NO, DELIVERY_DT);
-                            pro.writeHistory(CTR_CD, EMPL_NO, "YCSX TABLE", "THEM", "THEM YCSX", "0");
-                        }
 
-                        */
-                        
-                        string checkUSEYN = pro.checkM100UseYN(G_CODE);
-
-                       
                         if (checkUSEYN == "N")
                         {
                             MessageBox.Show("Code " + G_CODE + " đã bị khóa, có thể ver này không còn được sử dụng");
                         }
                         else
                         {
-                            pro.InsertYCSX(CTR_CD, PROD_REQUEST_DATE, PROD_REQUEST_NO, CODE_50, CODE_03, CODE_55, G_CODE, "A", PROD_REQUEST_QTY, CUST_CD, EMPL_NO, REMK, EMPL_NO, EMPL_NO, DELIVERY_DT);
+                            if (checkBox1.Checked)
+                            {
+                                string process_in_date = "", current_process_in_no = "", next_process_in_no = "";
+
+                                String sDate = DateTime.Now.ToString();
+                                DateTime datevalue = (Convert.ToDateTime(sDate.ToString()));
+                                int dy = datevalue.Day;
+                                int mn = datevalue.Month;
+                                int yy = datevalue.Year;
+                                string in_date = new Form1().STYMD(yy, mn, dy);                               
+                                dt = pro.checkProcessInNoP500(in_date, comboBox7.Text);
+
+                                if (dt.Rows.Count > 0)
+                                {
+                                    //MessageBox.Show(dt.Rows[0]["PROCESS_IN_NO"].ToString());
+                                    current_process_in_no = dt.Rows[0]["PROCESS_IN_NO"].ToString();
+                                    next_process_in_no = String.Format("{0:000}", int.Parse(current_process_in_no) + 1);
+                                }
+                                else
+                                {
+                                    next_process_in_no = "001";
+                                }
+                                
+                                string insertvalueP500 = $"('002','{in_date}','{next_process_in_no}','{next_process_in_no}','999','{PROD_REQUEST_DATE}','{PROD_REQUEST_NO}','{G_CODE}', '','','{EMPL_NO}','{comboBox7.Text}01','OK',GETDATE(),'{EMPL_NO}',GETDATE(),'{EMPL_NO}','NM1')";
+
+                                string next_process_lot_no = process_lot_no_generate(comboBox7.Text);
+
+                                string insertvalueP501 = $"('002','{in_date}','{next_process_in_no}','001','001','{next_process_lot_no.Substring(5,3)}','','{next_process_lot_no}',GETDATE(),'{EMPL_NO}',GETDATE(),'{EMPL_NO}')";
+
+                                pro.InsertYCSX(CTR_CD, PROD_REQUEST_DATE, PROD_REQUEST_NO, CODE_50, CODE_03, CODE_55, G_CODE, "A", PROD_REQUEST_QTY, CUST_CD, EMPL_NO, next_process_lot_no, EMPL_NO, EMPL_NO, DELIVERY_DT);
+                                pro.insertP500(insertvalueP500);
+                                pro.insertP501(insertvalueP501);
+                            }
+                            else
+                            {
+                                pro.InsertYCSX(CTR_CD, PROD_REQUEST_DATE, PROD_REQUEST_NO, CODE_50, CODE_03, CODE_55, G_CODE, "A", PROD_REQUEST_QTY, CUST_CD, EMPL_NO, REMK, EMPL_NO, EMPL_NO, DELIVERY_DT);
+                            }
+
+                            
                             pro.writeHistory(CTR_CD, EMPL_NO, "YCSX TABLE", "THEM", "THEM YCSX", "0");
                         }
-
-
                     }
                     else
                     {
@@ -226,17 +240,53 @@ namespace AutoClick
                     }
 
 
-
-                    
-
-                    MessageBox.Show("Đã hoàn thành yêu cầu sản xuất hàng loạt");
+                    MessageBox.Show("Đã hoàn thành thêm yêu cầu sản xuất");
                 }
                 catch (Exception ex)
                 {
                     MessageBox.Show(ex.ToString());
                 }
             }
-            
+        }
+
+        public string process_lot_no_generate(string machine_name)
+        {
+
+            //Machine name lấy khi trỏ vào 1 dòng nào đó trong bảng P500
+
+            ProductBLL pro = new ProductBLL();
+            DataTable dt = new DataTable();
+            String sDate = DateTime.Now.ToString();
+            DateTime datevalue = (Convert.ToDateTime(sDate.ToString()));
+            int dy = datevalue.Day;
+            int mn = datevalue.Month;
+            int yy = datevalue.Year;
+            string in_date = new Form1().STYMD(yy, mn, dy);
+            //string in_date = STYMD(2022, 04, 27);
+            // getlastest process_lot_no from machine name and in_date
+            string LOT_HEADER = machine_name + new Form1().CreateHeader2();
+            string NEXT_PROCESS_LOT_NO = machine_name + new Form1().CreateHeader2();
+
+            dt = pro.getLastProcessLotNo(machine_name, in_date);
+            if (dt.Rows.Count > 0)
+            {
+                // MessageBox.Show(dt.Rows[0]["PROCESS_LOT_NO"].ToString() + dt.Rows[0]["SEQ_NO"].ToString());
+                NEXT_PROCESS_LOT_NO += String.Format("{0:000}", int.Parse(dt.Rows[0]["SEQ_NO"].ToString()) + 1);
+            }
+            else
+            {
+                // MessageBox.Show("Chưa có " + in_date);
+                NEXT_PROCESS_LOT_NO += "001";
+            }
+            //MessageBox.Show(NEXT_PROCESS_LOT_NO);          
+            return NEXT_PROCESS_LOT_NO;
+
+        }
+
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            addnewYCSX();
         }
 
         private void button2_Click(object sender, EventArgs e)

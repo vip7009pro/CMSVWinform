@@ -16,7 +16,11 @@ namespace AutoClick
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
+            //Application.Run(new NewYCSX());
             Application.Run(new Form2());
+            //Application.Run(new QuanLyKhachHang());
+
+
             //Application.Run(new BEP_Info());
 
             //Application.Run(new Chart1());

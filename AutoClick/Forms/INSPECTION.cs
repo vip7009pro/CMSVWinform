@@ -347,12 +347,12 @@ namespace AutoClick
 
                 for (int j = 0; j < rownumdtpic; j++)
                 {
-                    sumdtpic += double.Parse(dt.Rows[j][dt.Columns[13]].ToString());
+                    sumdtpic += double.Parse(dt.Rows[j][dt.Columns[12]].ToString());
                 }
 
 
                 drpic[1] = "TOTAL";                
-                drpic[13] = sumdtpic;
+                drpic[12] = sumdtpic;
                 dt.Rows.InsertAt(drpic, 0);
 
 

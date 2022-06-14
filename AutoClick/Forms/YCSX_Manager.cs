@@ -8,11 +8,13 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Reflection;
+using System.IO;
 
 namespace AutoClick
 {
     public partial class YCSX_Manager : Form
     {
+        public string Login_ID = "";
         public YCSX_Manager()
         {
             InitializeComponent();
@@ -29,6 +31,10 @@ namespace AutoClick
         }
         private void YCSX_Manager_Load(object sender, EventArgs e)
         {
+            int h = Screen.PrimaryScreen.WorkingArea.Height;
+            int w = Screen.PrimaryScreen.WorkingArea.Width;
+            this.ClientSize = new Size(w, h);
+
             comboBox1.Items.Add("Thong Thuong");
             comboBox1.Items.Add("SDI");
             comboBox1.Items.Add("GC");
@@ -38,10 +44,9 @@ namespace AutoClick
             comboBox1.Text = "ALL";
             this.ContextMenuStrip = contextMenuStrip1;
             this.dataGridView1.DefaultCellStyle.ForeColor = Color.Blue;
-            this.dataGridView1.DefaultCellStyle.BackColor = Color.Beige;
-            dataGridView1.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+            this.dataGridView1.DefaultCellStyle.BackColor = Color.Beige;            
             dataGridView1.MultiSelect = true;
-            dataGridView1.ReadOnly = true;
+            dataGridView1.ReadOnly = false;
 
             if (!System.Windows.Forms.SystemInformation.TerminalServerSession)
             {
@@ -50,6 +55,9 @@ namespace AutoClick
                   BindingFlags.Instance | BindingFlags.NonPublic);
                 pi.SetValue(dataGridView1, true, null);
             }
+            dataGridView1.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.DisplayedCells;
+            this.dataGridView1.ClipboardCopyMode = DataGridViewClipboardCopyMode.EnableAlwaysIncludeHeaderText;
+            dataGridView1.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
 
         }
         public string STYMD(int y, int m, int d)
@@ -247,8 +255,6 @@ namespace AutoClick
             dtg1.Columns["PROD_REQUEST_NO"].HeaderText = "SỐ YÊU CẦU";
             dtg1.Columns["PROD_REQUEST_DATE"].HeaderText = "NGÀY YÊU CẦU";
             dtg1.Columns["PROD_REQUEST_QTY"].HeaderText = "SL YÊU CẦU";
-
-
         }
 
 
@@ -256,6 +262,12 @@ namespace AutoClick
         {
             try
             {
+                if (dataGridView1.Columns.Count > 0)
+                {
+                    dataGridView1.DataSource = null;
+                    dataGridView1.Columns.Remove("SELECT");                   
+                }
+
                 ProductBLL pro = new ProductBLL();
                 DataTable dt = new DataTable();
                 dt = pro.tra_YCSXMANAGER(generate_condition_ycsxManager());
@@ -263,6 +275,18 @@ namespace AutoClick
                 setRowNumber(dataGridView1);
                 formatYCSXTable(dataGridView1);
                 changeHeaderText(dataGridView1);
+
+                DataGridViewCheckBoxColumn ck = new DataGridViewCheckBoxColumn();
+                ck.Name = "SELECT";
+                ck.HeaderText = "CHỌN";
+                ck.Width = 50;
+                ck.ReadOnly = false;
+                dataGridView1.Columns.Insert(0, ck);
+                for (int r = 0; r < dataGridView1.Rows.Count; r++)
+                {
+                    dataGridView1.Rows[r].Cells["SELECT"].Value = false;
+                }
+
                 MessageBox.Show("Đã loát: " + dt.Rows.Count + " dòng");
             }
             catch (Exception ex)
@@ -436,6 +460,285 @@ namespace AutoClick
             
 
         }
-       
+
+        private void checkBảnVẽToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void newYCSXToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Form3 frm3 = new Form3();
+            frm3.loginIDfrm3 = Login_ID;
+            frm3.Show();
+        }
+
+        private void thêmYêuCầuMớiToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            
+        }
+
+        private void thêm1YCToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Form3 frm3 = new Form3();
+            frm3.loginIDfrm3 = Login_ID;
+            frm3.Show();
+        }
+
+        private void thêmNhiềuYCSXToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            NewYCSX newycsx = new NewYCSX();
+            newycsx.Login_ID = Login_ID;
+            newycsx.Show();
+        }
+
+        private void thêmNhiềuYCSXToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            NewYCSX newycsx = new NewYCSX();
+            newycsx.Login_ID = Login_ID;
+            newycsx.Show();
+        }
+        public List<string> listchuabanve = null;
+        public void xuatfile_inycsx(bool inhaykhong)
+        {
+            CheckBox cb1 = new CheckBox();
+            cb1.Checked = inhaykhong;
+            dataGridView1.EndEdit();
+            try
+            {
+                listchuabanve = null;
+                string Dir = System.IO.Directory.GetCurrentDirectory();
+                //MessageBox.Show(Dir);
+                string file = Dir + "\\template.xlsx";
+                string saveycsxpath = "";
+
+
+                using (var fbd = new FolderBrowserDialog())
+                {
+                    DialogResult result = fbd.ShowDialog();
+
+                    if (result == DialogResult.OK && !string.IsNullOrWhiteSpace(fbd.SelectedPath))
+                    {
+                        saveycsxpath = fbd.SelectedPath;
+
+                        ProductBLL pro = new ProductBLL();
+                        DataTable dt = new DataTable();
+
+                        //dataGridView1.Rows[rowindex].Cells[columnindex].Value.ToString();
+                        int checkRowsCount = 0;
+                        foreach (DataGridViewRow row in dataGridView1.Rows)
+                        { 
+                            if (!row.IsNewRow)
+                            {
+                                if (row.Cells["SELECT"].Value.ToString() == "True")
+                                {
+                                    checkRowsCount++;
+                                }
+                            }
+                        }
+                            progressBar1.Minimum = 0; //Đặt giá trị nhỏ nhất cho ProgressBar
+                        progressBar1.Maximum = checkRowsCount; //Đặt giá trị lớn nhất cho ProgressBar
+                        
+
+                        int startprogress = 0;
+
+                        foreach (DataGridViewRow row in dataGridView1.Rows)
+                        {
+                            if (!row.IsNewRow)
+                            {
+                                if (row.Cells["SELECT"].Value.ToString() == "True")
+                                {
+                                    
+                                    string ycsxno = row.Cells["PROD_REQUEST_NO"].Value.ToString();
+                                    dt = pro.getFullInfo(ycsxno);
+                                    if (file != "")
+                                    {
+                                        string drawfilename = dt.Rows[0]["G_NAME"].ToString().Substring(0, 11) + "_" + dt.Rows[0]["G_CODE"].ToString().Substring(7, 1) + ".pdf";
+                                        string pdffile = Dir + "\\BANVE\\" + drawfilename;
+                                        ExcelFactory.editFileExcel(file, dt, cb1, saveycsxpath);
+                                        if(inhaykhong == true)
+                                        {
+                                            if (File.Exists(pdffile))
+                                            {
+                                                new Form1().printPDF(pdffile);
+                                            }
+                                            else
+                                            {
+                                                MessageBox.Show("Không có bản vẽ : " + dt.Rows[0]["G_NAME"].ToString());
+                                            }
+
+                                        }
+                                        startprogress = startprogress + 1;
+                                        progressBar1.Value = startprogress;
+
+                                    }
+                                    
+                                }
+
+                            }
+                                                       
+                        }
+                        MessageBox.Show("Export Yêu cầu hoàn thành !");
+                        progressBar1.Value = 0;
+                        // MessageBox.Show(saveycsxpath);
+                    }
+                }
+
+
+
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Lỗi: " + ex.ToString());
+            }
+        }
+
+        private void xuấtFileInYCSXToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            xuatfile_inycsx(true);
+        }
+
+        private void checkBox4_CheckedChanged(object sender, EventArgs e)
+        {
+            if(checkBox4.Checked == true)
+            {
+                for (int r = 0; r < dataGridView1.Rows.Count; r++)
+                {
+                    dataGridView1.Rows[r].Cells["SELECT"].Value = true;
+                }
+            }
+            else
+            {
+                for (int r = 0; r < dataGridView1.Rows.Count; r++)
+                {
+                    dataGridView1.Rows[r].Cells["SELECT"].Value = false;
+                }
+            }            
+        }
+
+        private void xuấtFileYCSXOnlyToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            xuatfile_inycsx(false);
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            ProductBLL pro = new ProductBLL();
+            DataTable dt = new DataTable();         
+            dt = pro.getEmployeeName(Login_ID);
+            string my_name = dt.Rows[0]["EMPL_NAME"].ToString();
+            textBox5.Text = my_name;
+            traYCSXManager();
+            textBox5.Text = "";
+        }
+
+        private void checkBảnVẽToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            dataGridView1.EndEdit();
+            foreach (DataGridViewRow row in dataGridView1.Rows)
+            {
+                if (!row.IsNewRow)
+                {
+                    if (row.Cells["SELECT"].Value.ToString() == "True")
+                    {
+                        string Dir = System.IO.Directory.GetCurrentDirectory();
+                        string g_name_ = row.Cells["G_NAME"].Value.ToString();
+                        string g_code_ = row.Cells["G_CODE"].Value.ToString();
+                        string gname = g_name_.Substring(0, 11);
+                        string gcode = g_code_.Substring(7, 1);
+
+                        string drawpath = Dir + "\\BANVE\\" + gname + "_" + gcode + ".pdf";
+                        //MessageBox.Show(drawpath);
+                        if (!File.Exists(drawpath))
+                        {
+                            dataGridView1.Rows[row.Index].Cells["PROD_REQUEST_NO"].Style.BackColor = Color.Red;
+                        }
+                        else
+                        {
+                            dataGridView1.Rows[row.Index].Cells["PROD_REQUEST_NO"].Style.BackColor = Color.LightGreen;
+                        }
+                    }
+                }
+            }
+            MessageBox.Show("Đã check bản vẽ xong, kiểm tra lại các dòng bôi đỏ");
+
+           
+        }
+
+        private void xuấtChỉThịToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            CheckBox ckb = new CheckBox();
+            ckb.Checked = false;
+            dataGridView1.EndEdit();
+            try
+            {
+                string Dir = System.IO.Directory.GetCurrentDirectory();
+                //MessageBox.Show(Dir);
+                string file = Dir + "\\templateqlsx.xlsx";
+                string saveycsxpath = "";
+
+
+                using (var fbd = new FolderBrowserDialog())
+                {
+                    DialogResult result = fbd.ShowDialog();
+
+                    if (result == DialogResult.OK && !string.IsNullOrWhiteSpace(fbd.SelectedPath))
+                    {
+                        saveycsxpath = fbd.SelectedPath;
+
+                        ProductBLL pro = new ProductBLL();
+                        DataTable dt = new DataTable();
+
+                        int checkRowsCount = 0;
+                        for (int r = 0; r < dataGridView1.Rows.Count; r++)
+                        {
+                            DataGridViewRow row = dataGridView1.Rows[r];                           
+                            if (!row.IsNewRow)
+                            {                                
+                                if ((Boolean)((DataGridViewCheckBoxCell)row.Cells["SELECT"]).FormattedValue)
+                                {
+                                    checkRowsCount++;
+                                }
+
+                            }
+                        }
+
+                       
+                       // MessageBox.Show("Số dòng đã chọn: " + checkRowsCount);
+                        progressBar1.Minimum = 0; //Đặt giá trị nhỏ nhất cho ProgressBar
+                        progressBar1.Maximum = checkRowsCount; //Đặt giá trị lớn nhất cho ProgressBar
+
+
+                        int startprogress = 0;
+
+                        for (int r = 0; r < dataGridView1.Rows.Count; r++)
+                        {
+                            DataGridViewRow row = dataGridView1.Rows[r];
+                            if (!row.IsNewRow)
+                            {                                
+                                if ((Boolean)((DataGridViewCheckBoxCell)row.Cells["SELECT"]).FormattedValue)
+                                {
+                                    string ycsxno = row.Cells["PROD_REQUEST_NO"].Value.ToString();
+                                    dt = pro.getFullInfo(ycsxno);
+                                    if (file != "")
+                                    {
+                                        ExcelFactory.editFileExcelQLSX(file, dt, ckb, saveycsxpath);
+                                        startprogress = startprogress + 1;
+                                        progressBar1.Value = startprogress;
+                                    }
+                                }
+                            }
+                        }
+                        
+                        MessageBox.Show("Export Yêu cầu và thêm chỉ thị hoàn thành !");
+                        progressBar1.Value = 0;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Lỗi: " + ex.ToString());
+            }
+        }
     }
 }

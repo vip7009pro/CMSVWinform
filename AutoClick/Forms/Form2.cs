@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using AutoUpdaterDotNET;
 
 namespace AutoClick
 {
@@ -18,6 +19,64 @@ namespace AutoClick
         }
 
         public int currentver = 31;
+
+        public void checkUpdate()
+        {
+            System.Reflection.Assembly assembly = System.Reflection.Assembly.GetExecutingAssembly();
+            System.Diagnostics.FileVersionInfo fvi = System.Diagnostics.FileVersionInfo.GetVersionInfo(assembly.Location);
+            AutoUpdater.CheckForUpdateEvent += AutoUpdaterOnCheckForUpdateEvent;
+            string version = fvi.FileVersion;
+            label3.Text = "Phiên bản: " + version;
+            AutoUpdater.DownloadPath = "update";
+            AutoUpdater.Start("http://14.160.33.94:3010/update/update.xml");
+
+            System.Timers.Timer timer = new System.Timers.Timer
+            {
+                Interval = 1 * 60 * 1000,
+                SynchronizingObject = this
+            };
+            timer.Elapsed += delegate
+            {
+                AutoUpdater.Start("http://14.160.33.94:3010/update/update.xml");
+            };
+            timer.Start();
+        }
+
+        private void AutoUpdaterOnCheckForUpdateEvent(UpdateInfoEventArgs args)
+        {
+            if (args.IsUpdateAvailable)
+            {
+                DialogResult dialogResult;
+                dialogResult =
+                        MessageBox.Show(
+                            $@"Bạn ơi, phần mềm của bạn có phiên bản mới {args.CurrentVersion}. Phiên bản bạn đang sử dụng hiện tại  {args.InstalledVersion}. Bạn có muốn cập nhật phần mềm không?", @"Cập nhật phần mềm",
+                            MessageBoxButtons.YesNo,
+                            MessageBoxIcon.Information);
+
+                if (dialogResult.Equals(DialogResult.Yes) || dialogResult.Equals(DialogResult.OK))
+                {
+                    try
+                    {
+                        if (AutoUpdater.DownloadUpdate(args))
+                        {
+                            Application.Exit();
+                        }
+                    }
+                    catch (Exception exception)
+                    {
+                        MessageBox.Show(exception.Message, exception.GetType().ToString(), MessageBoxButtons.OK,
+                            MessageBoxIcon.Error);
+                    }
+                }
+            }
+            else
+            {
+                /* MessageBox.Show(@"Phiên bản bạn đang sử dụng đã được cập nhật mới nhất.", @"Cập nhật phần mềm",
+                     MessageBoxButtons.OK, MessageBoxIcon.Information); */
+            }
+        }
+
+
 
         public void login_fb()
         {
@@ -72,10 +131,8 @@ namespace AutoClick
 
         private void button1_Click(object sender, EventArgs e)
         {
-            ProductBLL pro = new ProductBLL();
-           
-            int lastver = pro.getVer();
-            
+            ProductBLL pro = new ProductBLL();           
+            int lastver = pro.getVer();            
             if(currentver >= lastver)
             {
                 login_fb();
@@ -141,6 +198,7 @@ namespace AutoClick
         private void Form2_Load(object sender, EventArgs e)
         {
             if (System.Diagnostics.Process.GetProcessesByName(System.IO.Path.GetFileNameWithoutExtension(System.Reflection.Assembly.GetEntryAssembly().Location)).Count() > 1) System.Diagnostics.Process.GetCurrentProcess().Kill();
+            checkUpdate();
         }
 
         private void button2_Click(object sender, EventArgs e)

@@ -48,6 +48,7 @@ namespace AutoClick
                   BindingFlags.Instance | BindingFlags.NonPublic);
                 pi.SetValue(dataGridView1, true, null);
             }
+            
             //dataGridView1.Hide();            
             dateTimePicker1.Value = DateTime.Today.AddDays(0);
             dateTimePicker2.Value = DateTime.Today.AddDays(0);
@@ -61,12 +62,8 @@ namespace AutoClick
             button14.Enabled = false;
             //MessageBox.Show("Xin chào " + LoginID);
             label6.Text = "Xin chào " + LoginID;
-            //checkBox2.Checked = true; 
-            
+            //checkBox2.Checked = true;             
             //checkKinhDoanhvsKiemTraG_CODE();
-
-
-
         }
 
         public void checkKinhDoanhvsKiemTraG_CODE()
@@ -133,17 +130,13 @@ namespace AutoClick
             }
         }
 
-
-
-
         public int po_flag = 0, invoice_flag = 0, ycsx_flag = 0, fcst_flag = 0, khgh_flag = 0, bom_flag=0; 
         public string LoginID = "NBT1901";
         public List<string> listchuabanve = null;
         List<YeuCauSanXuat> dsNV = null;
         public string[] monthArray = { "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L" };
         public string[] dayArray = { "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V" };
-                
-
+ 
         public int checkDate(DateTime dateTime)
         {
             if (dateTime <= DateTime.Today)
@@ -153,35 +146,28 @@ namespace AutoClick
             else
             {
                 return 0;
-            }
-            
+            }            
         }
         public int checkInvoicevsPODate(DateTime inVoicedateTime, DateTime PODateTime)
         {
             if (inVoicedateTime >= PODateTime) 
             {
-                
-                return 1;
-                
+                return 1;                
             }
             else
-            {
-                
-                return 0;
-               
+            {                
+                return 0;               
             }
 
         }
 
-
-        private void setRowNumber(DataGridView dgv)
+        public void setRowNumber(DataGridView dgv)
         {
             foreach (DataGridViewRow row in dgv.Rows)
             {
                 row.HeaderCell.Value = (row.Index + 1).ToString();
             }
         }
-
         public void CopyToClipboardWithHeaders(DataGridView _dgv)
         {   //Copy to clipboard
             _dgv.ClipboardCopyMode = DataGridViewClipboardCopyMode.EnableAlwaysIncludeHeaderText;
@@ -194,7 +180,6 @@ namespace AutoClick
         {
             return LoginID;
         }
-
 
         public void printPDF(string pdffilepath)
         {            
@@ -674,7 +659,11 @@ namespace AutoClick
         private void button6_Click(object sender, EventArgs e)
         {
             dataGridView1.Show();
-            traYCSX();
+            //traYCSX();
+            YCSX_Manager ycsxmanager = new YCSX_Manager();
+            ycsxmanager.Login_ID = LoginID;
+            ycsxmanager.Show();
+
         }
         
 
@@ -4864,6 +4853,7 @@ namespace AutoClick
         private void quảnLýYCSXToolStripMenuItem_Click(object sender, EventArgs e)
         {
             YCSX_Manager ycsxmanager = new YCSX_Manager();
+            ycsxmanager.Login_ID = LoginID;
             ycsxmanager.Show();
         }
 
@@ -5193,28 +5183,23 @@ namespace AutoClick
         public string process_lot_no_generate(string machine_name)
         {
 
-            //Machine name lấy khi trỏ vào 1 dòng nào đó trong bảng P500
-
-
-
             ProductBLL pro = new ProductBLL();
             DataTable dt = new DataTable();
             String sDate = DateTime.Now.ToString();
             DateTime datevalue = (Convert.ToDateTime(sDate.ToString()));
-
             int dy = datevalue.Day;
             int mn = datevalue.Month;
             int yy = datevalue.Year;
-            string in_date = STYMD(yy, mn, dy);
+            string in_date = new Form1().STYMD(yy, mn, dy);
             //string in_date = STYMD(2022, 04, 27);
             // getlastest process_lot_no from machine name and in_date
-            string LOT_HEADER = machine_name + CreateHeader2();
-            string NEXT_PROCESS_LOT_NO = machine_name + CreateHeader2();
+            string LOT_HEADER = machine_name + new Form1().CreateHeader2();
+            string NEXT_PROCESS_LOT_NO = machine_name + new Form1().CreateHeader2();
             dt = pro.getLastProcessLotNo(machine_name, in_date);
-            if(dt.Rows.Count > 0)
+            if (dt.Rows.Count > 0)
             {
                 // MessageBox.Show(dt.Rows[0]["PROCESS_LOT_NO"].ToString() + dt.Rows[0]["SEQ_NO"].ToString());
-                NEXT_PROCESS_LOT_NO += String.Format("{0:000}", int.Parse(dt.Rows[0]["SEQ_NO"].ToString()) +1);
+                NEXT_PROCESS_LOT_NO += String.Format("{0:000}", int.Parse(dt.Rows[0]["SEQ_NO"].ToString()) + 1);
             }
             else
             {
@@ -5223,11 +5208,255 @@ namespace AutoClick
             }
             //MessageBox.Show(NEXT_PROCESS_LOT_NO);          
             return NEXT_PROCESS_LOT_NO;
-
         }
+
         private void button34_Click(object sender, EventArgs e)
         {
             MessageBox.Show(process_lot_no_generate("SR"));
+        }
+
+        private void sXToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            
+        }
+
+        private void thêmKháchMớiToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            QuanLyKhachHang ql = new QuanLyKhachHang();
+            ql.Show();
+        }
+
+        private void yêuCầuSảnXuấtToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            YCSX_Manager ycsxmanager = new YCSX_Manager();
+            ycsxmanager.Login_ID = LoginID;
+            ycsxmanager.Show();
+        }
+
+        private void tạo1POMơiToolStripMenuItem_Click_1(object sender, EventArgs e)
+        {
+            POForm poform = new POForm();
+            poform.loginIDpoForm = LoginID;
+            poform.Show();
+        }
+
+        private void checkPOToolStripMenuItem_Click_1(object sender, EventArgs e)
+        {
+            checkPO();
+        }
+
+        private void uploadHàngLoạtToolStripMenuItem_Click_1(object sender, EventArgs e)
+        {
+            upPOhangloat();
+        }
+
+        private void newPOToolStripMenuItem_Click_1(object sender, EventArgs e)
+        {
+
+        }
+
+        private void tạo1InvoiceToolStripMenuItem_Click_1(object sender, EventArgs e)
+        {
+            InvoiceForm invoiceform = new InvoiceForm();
+            invoiceform.loginIDInvoiceForm = LoginID;
+            invoiceform.Show();
+        }
+
+        private void checkInvoiceToolStripMenuItem_Click_1(object sender, EventArgs e)
+        {
+            checkInvoice();
+        }
+
+        private void uploadInvoiceHàngLoạtToolStripMenuItem_Click_1(object sender, EventArgs e)
+        {
+            upInvoicehangloat();
+        }
+
+        private void upINVOICENOToolStripMenuItem_Click_1(object sender, EventArgs e)
+        {
+            updateINVOICENO();
+        }
+
+        private void checkFCSTToolStripMenuItem_Click_1(object sender, EventArgs e)
+        {
+            int total_flag = po_flag + invoice_flag + fcst_flag + khgh_flag;
+            if (total_flag == 0)
+            {
+
+                insertFCST(0);
+            }
+            else
+            {
+                MessageBox.Show("Check choác gì ! ?, import vào r mới check được !");
+            }
+        }
+
+        private void tạo1FCSTToolStripMenuItem_Click_1(object sender, EventArgs e)
+        {
+            insertFCST(1);
+        }
+
+        private void uploadKHGHHàngLoạtToolStripMenuItem_Click_1(object sender, EventArgs e)
+        {
+            insertKHGH(1);
+        }
+
+        private void tạo1KHGHMớiToolStripMenuItem_Click_1(object sender, EventArgs e)
+        {
+            int total_flag = po_flag + invoice_flag + fcst_flag + khgh_flag;
+            if (total_flag == 0)
+            {
+                insertKHGH(0);
+            }
+            else
+            {
+                MessageBox.Show("Check choác gì, import file vào mới check được !");
+
+            }
+        }
+
+        private void thànhTíchGiaoHàngReportToolStripMenuItem_Click_1(object sender, EventArgs e)
+        {
+            reportForm RPF = new reportForm();
+            RPF.Show();
+        }
+
+        private void generalReport2ToolStripMenuItem_Click_1(object sender, EventArgs e)
+        {
+            reportForm2 rpf2 = new reportForm2();
+            rpf2.Show();
+        }
+
+        private void overdueReportToolStripMenuItem_Click_1(object sender, EventArgs e)
+        {
+            Form4 overdueform = new Form4();
+            overdueform.Show();
+        }
+
+        private void wDeliveryPlanReportToolStripMenuItem_Click_1(object sender, EventArgs e)
+        {
+            SOPForm sopf = new SOPForm();
+            sopf.Show();
+        }
+
+        private void weekMonthReportToolStripMenuItem_Click_1(object sender, EventArgs e)
+        {
+            WeekMonthReportForm wmrp = new WeekMonthReportForm();
+            wmrp.Show();
+        }
+
+        private void checkUploadToolStripMenuItem_Click_1(object sender, EventArgs e)
+        {
+            ProductBLL pro = new ProductBLL();
+            DataTable dt = pro.readHistory();
+            dataGridView1.DataSource = dt;
+        }
+
+        private void lấyListCodeCMSToolStripMenuItem_Click_1(object sender, EventArgs e)
+        {
+            dataGridView1.Show();
+            ProductBLL pro = new ProductBLL();
+            DataTable dt = pro.report_getCodeList();
+            this.dataGridView1.DataSource = null;
+            this.dataGridView1.Rows.Clear();
+            this.dataGridView1.DataSource = dt;
+        }
+
+        private void lấyListKháchHàngToolStripMenuItem_Click_1(object sender, EventArgs e)
+        {
+            dataGridView1.Show();
+            ProductBLL pro = new ProductBLL();
+            DataTable dt = pro.report_getCustomerList();
+            this.dataGridView1.DataSource = null;
+            this.dataGridView1.Rows.Clear();
+            this.dataGridView1.DataSource = dt;
+        }
+
+        private void lấyListNhânViênToolStripMenuItem_Click_1(object sender, EventArgs e)
+        {
+            dataGridView1.Show();
+            dataGridView1.Show();
+            ProductBLL pro = new ProductBLL();
+            DataTable dt = pro.report_getEmployeeList();
+            this.dataGridView1.DataSource = null;
+            this.dataGridView1.Rows.Clear();
+            this.dataGridView1.DataSource = dt;
+        }
+
+        private void thêmKháchMớiToolStripMenuItem_Click_1(object sender, EventArgs e)
+        {
+            QuanLyKhachHang ql = new QuanLyKhachHang();
+            ql.Show();
+        }
+
+        private void upThôngTinHàngLoạtToolStripMenuItem1_Click_1(object sender, EventArgs e)
+        {
+            uploadcustomerinfor();
+        }
+
+        private void upThôngTinHàngLoạtToolStripMenuItem_Click_1(object sender, EventArgs e)
+        {
+
+        }
+
+        private void checkCodeThiếuDataToolStripMenuItem_Click_1(object sender, EventArgs e)
+        {
+            po_flag = 0;
+            invoice_flag = 0;
+            khgh_flag = 0;
+            fcst_flag = 0;
+            ycsx_flag = 0;
+
+            ProductBLL pro = new ProductBLL();
+            DataTable dt = new DataTable();
+            dt = pro.report_NoData();
+            this.dataGridView1.DataSource = null;
+            this.dataGridView1.Rows.Clear();
+            this.dataGridView1.DataSource = dt;
+        }
+
+        private void upThôngTinCODEToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void checkCodeThiếuDataQLSXToolStripMenuItem1_Click_1(object sender, EventArgs e)
+        {
+            po_flag = 0;
+            invoice_flag = 0;
+            khgh_flag = 0;
+            fcst_flag = 0;
+            ycsx_flag = 0;
+            ProductBLL pro = new ProductBLL();
+            DataTable dt = new DataTable();
+            dt = pro.report_QLSX();
+            this.dataGridView1.DataSource = null;
+            this.dataGridView1.Rows.Clear();
+            this.dataGridView1.DataSource = dt;
+            MessageBox.Show("Đã load : " + dt.Rows.Count + " dòng");
+            MessageBox.Show("Đã load danh sách các code còn tồn PO, có xuất hiện trong kế hoạch giao hàng SOP 14 ngày trở lại đây, có xuất hiện trong phòng kiểm tra 14 ngày trở lại đây. Mà vẫn chưa được update thông tin");
+        }
+
+        private void checkQuyTắcCapaQLSXToolStripMenuItem_Click_1(object sender, EventArgs e)
+        {
+            po_flag = 0;
+            invoice_flag = 0;
+            khgh_flag = 0;
+            fcst_flag = 0;
+            ycsx_flag = 0;
+            ProductBLL pro = new ProductBLL();
+            DataTable dt = new DataTable();
+            dt = pro.report_QLSX_validating();
+            this.dataGridView1.DataSource = null;
+            this.dataGridView1.Rows.Clear();
+            this.dataGridView1.DataSource = dt;
+            MessageBox.Show("Đã load : " + dt.Rows.Count + " dòng");
+            MessageBox.Show("Đã load danh sách các code điền ko đúng quy tắc");
+        }
+
+        private void updateDatadòngĐcChọnToolStripMenuItem_Click_1(object sender, EventArgs e)
+        {
+            upthongtincodeQLSXhangloat();
         }
 
         private void xóaYêuCầuSảnXuấtHàngLoạtToolStripMenuItem_Click(object sender, EventArgs e)
@@ -5259,8 +5488,7 @@ namespace AutoClick
                             {
                                 dt = pro.DeleteYCSX(ycsxno);
                                 pro.writeHistory("002", LoginID, "YCSX TABLE", "XOA", "XOA YCSX", "0");
-                            }
-                            
+                            }                            
                             startprogress = startprogress + 1;
                             label4.Text = "Progress: " + startprogress + "/" + dataGridView1.SelectedRows.Count;
                             progressBar1.Value = startprogress;
@@ -5273,7 +5501,6 @@ namespace AutoClick
                         MessageBox.Show(ex.ToString());
                     }
                 }
-
             }
             else
             {
@@ -6459,11 +6686,6 @@ namespace AutoClick
     }
 
 
-
-
-
-
-
     public class DataConfig
     {
         private SqlConnection con;// khai báo biến connect
@@ -6476,6 +6698,37 @@ namespace AutoClick
         }
 
         //hàm kết nối csdl
+
+        public string encode(string data)
+        {
+            string output = "";
+            foreach (var c in data)
+            {
+                output+= (int)(c) + "_";
+            }
+            return output;
+        }
+
+        // 15_25_35_45_
+        public string decode(string data)
+        {
+            string output = "";
+            string[] words = data.Split('_');
+
+            foreach (var word in words)
+            {
+                //MessageBox.Show(word);
+                if(word !="")
+                {
+                    int ascii_code = int.Parse(word);
+                    char character = (char)ascii_code;
+                    string text = character.ToString();
+                    output += text;
+                }
+                
+            }
+            return output;
+        }
         private void Connect()
         {
             try
@@ -6483,11 +6736,57 @@ namespace AutoClick
                 // string strConnect = "Data Source=14.160.33.198; Initial Catalog=CMS_VINA;User ID=sa;Password=Cms6886;" + " Pooling=false;";
                 //string strConnect = "Data Source=14.160.33.94,3003; Initial Catalog=CMS_VINA;User ID=sa;Password=*11021201$;" + " Pooling=false;";
                 //string strConnect = "Data Source=192.168.1.136,3003; Initial Catalog=CMS_VINA;User ID=sa;Password=*11021201$;" + " Pooling=false;";
-                string strConnect = "Data Source=14.160.33.94,3021; Initial Catalog=CMS_VINA;User ID=sa;Password=*11021201$;" + " Pooling=false;";
-                con = new SqlConnection(strConnect); //khởi tạo connect
+               
+                try
+                {
+                    string line;
+                    // Read the file and display it line by line.  
+                    string ipAddress="", port="", username="", password="";
+                    System.IO.StreamReader file =
+                        new System.IO.StreamReader("db.txt");
+                    if ((line = file.ReadLine()) != null)
+                    {
+                        //MessageBox.Show("Line content: " + line);
+                        ipAddress = line;
+                    }
+                    if ((line = file.ReadLine()) != null)
+                    {
+                        //MessageBox.Show("Line content: " + line);
+                        port = line;
+                    }
+                    if ((line = file.ReadLine()) != null)
+                    {
+                        //MessageBox.Show("Line content: " + line);
+                        username = decode(line);
+                    }
+                    if ((line = file.ReadLine()) != null)
+                    {
+                        //MessageBox.Show("Line content: " + line);
+                        password = decode(line);
+                    }
+                    file.Close();
+
+                    string strConnect = $"Data Source={ipAddress},{port}; Initial Catalog=CMS_VINA;User ID={username};Password={password};" + " Pooling=false;";
+
+
+
+
+                    
+                 
+
+                                     //   MessageBox.Show(strConnect);
+                    con = new SqlConnection(strConnect); //khởi tạo connect
                     if (con.State == ConnectionState.Open)//nếu kết nối đang mở thì ta đóng lại
                         con.Close(); // đóng kết nối
-                    con.Open();// mở kết nối                   
+                    con.Open();// mở kết nối         
+
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Có lỗi !\n" + ex.ToString());
+                }
+
+                         
                
             }
             catch (Exception ex)
@@ -6764,7 +7063,7 @@ namespace AutoClick
             DataTable result = new DataTable();
             DataConfig config = new DataConfig();
             //string strQuery = "SELECT G_Code,G_Name FROM M100 where G_Code='" + item + "'";
-            string strQuery = "SELECT P400.G_CODE, M100.G_NAME, M010.EMPL_NAME, M110.CUST_NAME_KD, P400.PROD_REQUEST_NO, P400.PROD_REQUEST_DATE, P400.PROD_REQUEST_QTY, isnull(INSPECT_BALANCE_TB.LOT_TOTAL_INPUT_QTY_EA,0) AS LOT_TOTAL_INPUT_QTY_EA, isnull(INSPECT_BALANCE_TB.LOT_TOTAL_OUTPUT_QTY_EA,0) AS LOT_TOTAL_OUTPUT_QTY_EA,isnull(INSPECT_BALANCE_TB.INSPECT_BALANCE,0) AS INSPECT_BALANCE, isnull(P400.PROD_REQUEST_QTY - INSPECT_BALANCE_TB.LOT_TOTAL_INPUT_QTY_EA,0) AS SHORTAGE_YCSX, (CASE WHEN P400.YCSX_PENDING = 1 THEN 'PENDING' WHEN P400.YCSX_PENDING = 0 THEN 'CLOSED' END) AS YCSX_PENDING,  (CASE WHEN P400.CODE_55='01' THEN 'Thong Thuong' WHEN P400.CODE_55='02' THEN 'SDI' WHEN P400.CODE_55='03' THEN 'GC' WHEN P400.CODE_55='04' THEN 'SAMPLE' END) AS PHAN_LOAI FROM P400 JOIN M100 ON (P400.G_CODE = M100.G_CODE) JOIN M010 ON (M010.EMPL_NO = P400.EMPL_NO) JOIN M110 ON (P400.CUST_CD = M110.CUST_CD) LEFT JOIN ( 	SELECT M010.EMPL_NAME, M110.CUST_NAME_KD, M100.G_CODE, M100.G_NAME, P400.PROD_REQUEST_NO, P400.PROD_REQUEST_QTY, INOUT.LOT_TOTAL_INPUT_QTY_EA, INOUT.LOT_TOTAL_OUTPUT_QTY_EA, INOUT.INSPECT_BALANCE  FROM 	( 	SELECT  P400.PROD_REQUEST_NO ,  SUM(CC.LOT_TOTAL_INPUT_QTY_EA) AS LOT_TOTAL_INPUT_QTY_EA , SUM(CC.LOT_TOTAL_OUTPUT_QTY_EA) AS LOT_TOTAL_OUTPUT_QTY_EA , SUM(CC.INSPECT_BALANCE) AS  INSPECT_BALANCE FROM( 		SELECT  AA.PROCESS_LOT_NO,  AA.LOT_TOTAL_QTY_KG, AA.LOT_TOTAL_INPUT_QTY_EA, isnull(BB.LOT_TOTAL_OUTPUT_QTY_EA,0) AS LOT_TOTAL_OUTPUT_QTY_EA, ( AA.LOT_TOTAL_INPUT_QTY_EA- isnull(BB.LOT_TOTAL_OUTPUT_QTY_EA,0)) AS INSPECT_BALANCE FROM 		(SELECT PROCESS_LOT_NO, SUM(INPUT_QTY_EA) As LOT_TOTAL_INPUT_QTY_EA, SUM(INPUT_QTY_KG) AS LOT_TOTAL_QTY_KG  FROM ZTBINSPECTINPUTTB GROUP BY PROCESS_LOT_NO) AS AA 		LEFT JOIN 		(SELECT PROCESS_LOT_NO, SUM(OUTPUT_QTY_EA) As LOT_TOTAL_OUTPUT_QTY_EA  FROM ZTBINSPECTOUTPUTTB GROUP BY PROCESS_LOT_NO) AS BB 		ON (AA.PROCESS_LOT_NO = BB.PROCESS_LOT_NO) 	) AS CC 	JOIN P501 ON (CC.PROCESS_LOT_NO = P501.PROCESS_LOT_NO) 	JOIN (SELECT DISTINCT PROD_REQUEST_NO, PROCESS_IN_DATE, PROCESS_IN_NO FROM P500) AS P500_A ON (P500_A.PROCESS_IN_DATE = P501.PROCESS_IN_DATE AND P500_A.PROCESS_IN_NO = P501.PROCESS_IN_NO) 	JOIN P400 ON (P500_A.PROD_REQUEST_NO = P400.PROD_REQUEST_NO) 	GROUP BY P400.PROD_REQUEST_NO 	) AS INOUT 	JOIN P400 ON (INOUT.PROD_REQUEST_NO = P400.PROD_REQUEST_NO) 	JOIN M110 ON (M110.CUST_CD = P400.CUST_CD)  	JOIN M100 ON (M100.G_CODE = P400.G_CODE) 	JOIN M010 ON (M010.EMPL_NO = P400.EMPL_NO) ) AS INSPECT_BALANCE_TB ON (INSPECT_BALANCE_TB.PROD_REQUEST_NO = P400.PROD_REQUEST_NO)" + condition + " ORDER BY PROD_REQUEST_DATE DESC";
+            string strQuery = "SELECT P400.G_CODE, M100.G_NAME, M010.EMPL_NAME, M110.CUST_NAME_KD, P400.PROD_REQUEST_NO, P400.PROD_REQUEST_DATE, P400.PROD_REQUEST_QTY, isnull(INSPECT_BALANCE_TB.LOT_TOTAL_INPUT_QTY_EA,0) AS LOT_TOTAL_INPUT_QTY_EA, isnull(INSPECT_BALANCE_TB.LOT_TOTAL_OUTPUT_QTY_EA,0) AS LOT_TOTAL_OUTPUT_QTY_EA,isnull(INSPECT_BALANCE_TB.INSPECT_BALANCE,0) AS INSPECT_BALANCE, isnull(P400.PROD_REQUEST_QTY - INSPECT_BALANCE_TB.LOT_TOTAL_INPUT_QTY_EA,0) AS SHORTAGE_YCSX, (CASE WHEN P400.YCSX_PENDING = 1 THEN 'PENDING' WHEN P400.YCSX_PENDING = 0 THEN 'CLOSED' END) AS YCSX_PENDING,  (CASE WHEN P400.CODE_55='01' THEN 'Thong Thuong' WHEN P400.CODE_55='02' THEN 'SDI' WHEN P400.CODE_55='03' THEN 'GC' WHEN P400.CODE_55='04' THEN 'SAMPLE' END) AS PHAN_LOAI, P400.REMK AS REMARK FROM P400 LEFT JOIN M100 ON (P400.G_CODE = M100.G_CODE) LEFT JOIN M010 ON (M010.EMPL_NO = P400.EMPL_NO) LEFT JOIN M110 ON (P400.CUST_CD = M110.CUST_CD)  LEFT JOIN ( 	SELECT M010.EMPL_NAME, M110.CUST_NAME_KD, M100.G_CODE, M100.G_NAME, P400.PROD_REQUEST_NO, P400.PROD_REQUEST_QTY, INOUT.LOT_TOTAL_INPUT_QTY_EA, INOUT.LOT_TOTAL_OUTPUT_QTY_EA, INOUT.INSPECT_BALANCE  FROM 	( 	SELECT  P400.PROD_REQUEST_NO ,  SUM(CC.LOT_TOTAL_INPUT_QTY_EA) AS LOT_TOTAL_INPUT_QTY_EA , SUM(CC.LOT_TOTAL_OUTPUT_QTY_EA) AS LOT_TOTAL_OUTPUT_QTY_EA , SUM(CC.INSPECT_BALANCE) AS  INSPECT_BALANCE FROM( 		SELECT  AA.PROCESS_LOT_NO,  AA.LOT_TOTAL_QTY_KG, AA.LOT_TOTAL_INPUT_QTY_EA, isnull(BB.LOT_TOTAL_OUTPUT_QTY_EA,0) AS LOT_TOTAL_OUTPUT_QTY_EA, ( AA.LOT_TOTAL_INPUT_QTY_EA- isnull(BB.LOT_TOTAL_OUTPUT_QTY_EA,0)) AS INSPECT_BALANCE FROM 		(SELECT PROCESS_LOT_NO, SUM(INPUT_QTY_EA) As LOT_TOTAL_INPUT_QTY_EA, SUM(INPUT_QTY_KG) AS LOT_TOTAL_QTY_KG  FROM ZTBINSPECTINPUTTB GROUP BY PROCESS_LOT_NO) AS AA 		 LEFT JOIN 		(SELECT PROCESS_LOT_NO, SUM(OUTPUT_QTY_EA) As LOT_TOTAL_OUTPUT_QTY_EA  FROM ZTBINSPECTOUTPUTTB GROUP BY PROCESS_LOT_NO) AS BB 		ON (AA.PROCESS_LOT_NO = BB.PROCESS_LOT_NO) 	) AS CC 	LEFT JOIN P501 ON (CC.PROCESS_LOT_NO = P501.PROCESS_LOT_NO) 	LEFT JOIN (SELECT DISTINCT PROD_REQUEST_NO, PROCESS_IN_DATE, PROCESS_IN_NO FROM P500) AS P500_A ON (P500_A.PROCESS_IN_DATE = P501.PROCESS_IN_DATE AND P500_A.PROCESS_IN_NO = P501.PROCESS_IN_NO) 	LEFT JOIN P400 ON (P500_A.PROD_REQUEST_NO = P400.PROD_REQUEST_NO) 	GROUP BY P400.PROD_REQUEST_NO 	) AS INOUT 	LEFT JOIN P400 ON (INOUT.PROD_REQUEST_NO = P400.PROD_REQUEST_NO) 	LEFT JOIN M110 ON (M110.CUST_CD = P400.CUST_CD)  	LEFT JOIN M100 ON (M100.G_CODE = P400.G_CODE) 	LEFT JOIN M010 ON (M010.EMPL_NO = P400.EMPL_NO) ) AS INSPECT_BALANCE_TB ON (INSPECT_BALANCE_TB.PROD_REQUEST_NO = P400.PROD_REQUEST_NO)" + condition + " ORDER BY P400.INS_DATE DESC";
             result = config.GetData(strQuery);
             return result;
 
@@ -6891,6 +7190,18 @@ namespace AutoClick
             return empl_name;
         }
 
+        public DataTable check_M_NAME(String M_LOT_NO)
+        {
+            DataTable result = new DataTable();
+            DataConfig config = new DataConfig();
+            String empl_name = "";
+            //string strQuery = "SELECT G_Code,G_Name FROM M100 where G_Code='" + item + "'";
+            string strQuery = $"SELECT M090.M_NAME FROM I222 JOIN M090 ON (M090.M_CODE=  I222.M_CODE) WHERE I222.M_LOT_NO ='{M_LOT_NO}'";
+            result = config.GetData(strQuery);
+            return result;
+           
+        }
+
         public String report_inspection_check_prod_date(String lotsx)
         {
             DataTable result = new DataTable();
@@ -6958,7 +7269,10 @@ namespace AutoClick
 
             //SELECT ZTBINSPECTOUTPUTTB.INSPECT_OUTPUT_ID, M110.CUST_NAME_KD,M010.EMPL_NAME, M100.G_CODE, M100.G_NAME, ZTBINSPECTOUTPUTTB.PROCESS_LOT_NO, P400.PROD_REQUEST_NO, P400.PROD_REQUEST_DATE, P400.PROD_REQUEST_QTY, P501.INS_DATE AS PROD_DATETIME, ZTBINSPECTOUTPUTTB.OUTPUT_DATETIME, ZTBINSPECTOUTPUTTB.OUTPUT_QTY_EA, ZTBINSPECTOUTPUTTB.REMARK FROM ZTBINSPECTOUTPUTTB JOIN P501 ON(ZTBINSPECTOUTPUTTB.PROCESS_LOT_NO = P501.PROCESS_LOT_NO) JOIN(SELECT DISTINCT PROD_REQUEST_NO, PROCESS_IN_DATE, PROCESS_IN_NO FROM P500) AS P500_A ON(P500_A.PROCESS_IN_DATE = P501.PROCESS_IN_DATE AND P500_A.PROCESS_IN_NO = P501.PROCESS_IN_NO) JOIN P400 ON(P500_A.PROD_REQUEST_NO = P400.PROD_REQUEST_NO) JOIN M110 ON(M110.CUST_CD = P400.CUST_CD) JOIN M100 ON(M100.G_CODE = P400.G_CODE) JOIN M010 ON(M010.EMPL_NO = ZTBINSPECTOUTPUTTB.EMPL_NO)
 
-            string strQuery = "SELECT ZTBINSPECTOUTPUTTB.INSPECT_OUTPUT_ID,M110.CUST_NAME_KD, M010.EMPL_NAME,ZTBINSPECTOUTPUTTB.G_CODE,M100.G_NAME,M100.PROD_TYPE,M100.G_NAME_KD,ZTBINSPECTOUTPUTTB.PROD_REQUEST_NO,P400.PROD_REQUEST_DATE,P400.PROD_REQUEST_QTY,ZTBINSPECTOUTPUTTB.PROCESS_LOT_NO,P501_A.INS_DATE AS PROD_DATETIME, ZTBINSPECTOUTPUTTB.OUTPUT_DATETIME,ZTBINSPECTOUTPUTTB.OUTPUT_QTY_EA,ZTBINSPECTOUTPUTTB.REMARK,P400.EMPL_NO AS PIC_KD,CASE  WHEN (DATEPART(HOUR,OUTPUT_DATETIME) >=8 AND DATEPART(HOUR,OUTPUT_DATETIME) <20) THEN 'CA NGAY'  ELSE 'CA DEM' END AS CA_LAM_VIEC,  CASE  WHEN DATEPART(HOUR,OUTPUT_DATETIME) < 8  THEN CONVERT(date,DATEADD(DAY,-1,OUTPUT_DATETIME))  ELSE CONVERT(date,OUTPUT_DATETIME) END  AS NGAY_LAM_VIEC  FROM ZTBINSPECTOUTPUTTB  LEFT JOIN M010 ON (M010.EMPL_NO = ZTBINSPECTOUTPUTTB.EMPL_NO)  LEFT JOIN P400 ON (P400.PROD_REQUEST_NO = ZTBINSPECTOUTPUTTB.PROD_REQUEST_NO)  LEFT JOIN (SELECT * FROM P501 WHERE INS_DATE>'2021-07-01') AS P501_A ON (P501_A.PROCESS_LOT_NO = ZTBINSPECTOUTPUTTB.PROCESS_LOT_NO)  LEFT JOIN M100 ON (M100.G_CODE = ZTBINSPECTOUTPUTTB.G_CODE)  LEFT JOIN M110 ON (M110.CUST_CD = P400.CUST_CD) " + condition + " ORDER BY INSPECT_OUTPUT_ID DESC";
+            //string strQuery = "SELECT ZTBINSPECTOUTPUTTB.INSPECT_OUTPUT_ID,M110.CUST_NAME_KD, M010.EMPL_NAME,ZTBINSPECTOUTPUTTB.G_CODE,M100.G_NAME,M100.PROD_TYPE,M100.G_NAME_KD,ZTBINSPECTOUTPUTTB.PROD_REQUEST_NO,P400.PROD_REQUEST_DATE,P400.PROD_REQUEST_QTY,ZTBINSPECTOUTPUTTB.PROCESS_LOT_NO,P501_A.INS_DATE AS PROD_DATETIME, ZTBINSPECTOUTPUTTB.OUTPUT_DATETIME,ZTBINSPECTOUTPUTTB.OUTPUT_QTY_EA,ZTBINSPECTOUTPUTTB.REMARK,P400.EMPL_NO AS PIC_KD,CASE  WHEN (DATEPART(HOUR,OUTPUT_DATETIME) >=8 AND DATEPART(HOUR,OUTPUT_DATETIME) <20) THEN 'CA NGAY'  ELSE 'CA DEM' END AS CA_LAM_VIEC,  CASE  WHEN DATEPART(HOUR,OUTPUT_DATETIME) < 8  THEN CONVERT(date,DATEADD(DAY,-1,OUTPUT_DATETIME))  ELSE CONVERT(date,OUTPUT_DATETIME) END  AS NGAY_LAM_VIEC  FROM ZTBINSPECTOUTPUTTB  LEFT JOIN M010 ON (M010.EMPL_NO = ZTBINSPECTOUTPUTTB.EMPL_NO)  LEFT JOIN P400 ON (P400.PROD_REQUEST_NO = ZTBINSPECTOUTPUTTB.PROD_REQUEST_NO)  LEFT JOIN (SELECT * FROM P501 WHERE INS_DATE>'2021-07-01') AS P501_A ON (P501_A.PROCESS_LOT_NO = ZTBINSPECTOUTPUTTB.PROCESS_LOT_NO)  LEFT JOIN M100 ON (M100.G_CODE = ZTBINSPECTOUTPUTTB.G_CODE)  LEFT JOIN M110 ON (M110.CUST_CD = P400.CUST_CD) " + condition + " ORDER BY INSPECT_OUTPUT_ID DESC";
+            string strQuery = "SELECT ZTBINSPECTOUTPUTTB.INSPECT_OUTPUT_ID,M110.CUST_NAME_KD, M010.EMPL_NAME,ZTBINSPECTOUTPUTTB.G_CODE,M100.G_NAME,M100.PROD_TYPE,M100.G_NAME_KD,ZTBINSPECTOUTPUTTB.PROD_REQUEST_NO,P400.PROD_REQUEST_DATE,P400.PROD_REQUEST_QTY,ZTBINSPECTOUTPUTTB.PROCESS_LOT_NO, ZTBINSPECTOUTPUTTB.OUTPUT_DATETIME,ZTBINSPECTOUTPUTTB.OUTPUT_QTY_EA,ZTBINSPECTOUTPUTTB.REMARK,P400.EMPL_NO AS PIC_KD,CASE  WHEN (DATEPART(HOUR,OUTPUT_DATETIME) >=8 AND DATEPART(HOUR,OUTPUT_DATETIME) <20) THEN 'CA NGAY'  ELSE 'CA DEM' END AS CA_LAM_VIEC,  CASE  WHEN DATEPART(HOUR,OUTPUT_DATETIME) < 8  THEN CONVERT(date,DATEADD(DAY,-1,OUTPUT_DATETIME))  ELSE CONVERT(date,OUTPUT_DATETIME) END  AS NGAY_LAM_VIEC  FROM ZTBINSPECTOUTPUTTB  LEFT JOIN M010 ON (M010.EMPL_NO = ZTBINSPECTOUTPUTTB.EMPL_NO)  LEFT JOIN P400 ON (P400.PROD_REQUEST_NO = ZTBINSPECTOUTPUTTB.PROD_REQUEST_NO)  LEFT JOIN M100 ON (M100.G_CODE = ZTBINSPECTOUTPUTTB.G_CODE)  LEFT JOIN M110 ON (M110.CUST_CD = P400.CUST_CD) " + condition + " ORDER BY INSPECT_OUTPUT_ID DESC";
+
+            //MessageBox.Show(strQuery);
             result = config.GetData(strQuery);
             return result;
 
@@ -7105,6 +7419,38 @@ namespace AutoClick
             DataConfig config = new DataConfig();
             //string strQuery = "SELECT G_Code,G_Name FROM M100 where G_Code='" + item + "'";
             string strQuery = "SELECT CUST_CD, CUST_NAME, CUST_NAME_KD FROM M110";
+            result = config.GetData(strQuery);
+            return result;
+
+        }
+
+        public DataTable report_getCustomerList1(string searchValue)
+        {
+            DataTable result = new DataTable();
+            DataConfig config = new DataConfig();
+            //string strQuery = "SELECT G_Code,G_Name FROM M100 where G_Code='" + item + "'";
+            string strQuery = "SELECT CUST_CD, CUST_NAME, CUST_NAME_KD FROM M110 WHERE " + searchValue;
+            result = config.GetData(strQuery);
+            return result;
+
+        }
+
+        public DataTable report_addCustomer(string addValue)
+        {
+            DataTable result = new DataTable();
+            DataConfig config = new DataConfig();
+            //string strQuery = "SELECT G_Code,G_Name FROM M100 where G_Code='" + item + "'";
+            string strQuery = "INSERT INTO M110 (CTR_CD,CUST_CD, CUST_NAME, CUST_NAME_KD) VALUES " + addValue;
+            result = config.GetData(strQuery);
+            return result;
+
+        }
+        public DataTable report_updateCustomer(string updateValue)
+        {
+            DataTable result = new DataTable();
+            DataConfig config = new DataConfig();
+            //string strQuery = "SELECT G_Code,G_Name FROM M100 where G_Code='" + item + "'";
+            string strQuery = "UPDATE M110 " + updateValue;
             result = config.GetData(strQuery);
             return result;
 
@@ -7752,6 +8098,8 @@ namespace AutoClick
             return result;
 
         }
+
+       
         public DataTable insertM300(string CTR_CD, string OUT_DATE, string OUT_NO, string CODE_03, string CODE_50, string CODE_52, string DEPT_CD, string PROD_REQUEST_DATE, string PROD_REQUEST_NO, string INS_EMPL, string UPD_EMPL)
         {
             DataTable result = new DataTable();
@@ -7819,6 +8167,17 @@ namespace AutoClick
             DataConfig config = new DataConfig();
             //string strQuery = "SELECT G_Code,G_Name FROM M100 where G_Code='" + item + "'";
             string strQuery = "Select G_CODE,PROD_REQUEST_QTY, PROD_REQUEST_DATE,PROD_REQUEST_NO,REMK,DELIVERY_DT,CODE_50,CODE_55 From P400  WHERE PROD_REQUEST_NO='" + keyword + "'";
+            result = config.GetData(strQuery);
+            return result;
+
+        }
+        public DataTable getYCSXInfo2(string ycsxno)
+        {
+            DataTable result = new DataTable();
+            DataConfig config = new DataConfig();
+            //string strQuery = "SELECT G_Code,G_Name FROM M100 where G_Code='" + item + "'";
+            string strQuery = $"SELECT P400.CODE_50, P400.G_CODE, M100.G_NAME, P400.PROD_REQUEST_DATE, P400.PROD_REQUEST_NO, P400.PROD_REQUEST_QTY FROM P400 JOIN M100 ON (P400.G_CODE = M100.G_CODE) WHERE P400.PROD_REQUEST_NO='{ycsxno}'";
+            //MessageBox.Show(strQuery);
             result = config.GetData(strQuery);
             return result;
 
@@ -7913,7 +8272,7 @@ namespace AutoClick
         {
             DataTable result = new DataTable();
             DataConfig config = new DataConfig();
-            string strQuery = "SELECT AA.EQUIPMENT_CD, AA.LAST_ACTIVE_TIME, M100.G_CODE, M100.G_NAME, M100.G_NAME_KD, M090.M_NAME, M110.CUST_NAME_KD, P500.PROD_REQUEST_NO, M010.EMPL_NAME FROM (SELECT DISTINCT EQUIPMENT_CD,  MAX(INS_DATE) OVER (PARTITION BY EQUIPMENT_CD) AS LAST_ACTIVE_TIME FROM P500) AS AA JOIN P500 ON (AA.LAST_ACTIVE_TIME = P500.INS_DATE) JOIN M100 ON (P500.G_CODE = M100.G_CODE) JOIN M090 ON (M090.M_CODE = P500.M_CODE) JOIN P400 ON (P400.PROD_REQUEST_NO = P500.PROD_REQUEST_NO AND P400.PROD_REQUEST_DATE = P500.PROD_REQUEST_DATE) JOIN M010 ON (P400.EMPL_NO = M010.EMPL_NO) JOIN M110 ON (M110.CUST_CD = P400.CUST_CD) ORDER BY  AA.LAST_ACTIVE_TIME DESC";
+            string strQuery = "SELECT AA.EQUIPMENT_CD, AA.LAST_ACTIVE_TIME, M100.G_CODE, M100.G_NAME, M100.G_NAME_KD, M090.M_NAME, M110.CUST_NAME_KD, P500.PROD_REQUEST_NO, M010.EMPL_NAME FROM (SELECT DISTINCT EQUIPMENT_CD,  MAX(INS_DATE) OVER (PARTITION BY EQUIPMENT_CD) AS LAST_ACTIVE_TIME FROM P500) AS AA LEFT JOIN P500 ON (AA.LAST_ACTIVE_TIME = P500.INS_DATE) LEFT JOIN M100 ON (P500.G_CODE = M100.G_CODE) LEFT JOIN M090 ON (M090.M_CODE = P500.M_CODE) LEFT JOIN P400 ON (P400.PROD_REQUEST_NO = P500.PROD_REQUEST_NO AND P400.PROD_REQUEST_DATE = P500.PROD_REQUEST_DATE) LEFT JOIN M010 ON (P400.EMPL_NO = M010.EMPL_NO) LEFT JOIN M110 ON (M110.CUST_CD = P400.CUST_CD) ORDER BY  AA.LAST_ACTIVE_TIME DESC";
             result = config.GetData(strQuery);
             return result;
 
@@ -7955,6 +8314,15 @@ namespace AutoClick
             DataTable result = new DataTable();
             DataConfig config = new DataConfig();
             string strQuery = $"SELECT M140.G_CODE, M100.G_NAME, M100.G_NAME_KD, M140.RIV_NO, M140.M_CODE, M090.M_NAME, M090.WIDTH_CD, M140.M_QTY, M140.INS_EMPL, M140.INS_DATE, M140.UPD_EMPL,M140.UPD_DATE FROM M140 JOIN M100 ON (M140.G_CODE = M100.G_CODE) JOIN M090 ON (M090.M_CODE = M140.M_CODE) WHERE M140.G_CODE='{G_CODE}' AND M140.RIV_NO='{RIV_NO}'";
+            //MessageBox.Show(strQuery);
+            result = config.GetData(strQuery);
+            return result;
+        }
+        public DataTable getFullBOMXuatLieu(string G_CODE, string RIV_NO)
+        {
+            DataTable result = new DataTable();
+            DataConfig config = new DataConfig();
+            string strQuery = $"SELECT  M140.RIV_NO, M140.M_CODE, M090.M_NAME, M090.WIDTH_CD FROM M140 JOIN M100 ON (M140.G_CODE = M100.G_CODE) JOIN M090 ON (M090.M_CODE = M140.M_CODE) WHERE M140.G_CODE='{G_CODE}' AND M140.RIV_NO='{RIV_NO}'";
             //MessageBox.Show(strQuery);
             result = config.GetData(strQuery);
             return result;
@@ -8115,6 +8483,35 @@ namespace AutoClick
             return result;
 
         }
+        public DataTable checkProcessInNoP500(string in_date, string machine)
+        {
+            DataTable result = new DataTable();
+            DataConfig config = new DataConfig();
+            string strQuery = $"SELECT TOP 1 PROCESS_IN_DATE, PROCESS_IN_NO, EQUIPMENT_CD FROM P500 WHERE PROCESS_IN_DATE='{in_date}'  ORDER BY INS_DATE DESC";
+            //MessageBox.Show(strQuery);
+            result = config.GetData(strQuery);
+            return result;
+        }
+
+        public DataTable insertP500(string value)
+        {
+            DataTable result = new DataTable();
+            DataConfig config = new DataConfig();
+            string strQuery = $"INSERT INTO P500 (CTR_CD, PROCESS_IN_DATE, PROCESS_IN_NO, PROCESS_IN_SEQ, M_LOT_IN_SEQ, PROD_REQUEST_DATE, PROD_REQUEST_NO, G_CODE, M_CODE, M_LOT_NO, EMPL_NO, EQUIPMENT_CD, SCAN_RESULT, INS_DATE, INS_EMPL, UPD_DATE, UPD_EMPL, FACTORY) VALUES " + value;
+            //MessageBox.Show(strQuery);
+            result = config.GetData(strQuery);
+            return result;
+        }
+        public DataTable insertP501(string value)
+        {
+            DataTable result = new DataTable();
+            DataConfig config = new DataConfig();
+            string strQuery = $"INSERT INTO P501 (CTR_CD,PROCESS_IN_DATE,PROCESS_IN_NO,PROCESS_IN_SEQ,M_LOT_IN_SEQ,PROCESS_PRT_SEQ,M_LOT_NO,PROCESS_LOT_NO,INS_DATE,INS_EMPL,UPD_DATE,UPD_EMPL) VALUES " + value;
+            //MessageBox.Show(strQuery);
+            result = config.GetData(strQuery);
+            return result;
+        }
+
         public DataTable insertNewBOM(string value)
         {
             DataTable result = new DataTable();
@@ -8191,6 +8588,16 @@ namespace AutoClick
             return result;
 
         }
+        public DataTable traYCSXCODEKD(string keyword)
+        {
+            DataTable result = new DataTable();
+            DataConfig config = new DataConfig();
+            string strQuery = $"SELECT P400.PROD_REQUEST_DATE, P400.PROD_REQUEST_NO,  M110.CUST_NAME_KD, P400.G_CODE, M100.G_NAME, P400.PROD_REQUEST_QTY, M010.EMPL_NAME, P400.EMPL_NO, P400.CUST_CD FROM P400 LEFT JOIN M100 ON (P400.G_CODE = M100.G_CODE) LEFT JOIN M010 ON (P400.EMPL_NO = M010.EMPL_NO) LEFT JOIN M110 ON (P400.CUST_CD = M110.CUST_CD) WHERE M100.G_NAME LIKE '%{keyword}%' ORDER BY P400.INS_DATE DESC";
+            result = config.GetData(strQuery);
+            return result;
+
+        }
+
 
         public DataTable traYCSX(string codename,string fromdate, string todate)
         {
@@ -8281,7 +8688,14 @@ namespace AutoClick
             string strQuery = "SELECT MAX(OUT_NO) AS OUT_NO FROM O300 WHERE OUT_DATE='"+ keyword + "'";
             result = config.GetData(strQuery);
             return result;
-
+        }
+        public DataTable getLastOutSEQO301(string OUTDATE, string OUT_NO)
+        {
+            DataTable result = new DataTable();
+            DataConfig config = new DataConfig();
+            string strQuery = $"SELECT TOP 1 OUT_SEQ FROM O301 WHERE OUT_DATE='" + OUTDATE + $"' AND OUT_NO='{OUT_NO}'";
+            result = config.GetData(strQuery);
+            return result;
         }
 
         public DataTable DeletePO(string PO_ID)
@@ -8350,6 +8764,30 @@ namespace AutoClick
             return result;
 
         }
+        public DataTable InsertO300(string insertValue)
+        {
+            DataTable result = new DataTable();
+            DataConfig config = new DataConfig();
+            //string strQuery = "SELECT G_Code,G_Name FROM M100 where G_Code='" + item + "'";
+            string strQuery = $"INSERT INTO O300 (CTR_CD,OUT_DATE, OUT_NO, CODE_03, CODE_50, CODE_52, PROD_REQUEST_DATE, PROD_REQUEST_NO, USE_YN, INS_DATE, INS_EMPL, FACTORY) VALUES {insertValue}";
+            //MessageBox.Show(strQuery);
+            result = config.GetData(strQuery);
+            return result;
+
+        }
+
+        public DataTable InsertO301(string insertValue)
+        {
+            DataTable result = new DataTable();
+            DataConfig config = new DataConfig();
+            //string strQuery = "SELECT G_Code,G_Name FROM M100 where G_Code='" + item + "'";
+            string strQuery = $"INSERT INTO O301 (CTR_CD,OUT_DATE, OUT_NO, OUT_SEQ, CODE_03, M_CODE, OUT_PRE_QTY, USE_YN, INS_DATE, INS_EMPL) VALUES {insertValue} ";
+            //MessageBox.Show(strQuery);
+            result = config.GetData(strQuery);
+            return result;
+
+        }
+
 
 
 
