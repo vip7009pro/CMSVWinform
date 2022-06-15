@@ -740,5 +740,71 @@ namespace AutoClick
                 MessageBox.Show("Lỗi: " + ex.ToString());
             }
         }
+
+        private void xóaYCSXToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            dataGridView1.EndEdit();
+            if (textBox3.Text == "xoa")
+            {
+                if (MessageBox.Show("Bạn thực sự muốn xóa YCSX?", "Xóa YCSX ?", MessageBoxButtons.OKCancel) == DialogResult.OK)
+                {
+                    try
+                    {
+                        ProductBLL pro = new ProductBLL();
+                        DataTable dt = new DataTable();
+
+                     
+                        int checkRowsCount = 0;
+                        for (int r = 0; r < dataGridView1.Rows.Count; r++)
+                        {
+                            DataGridViewRow row = dataGridView1.Rows[r];
+                            if (!row.IsNewRow)
+                            {
+                                if ((Boolean)((DataGridViewCheckBoxCell)row.Cells["SELECT"]).FormattedValue)
+                                {
+                                    checkRowsCount++;
+                                }
+
+                            }
+                        }
+
+                        progressBar1.Minimum = 0; //Đặt giá trị nhỏ nhất cho ProgressBar
+                        progressBar1.Maximum = checkRowsCount; //Đặt giá trị lớn nhất cho ProgressBar
+                        int startprogress = 0;
+
+                        for (int r = 0; r < dataGridView1.Rows.Count; r++)
+                        {
+                            DataGridViewRow row = dataGridView1.Rows[r];
+                            if (!row.IsNewRow)
+                            {
+                                if ((Boolean)((DataGridViewCheckBoxCell)row.Cells["SELECT"]).FormattedValue)
+                                {
+                                    string ycsxno = row.Cells["PROD_REQUEST_NO"].Value.ToString();
+                                    dt = pro.checkYCSXO300(ycsxno);
+                                    if (dt.Rows.Count == 0)
+                                    {
+                                        dt = pro.DeleteYCSX(ycsxno);
+                                        pro.writeHistory("002", Login_ID, "YCSX TABLE", "XOA", "XOA YCSX", "0");
+                                    }
+                                    startprogress = startprogress + 1;
+                                    progressBar1.Value = startprogress;
+                                }                                
+                            }
+                        }                          
+                        
+                        progressBar1.Value = 0;
+                        dataGridView1.ClearSelection();
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show(ex.ToString());
+                    }
+                }
+            }
+            else
+            {
+                MessageBox.Show("Lêu lêu, còn lâu mới xóa được !");
+            }
+        }
     }
 }

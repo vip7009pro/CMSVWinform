@@ -48,6 +48,7 @@ namespace AutoClick
             this.myRequestToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.newYCSXToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.thêmNhiềuYCSXToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.progressBar1 = new System.Windows.Forms.ProgressBar();
             this.gradientPanel1 = new AutoClick.GradientPanel();
             this.button2 = new System.Windows.Forms.Button();
             this.checkBox4 = new System.Windows.Forms.CheckBox();
@@ -73,7 +74,8 @@ namespace AutoClick
             this.label6 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
-            this.progressBar1 = new System.Windows.Forms.ProgressBar();
+            this.xóaYCSXToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.contextMenuStrip1.SuspendLayout();
             this.menuStrip1.SuspendLayout();
@@ -108,9 +110,11 @@ namespace AutoClick
             this.sETHOÀNTHÀNHToolStripMenuItem,
             this.sETPENDINGToolStripMenuItem,
             this.toolStripSeparator2,
-            this.tRALỊCHSỬXUẤTLIỆUToolStripMenuItem});
+            this.tRALỊCHSỬXUẤTLIỆUToolStripMenuItem,
+            this.toolStripSeparator3,
+            this.xóaYCSXToolStripMenuItem});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(200, 192);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(200, 242);
             // 
             // thêmYêuCầuMớiToolStripMenuItem
             // 
@@ -230,7 +234,7 @@ namespace AutoClick
             // 
             this.newYCSXToolStripMenuItem.Image = global::AutoClick.Properties.Resources.icons8_plan_64;
             this.newYCSXToolStripMenuItem.Name = "newYCSXToolStripMenuItem";
-            this.newYCSXToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.newYCSXToolStripMenuItem.Size = new System.Drawing.Size(168, 22);
             this.newYCSXToolStripMenuItem.Text = "Thêm 1 YCSX";
             this.newYCSXToolStripMenuItem.Click += new System.EventHandler(this.newYCSXToolStripMenuItem_Click);
             // 
@@ -238,9 +242,18 @@ namespace AutoClick
             // 
             this.thêmNhiềuYCSXToolStripMenuItem.Image = global::AutoClick.Properties.Resources.icons8_list_64;
             this.thêmNhiềuYCSXToolStripMenuItem.Name = "thêmNhiềuYCSXToolStripMenuItem";
-            this.thêmNhiềuYCSXToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.thêmNhiềuYCSXToolStripMenuItem.Size = new System.Drawing.Size(168, 22);
             this.thêmNhiềuYCSXToolStripMenuItem.Text = "Thêm nhiều YCSX";
             this.thêmNhiềuYCSXToolStripMenuItem.Click += new System.EventHandler(this.thêmNhiềuYCSXToolStripMenuItem_Click);
+            // 
+            // progressBar1
+            // 
+            this.progressBar1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.progressBar1.Location = new System.Drawing.Point(13, 636);
+            this.progressBar1.Name = "progressBar1";
+            this.progressBar1.Size = new System.Drawing.Size(1524, 33);
+            this.progressBar1.TabIndex = 34;
             // 
             // gradientPanel1
             // 
@@ -524,14 +537,18 @@ namespace AutoClick
             this.label5.TabIndex = 21;
             this.label5.Text = "YCSX NO";
             // 
-            // progressBar1
+            // xóaYCSXToolStripMenuItem
             // 
-            this.progressBar1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.progressBar1.Location = new System.Drawing.Point(13, 636);
-            this.progressBar1.Name = "progressBar1";
-            this.progressBar1.Size = new System.Drawing.Size(1524, 33);
-            this.progressBar1.TabIndex = 34;
+            this.xóaYCSXToolStripMenuItem.Image = global::AutoClick.Properties.Resources.icons8_export_file_58;
+            this.xóaYCSXToolStripMenuItem.Name = "xóaYCSXToolStripMenuItem";
+            this.xóaYCSXToolStripMenuItem.Size = new System.Drawing.Size(199, 22);
+            this.xóaYCSXToolStripMenuItem.Text = "Xóa YCSX";
+            this.xóaYCSXToolStripMenuItem.Click += new System.EventHandler(this.xóaYCSXToolStripMenuItem_Click);
+            // 
+            // toolStripSeparator3
+            // 
+            this.toolStripSeparator3.Name = "toolStripSeparator3";
+            this.toolStripSeparator3.Size = new System.Drawing.Size(196, 6);
             // 
             // YCSX_Manager
             // 
@@ -606,5 +623,7 @@ namespace AutoClick
         private System.Windows.Forms.ProgressBar progressBar1;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
+        private System.Windows.Forms.ToolStripMenuItem xóaYCSXToolStripMenuItem;
     }
 }

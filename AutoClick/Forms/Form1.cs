@@ -4453,20 +4453,20 @@ namespace AutoClick
                     {
                         string CUST_CD, EMPL_NO, G_CODE, PO_NO, PO_DATE, RD_DATE, PROD_PRICE, DELIVERY_QTY, DELIVERY_DATE, REMARK, G_NAME, CUST_NAME, PO_QTY, PO_ID;
                         string CTR_CD = "002";
-                        G_CODE = row.Cells[10].Value.ToString();
-                        CUST_CD = row.Cells[5].Value.ToString();
-                        EMPL_NO = row.Cells[8].Value.ToString();
+                        G_CODE = row.Cells["G_CODE"].Value.ToString();
+                        CUST_CD = row.Cells["CUST_CD"].Value.ToString();
+                        EMPL_NO = row.Cells["EMPL_NO"].Value.ToString();
                         //DELIVERY_DATE = STYMD(DateTime.Today.Year, DateTime.Today.Month, DateTime.Today.Day); 
                         //DELIVERY_DATE = row.Cells[3].Value.ToString().Substring(0, 10);
-                        PO_NO = row.Cells[0].Value.ToString();  //ok
-                        REMARK = row.Cells[21].Value.ToString(); //ok
-                        G_NAME = row.Cells[7].Value.ToString(); //ok
-                        CUST_NAME = row.Cells[6].Value.ToString();//ok
-                        PO_QTY = row.Cells[11].Value.ToString();
-                        PO_DATE = row.Cells[3].Value.ToString().ToString().Substring(0, 10);
-                        RD_DATE = row.Cells[4].Value.ToString().ToString().Substring(0, 10);
-                        PROD_PRICE = row.Cells[12].Value.ToString();
-                        PO_ID = row.Cells[22].Value.ToString();  //ok
+                        PO_NO = row.Cells["PO_NO"].Value.ToString();  //ok
+                        REMARK = row.Cells["REMARK"].Value.ToString(); //ok
+                        G_NAME = row.Cells["G_NAME"].Value.ToString(); //ok
+                        CUST_NAME = row.Cells["CUST_NAME_KD"].Value.ToString();//ok
+                        PO_QTY = row.Cells["PO_QTY"].Value.ToString();
+                        PO_DATE = row.Cells["PO_DATE"].Value.ToString().ToString().Substring(0, 10);
+                        RD_DATE = row.Cells["RD_DATE"].Value.ToString().ToString().Substring(0, 10);
+                        PROD_PRICE = row.Cells["PROD_PRICE"].Value.ToString();
+                        PO_ID = row.Cells["PO_ID"].Value.ToString();  //ok
 
 
                         poForm.CUST_CD = CUST_CD;
@@ -4885,18 +4885,18 @@ namespace AutoClick
                     {
                         string CUST_CD, EMPL_NO, G_CODE, PO_NO, DELIVERY_QTY, DELIVERY_DATE, NOCANCEL, REMARK, G_NAME, CUST_NAME;
                         string CTR_CD = "002";
-                        G_CODE = row.Cells[10].Value.ToString();
+                        G_CODE = row.Cells["G_CODE"].Value.ToString();
                         DELIVERY_QTY = "";
-                        CUST_CD = row.Cells[5].Value.ToString();
-                        EMPL_NO = row.Cells[8].Value.ToString();
+                        CUST_CD = row.Cells["CUST_CD"].Value.ToString();
+                        EMPL_NO = row.Cells["EMPL_NO"].Value.ToString();
                         //DELIVERY_DATE = STYMD(DateTime.Today.Year, DateTime.Today.Month, DateTime.Today.Day); 
                         DateTime today = DateTime.Today;
                         today = today.AddDays(-1);
                         DELIVERY_DATE = today.ToString("yyyy-MM-dd");
-                        PO_NO = row.Cells[0].Value.ToString();
+                        PO_NO = row.Cells["PO_NO"].Value.ToString();
                         REMARK = "";
-                        G_NAME = row.Cells[7].Value.ToString();
-                        CUST_NAME = row.Cells[6].Value.ToString();
+                        G_NAME = row.Cells["G_NAME"].Value.ToString();
+                        CUST_NAME = row.Cells["CUST_NAME_KD"].Value.ToString();
                         NOCANCEL = "1";
 
                         invoiceform.CUST_CD = CUST_CD;
