@@ -17,6 +17,12 @@ namespace AutoClick
         {
             InitializeComponent();
         }
+        public int nhapkiem_lot_flag = 0;
+        public int xuatkiem_lot_flag = 0;        
+        public int nhapxuatkiem_ycsx_flag = 0;
+        public int nhatkykiemtra_flag = 0;
+        public DataTable dtgv1_data = new DataTable();
+
 
         public void formatInspectNGTable(DataGridView dataGridView1)
         {
@@ -331,6 +337,41 @@ namespace AutoClick
 
         }
 
+        public void tranhapkiem_Async()
+        {
+            try
+            {
+                this.dataGridView1.ClipboardCopyMode = DataGridViewClipboardCopyMode.EnableAlwaysIncludeHeaderText;
+                ProductBLL pro = new ProductBLL();                
+                dtgv1_data = pro.report_inspection_all_input_data(generate_condition_inspection_input());
+
+
+
+                DataRow drpic = dtgv1_data.NewRow();
+                int colnumdtpic = dtgv1_data.Columns.Count;
+                int rownumdtpic = dtgv1_data.Rows.Count;
+                double sumdtpic = 0.0;
+
+                for (int j = 0; j < rownumdtpic; j++)
+                {
+                    sumdtpic += double.Parse(dtgv1_data.Rows[j][dtgv1_data.Columns[13]].ToString());
+                }
+
+
+                drpic[1] = "TOTAL";
+                drpic[13] = sumdtpic;
+                dtgv1_data.Rows.InsertAt(drpic, 0);
+
+               
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Loi : " + ex.ToString());
+            }
+
+        }
+
+
         public void traxuatkiem()
         {
             try
@@ -372,7 +413,38 @@ namespace AutoClick
                 MessageBox.Show("Loi : " + ex.ToString());
             }
         }
+        public void traxuatkiem_Async()
+        {
+            try
+            {
+                this.dataGridView1.ClipboardCopyMode = DataGridViewClipboardCopyMode.EnableAlwaysIncludeHeaderText;
+                ProductBLL pro = new ProductBLL();
+               
+                dtgv1_data = pro.report_inspection_all_output_data(generate_condition_inspection_output());
 
+                DataRow drpic = dtgv1_data.NewRow();
+                int colnumdtpic = dtgv1_data.Columns.Count;
+                int rownumdtpic = dtgv1_data.Rows.Count;
+                double sumdtpic = 0.0;
+
+                for (int j = 0; j < rownumdtpic; j++)
+                {
+                    sumdtpic += double.Parse(dtgv1_data.Rows[j][dtgv1_data.Columns[12]].ToString());
+                }
+
+
+                drpic[1] = "TOTAL";
+                drpic[12] = sumdtpic;
+                dtgv1_data.Rows.InsertAt(drpic, 0);
+
+
+               
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Loi : " + ex.ToString());
+            }
+        }
         public void trabalancekiem()
         {
             try
@@ -405,7 +477,12 @@ namespace AutoClick
             changeHeaderText(dataGridView1);
             MessageBox.Show("Đã load : " + dt.Rows.Count + "dòng");
         }
-
+        public void traNGkiem_Async()
+        {
+            this.dataGridView1.ClipboardCopyMode = DataGridViewClipboardCopyMode.EnableAlwaysIncludeHeaderText;
+            ProductBLL pro = new ProductBLL();
+            dtgv1_data = pro.report_inspection_all_NG_data(generate_condition_inspection_NG());       
+        }
 
         public void traINPUTYCSX()
         {
@@ -506,7 +583,52 @@ namespace AutoClick
             }
         }
 
+        public void traINOUTYCSX_Async()
+        {
+            try
+            {
+                this.dataGridView1.ClipboardCopyMode = DataGridViewClipboardCopyMode.EnableAlwaysIncludeHeaderText;
+                ProductBLL pro = new ProductBLL();
+                
+                // MessageBox.Show(generate_condition_inspection_balance());
+                dtgv1_data = pro.report_inspection_all_balance_data_YCSX(generate_condition_inspection_balance_YCSX());
+                DataRow drpic = dtgv1_data.NewRow();
+                int colnumdtpic = dtgv1_data.Columns.Count;
+                int rownumdtpic = dtgv1_data.Rows.Count;
+                double sumin = 0.0, sumout = 0.0, dakiem = 0.0, ok = 0.0, loss = 0.0, kiembalance = 0.0;
 
+                for (int j = 0; j < rownumdtpic; j++)
+                {
+                    sumin += double.Parse(dtgv1_data.Rows[j][dtgv1_data.Columns[8]].ToString());
+                    sumout += double.Parse(dtgv1_data.Rows[j][dtgv1_data.Columns[9]].ToString());
+                    dakiem += double.Parse(dtgv1_data.Rows[j][dtgv1_data.Columns[10]].ToString());
+                    ok += double.Parse(dtgv1_data.Rows[j][dtgv1_data.Columns[11]].ToString());
+                    loss += double.Parse(dtgv1_data.Rows[j][dtgv1_data.Columns[12]].ToString());
+                    kiembalance += double.Parse(dtgv1_data.Rows[j][dtgv1_data.Columns[13]].ToString());
+                }
+
+
+                drpic[1] = "TOTAL";
+
+                drpic[8] = sumin;
+                drpic[9] = sumout;
+                drpic[10] = dakiem;
+                drpic[11] = ok;
+                drpic[12] = loss;
+                drpic[13] = kiembalance;
+
+
+
+                dtgv1_data.Rows.InsertAt(drpic, 0);
+
+
+                
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Loi : " + ex.ToString());
+            }
+        }
 
 
 
@@ -550,9 +672,24 @@ namespace AutoClick
 
         private void button1_Click(object sender, EventArgs e)
         {
-            tranhapkiem(); 
-            label1.Text = "TRA NHẬP KIỂM THEO LOT";
+            nhapkiem_lot_flag = 1;
+            xuatkiem_lot_flag = 0;
+            nhapxuatkiem_ycsx_flag = 0;
+            nhatkykiemtra_flag = 0;
 
+            if (!backgroundWorker1.IsBusy)
+            {
+                pictureBox1.Show();
+                backgroundWorker1.RunWorkerAsync();
+            }
+            else
+            {
+                MessageBox.Show("Đang trong tiến trình khác, thử lại sau");
+            }
+
+
+            //tranhapkiem(); 
+            label1.Text = "TRA NHẬP KIỂM THEO LOT";
         }
 
         private void INSPECTION_Load(object sender, EventArgs e)
@@ -568,20 +705,49 @@ namespace AutoClick
                   BindingFlags.Instance | BindingFlags.NonPublic);
                 pi.SetValue(dataGridView1, true, null);
             }
-
+            pictureBox1.Hide();
 
         }
 
         private void button2_Click(object sender, EventArgs e)
         {
-            traxuatkiem();
+            nhapkiem_lot_flag = 0;
+            xuatkiem_lot_flag = 1;
+            nhapxuatkiem_ycsx_flag = 0;
+            nhatkykiemtra_flag = 0;
+
+            if (!backgroundWorker1.IsBusy)
+            {
+                pictureBox1.Show();
+                backgroundWorker1.RunWorkerAsync();
+            }
+            else
+            {
+                MessageBox.Show("Đang trong tiến trình khác, thử lại sau");
+            }
+            //traxuatkiem();
             label1.Text = "TRA XUẤT KIỂM THEO LOT";
         }
 
         private void button3_Click(object sender, EventArgs e)
         {
             //trabalancekiem();
-            traINOUTYCSX();
+            nhapkiem_lot_flag = 0;
+            xuatkiem_lot_flag = 0;
+            nhapxuatkiem_ycsx_flag = 1;
+            nhatkykiemtra_flag = 0;
+
+            if (!backgroundWorker1.IsBusy)
+            {
+                pictureBox1.Show();
+                backgroundWorker1.RunWorkerAsync();
+            }
+            else
+            {
+                MessageBox.Show("Đang trong tiến trình khác, thử lại sau");
+            }
+
+            //traINOUTYCSX();
             label1.Text = "TRA NHẬP XUẤT KIỂM THEO YCSX";
         }
 
@@ -1153,8 +1319,26 @@ namespace AutoClick
 
         private void tRANGDATAToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            /*
+            nhapkiem_lot_flag = 0;
+            xuatkiem_lot_flag = 0;
+            nhapxuatkiem_ycsx_flag = 0;
+            nhatkykiemtra_flag = 1;
+
+            if (!backgroundWorker1.IsBusy)
+            {
+                label1.Text = "TRA NG KIỂM THEO NHẬT KÝ";
+                pictureBox1.Show();
+                backgroundWorker1.RunWorkerAsync();
+            }
+            else
+            {
+                MessageBox.Show("Đang trong tiến trình khác, thử lại sau");
+            }
+            */
             traNGkiem();
             label1.Text = "TRA NG KIỂM THEO NHẬT KÝ";
+
         }
 
         private void tRATỒNKIỂMTHEOLOTToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1184,6 +1368,79 @@ namespace AutoClick
         {
             traINOUTYCSX();
             label1.Text = "TRA NHẬP XUẤT KIỂM THEO YCSX";
+        }
+
+        public void xulytrakiem()
+        {
+            if(nhapkiem_lot_flag == 1)
+            {
+                tranhapkiem_Async();
+            }
+            else if(xuatkiem_lot_flag == 1)
+            {
+                traxuatkiem_Async();
+            }
+            else if(nhapxuatkiem_ycsx_flag == 1)
+            {
+                traINOUTYCSX_Async();
+            }
+            else if(nhatkykiemtra_flag == 1)
+            {
+                traNGkiem_Async();
+            }
+        }
+
+        private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
+        {
+            xulytrakiem();
+        }
+
+        private void backgroundWorker1_ProgressChanged(object sender, ProgressChangedEventArgs e)
+        {
+
+        }
+
+        private void backgroundWorker1_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            pictureBox1.Hide();
+            if (nhapkiem_lot_flag == 1)
+            {
+                dataGridView1.DataSource = dtgv1_data;
+                formatInspectInputTable(dataGridView1);
+                dataGridView1.Rows[0].DefaultCellStyle.ForeColor = Color.White;
+                dataGridView1.Rows[0].DefaultCellStyle.BackColor = Color.Green;
+                dataGridView1.Rows[0].DefaultCellStyle.Font = new Font("tahoma", 9, FontStyle.Bold);
+                setRowNumber(dataGridView1);
+                MessageBox.Show("Đã load : " + dtgv1_data.Rows.Count + "dòng");
+            }
+            else if (xuatkiem_lot_flag == 1)
+            {
+                dataGridView1.DataSource = dtgv1_data;
+                formatInspectOutputTable(dataGridView1);
+                dataGridView1.Rows[0].DefaultCellStyle.ForeColor = Color.White;
+                dataGridView1.Rows[0].DefaultCellStyle.BackColor = Color.Green;
+                dataGridView1.Rows[0].DefaultCellStyle.Font = new Font("tahoma", 9, FontStyle.Bold);
+                setRowNumber(dataGridView1);
+                MessageBox.Show("Đã load : " + dtgv1_data.Rows.Count + "dòng");
+            }
+            else if (nhapxuatkiem_ycsx_flag == 1)
+            {
+                dataGridView1.DataSource = dtgv1_data;
+                formatInspectBalanceTable_YCSX(dataGridView1);
+                dataGridView1.Rows[0].DefaultCellStyle.ForeColor = Color.White;
+                dataGridView1.Rows[0].DefaultCellStyle.BackColor = Color.Green;
+                dataGridView1.Rows[0].DefaultCellStyle.Font = new Font("tahoma", 9, FontStyle.Bold);
+                setRowNumber(dataGridView1);
+                MessageBox.Show("Đã load : " + dtgv1_data.Rows.Count + "dòng");
+            }
+            else if (nhatkykiemtra_flag == 1)
+            {
+                dataGridView1.DataSource = dtgv1_data;
+                formatInspectNGTable(dataGridView1);
+                setRowNumber(dataGridView1);
+                changeHeaderText(dataGridView1);
+                MessageBox.Show("Đã load : " + dtgv1_data.Rows.Count + "dòng");
+            }
         }
     }
 }

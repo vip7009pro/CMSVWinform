@@ -71,10 +71,13 @@ namespace AutoClick
             this.button1 = new System.Windows.Forms.Button();
             this.button3 = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
+            this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
+            this.pictureBox1 = new System.Windows.Forms.PictureBox();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.menuStrip1.SuspendLayout();
             this.gradientPanel2.SuspendLayout();
             this.gradientPanel1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
             // dataGridView1
@@ -306,6 +309,7 @@ namespace AutoClick
             this.tRANHẬPKIỂMToolStripMenuItem.Name = "tRANHẬPKIỂMToolStripMenuItem";
             this.tRANHẬPKIỂMToolStripMenuItem.Size = new System.Drawing.Size(198, 22);
             this.tRANHẬPKIỂMToolStripMenuItem.Text = "TRA NHẬP KIỂM";
+            this.tRANHẬPKIỂMToolStripMenuItem.Visible = false;
             this.tRANHẬPKIỂMToolStripMenuItem.Click += new System.EventHandler(this.tRANHẬPKIỂMToolStripMenuItem_Click);
             // 
             // tRAXUẤTKIỂMToolStripMenuItem
@@ -313,6 +317,7 @@ namespace AutoClick
             this.tRAXUẤTKIỂMToolStripMenuItem.Name = "tRAXUẤTKIỂMToolStripMenuItem";
             this.tRAXUẤTKIỂMToolStripMenuItem.Size = new System.Drawing.Size(198, 22);
             this.tRAXUẤTKIỂMToolStripMenuItem.Text = "TRA XUẤT KIỂM";
+            this.tRAXUẤTKIỂMToolStripMenuItem.Visible = false;
             this.tRAXUẤTKIỂMToolStripMenuItem.Click += new System.EventHandler(this.tRAXUẤTKIỂMToolStripMenuItem_Click);
             // 
             // tRATỒNKIỂMTHEOLOTToolStripMenuItem
@@ -320,6 +325,7 @@ namespace AutoClick
             this.tRATỒNKIỂMTHEOLOTToolStripMenuItem.Name = "tRATỒNKIỂMTHEOLOTToolStripMenuItem";
             this.tRATỒNKIỂMTHEOLOTToolStripMenuItem.Size = new System.Drawing.Size(198, 22);
             this.tRATỒNKIỂMTHEOLOTToolStripMenuItem.Text = "TRA NHẬP-XUẤT  KIỂM";
+            this.tRATỒNKIỂMTHEOLOTToolStripMenuItem.Visible = false;
             this.tRATỒNKIỂMTHEOLOTToolStripMenuItem.Click += new System.EventHandler(this.tRATỒNKIỂMTHEOLOTToolStripMenuItem_Click);
             // 
             // tRANGDATAToolStripMenuItem
@@ -338,6 +344,7 @@ namespace AutoClick
             this.tRADATAKIỂMTHEOYCSXToolStripMenuItem.Name = "tRADATAKIỂMTHEOYCSXToolStripMenuItem";
             this.tRADATAKIỂMTHEOYCSXToolStripMenuItem.Size = new System.Drawing.Size(173, 20);
             this.tRADATAKIỂMTHEOYCSXToolStripMenuItem.Text = "TRA DATA KIỂM (THEO YCSX)";
+            this.tRADATAKIỂMTHEOYCSXToolStripMenuItem.Visible = false;
             // 
             // tRAINPUTToolStripMenuItem
             // 
@@ -457,12 +464,32 @@ namespace AutoClick
             this.button2.UseVisualStyleBackColor = false;
             this.button2.Click += new System.EventHandler(this.button2_Click);
             // 
+            // backgroundWorker1
+            // 
+            this.backgroundWorker1.WorkerReportsProgress = true;
+            this.backgroundWorker1.WorkerSupportsCancellation = true;
+            this.backgroundWorker1.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorker1_DoWork);
+            this.backgroundWorker1.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.backgroundWorker1_ProgressChanged);
+            this.backgroundWorker1.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.backgroundWorker1_RunWorkerCompleted);
+            // 
+            // pictureBox1
+            // 
+            this.pictureBox1.BackColor = System.Drawing.Color.Transparent;
+            this.pictureBox1.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox1.Image")));
+            this.pictureBox1.Location = new System.Drawing.Point(702, 27);
+            this.pictureBox1.Name = "pictureBox1";
+            this.pictureBox1.Size = new System.Drawing.Size(100, 37);
+            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.pictureBox1.TabIndex = 14;
+            this.pictureBox1.TabStop = false;
+            // 
             // INSPECTION
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.SlateBlue;
             this.ClientSize = new System.Drawing.Size(1383, 689);
+            this.Controls.Add(this.pictureBox1);
             this.Controls.Add(this.gradientPanel2);
             this.Controls.Add(this.checkBox1);
             this.Controls.Add(this.label9);
@@ -495,6 +522,7 @@ namespace AutoClick
             this.menuStrip1.PerformLayout();
             this.gradientPanel2.ResumeLayout(false);
             this.gradientPanel1.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -543,5 +571,7 @@ namespace AutoClick
         private System.Windows.Forms.ToolStripMenuItem tRAINPUTToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem tRAOUTPUTToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem tRAINOUTToolStripMenuItem;
+        private System.ComponentModel.BackgroundWorker backgroundWorker1;
+        private System.Windows.Forms.PictureBox pictureBox1;
     }
 }

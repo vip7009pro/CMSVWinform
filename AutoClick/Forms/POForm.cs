@@ -166,6 +166,7 @@ namespace AutoClick
                     REMARK = textBox8.Text;
                     DateTime podate = DateTime.Parse(PO_DATE);
                     int check_date = new Form1().checkDate(podate);
+                    string checkUSEYN = pro.checkM100UseYN(G_CODE);
 
                     if (check_date == 0)
                     {
@@ -174,6 +175,10 @@ namespace AutoClick
                     else if (pro.checkPOExist(CUST_CD, G_CODE, PO_NO) != -1)
                     {
                         MessageBox.Show("Đã tồn tại PO, thêm PO thất bại!");
+                    }
+                    else if(checkUSEYN == "N")
+                    {
+                        MessageBox.Show("Ver này đã bị khoá, kiểm tra lại ver final");
                     }
                     else
                     {

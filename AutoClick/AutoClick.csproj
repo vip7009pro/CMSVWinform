@@ -52,16 +52,16 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestCertificateThumbprint>32F3DCD08320520EC78C09E308174B0A727F80BA</ManifestCertificateThumbprint>
+    <ManifestCertificateThumbprint>B311E679598022179A26D69719B6495420ACB7AD</ManifestCertificateThumbprint>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestKeyFile>AutoClick_1_TemporaryKey.pfx</ManifestKeyFile>
+    <ManifestKeyFile>AutoClick_TemporaryKey.pfx</ManifestKeyFile>
   </PropertyGroup>
   <PropertyGroup>
     <GenerateManifests>true</GenerateManifests>
   </PropertyGroup>
   <PropertyGroup>
-    <SignManifests>true</SignManifests>
+    <SignManifests>false</SignManifests>
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationIcon>file__3__s1D_icon.ico</ApplicationIcon>
@@ -70,7 +70,16 @@
     <Reference Include="AutoUpdater.NET, Version=1.7.0.0, Culture=neutral, PublicKeyToken=501435c91b35f4bc, processorArchitecture=MSIL">
       <HintPath>..\packages\Autoupdater.NET.Official.1.7.0\lib\net45\AutoUpdater.NET.dll</HintPath>
     </Reference>
+    <Reference Include="PdfiumViewer, Version=2.10.0.0, Culture=neutral, PublicKeyToken=91e4789cfb0609e0, processorArchitecture=MSIL">
+      <HintPath>..\packages\PdfiumViewer.2.10.0.0\lib\net20\PdfiumViewer.dll</HintPath>
+    </Reference>
     <Reference Include="PresentationFramework" />
+    <Reference Include="RawPrint, Version=0.5.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\RawPrint.0.5.0\lib\net40\RawPrint.dll</HintPath>
+    </Reference>
+    <Reference Include="Spire.Pdf, Version=8.6.1.0, Culture=neutral, PublicKeyToken=663f351905198cb3, processorArchitecture=MSIL">
+      <HintPath>..\packages\Spire.PDF.8.6.1\lib\net40\Spire.Pdf.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Runtime.Serialization" />
@@ -89,8 +98,32 @@
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="WindowsBase" />
+    <Reference Include="zxing, Version=0.16.8.0, Culture=neutral, PublicKeyToken=4e88037ac681fe60, processorArchitecture=MSIL">
+      <HintPath>..\packages\ZXing.Net.0.16.8\lib\net47\zxing.dll</HintPath>
+    </Reference>
+    <Reference Include="zxing.presentation, Version=0.16.8.0, Culture=neutral, PublicKeyToken=4e88037ac681fe60, processorArchitecture=MSIL">
+      <HintPath>..\packages\ZXing.Net.0.16.8\lib\net47\zxing.presentation.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Forms\AmazoneForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\AmazoneForm.Designer.cs">
+      <DependentUpon>AmazoneForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\BOMAMAZONE.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\BOMAMAZONE.Designer.cs">
+      <DependentUpon>BOMAMAZONE.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\DESIGN_AMAZONE.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\DESIGN_AMAZONE.Designer.cs">
+      <DependentUpon>DESIGN_AMAZONE.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\BangGia.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -126,11 +159,6 @@
     </Compile>
     <Compile Include="Forms\CheckBOMGia.Designer.cs">
       <DependentUpon>CheckBOMGia.cs</DependentUpon>
-    </Compile>
-    <Compile Include="CMS_VINADataSet.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>CMS_VINADataSet.xsd</DependentUpon>
     </Compile>
     <Compile Include="ExtensionMethods.cs" />
     <Compile Include="Forms\DangKyXuatLieu.cs">
@@ -274,11 +302,23 @@
     <Compile Include="Forms\LOTSANXUAT.Designer.cs">
       <DependentUpon>LOTSANXUAT.cs</DependentUpon>
     </Compile>
-    <Compile Include="NewYCSX.cs">
+    <Compile Include="Forms\KHOTHANHPHAM.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="NewYCSX.Designer.cs">
+    <Compile Include="Forms\KHOTHANHPHAM.Designer.cs">
+      <DependentUpon>KHOTHANHPHAM.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\NewYCSX.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\NewYCSX.Designer.cs">
       <DependentUpon>NewYCSX.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\LICHSUSANXUAT.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\LICHSUSANXUAT.Designer.cs">
+      <DependentUpon>LICHSUSANXUAT.cs</DependentUpon>
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -330,12 +370,27 @@
     <Compile Include="Forms\YCSX_Manager.Designer.cs">
       <DependentUpon>YCSX_Manager.cs</DependentUpon>
     </Compile>
-    <Compile Include="QuanLyKhachHang.cs">
+    <Compile Include="Forms\QuanLyKhachHang.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="QuanLyKhachHang.Designer.cs">
+    <Compile Include="Forms\QuanLyKhachHang.Designer.cs">
       <DependentUpon>QuanLyKhachHang.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\SOPFULL.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\SOPFULL.Designer.cs">
+      <DependentUpon>SOPFULL.cs</DependentUpon>
+    </Compile>
+    <EmbeddedResource Include="Forms\AmazoneForm.resx">
+      <DependentUpon>AmazoneForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\BOMAMAZONE.resx">
+      <DependentUpon>BOMAMAZONE.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\DESIGN_AMAZONE.resx">
+      <DependentUpon>DESIGN_AMAZONE.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\BangGia.resx">
       <DependentUpon>BangGia.cs</DependentUpon>
     </EmbeddedResource>
@@ -414,8 +469,14 @@
     <EmbeddedResource Include="Forms\LOTSANXUAT.resx">
       <DependentUpon>LOTSANXUAT.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="NewYCSX.resx">
+    <EmbeddedResource Include="Forms\KHOTHANHPHAM.resx">
+      <DependentUpon>KHOTHANHPHAM.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\NewYCSX.resx">
       <DependentUpon>NewYCSX.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\LICHSUSANXUAT.resx">
+      <DependentUpon>LICHSUSANXUAT.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -451,22 +512,14 @@
     <EmbeddedResource Include="Forms\YCSX_Manager.resx">
       <DependentUpon>YCSX_Manager.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="QuanLyKhachHang.resx">
+    <EmbeddedResource Include="Forms\QuanLyKhachHang.resx">
       <DependentUpon>QuanLyKhachHang.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\SOPFULL.resx">
+      <DependentUpon>SOPFULL.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="AutoClick_1_TemporaryKey.pfx" />
     <None Include="AutoClick_TemporaryKey.pfx" />
-    <None Include="CMS_VINADataSet.xsc">
-      <DependentUpon>CMS_VINADataSet.xsd</DependentUpon>
-    </None>
-    <None Include="CMS_VINADataSet.xsd">
-      <Generator>MSDataSetGenerator</Generator>
-      <LastGenOutput>CMS_VINADataSet.Designer.cs</LastGenOutput>
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="CMS_VINADataSet.xss">
-      <DependentUpon>CMS_VINADataSet.xsd</DependentUpon>
-    </None>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -486,6 +539,15 @@
       <Guid>{2DF8D04C-5BFA-101B-BDE5-00AA0044DE52}</Guid>
       <VersionMajor>2</VersionMajor>
       <VersionMinor>8</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>primary</WrapperTool>
+      <Isolated>False</Isolated>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </COMReference>
+    <COMReference Include="Microsoft.Office.Interop.Access.Dao">
+      <Guid>{4AC9E1DA-5BAD-4AC7-86E3-24F4CDCECA28}</Guid>
+      <VersionMajor>12</VersionMajor>
+      <VersionMinor>0</VersionMinor>
       <Lcid>0</Lcid>
       <WrapperTool>primary</WrapperTool>
       <Isolated>False</Isolated>
@@ -523,6 +585,8 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="x64\pdfium.dll" />
+    <Content Include="x86\pdfium.dll" />
     <None Include="bin\Debug\icon\assembly.png" />
     <None Include="bin\Debug\icon\file %286%29.png" />
     <None Include="bin\Debug\icon\file.png" />

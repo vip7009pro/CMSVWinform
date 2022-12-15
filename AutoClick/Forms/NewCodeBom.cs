@@ -85,7 +85,8 @@ namespace AutoClick
                 label43.Text = "Khóa sửa";
             }
         }
-
+        public DataTable dtgv1_data = new DataTable();
+        public DataTable dtgv2_data = new DataTable();
         public void loadFormFunction()
         {
             if (!System.Windows.Forms.SystemInformation.TerminalServerSession)
@@ -102,20 +103,18 @@ namespace AutoClick
             comboBox9.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
             comboBox9.AutoCompleteSource = AutoCompleteSource.ListItems;
 
-            ProductBLL pro = new ProductBLL();
-            DataTable dt = pro.report_getCustomerList();
-
-            comboBox7.DataSource = dt;
-            comboBox7.ValueMember = "CUST_CD";
-            comboBox7.DisplayMember = "CUST_NAME_KD";
-
-            dt = pro.report_MaterialList();
-            comboBox9.DataSource = dt;
-            comboBox9.ValueMember = "M_CODE";
-            comboBox9.DisplayMember = "M_NAME_SIZEZ";
-            radioButton1.Checked = true;
-
+           
             changeInputStatus(false);
+
+            if(!backgroundWorker1.IsBusy)
+            {
+                radioButton1.Checked = true;
+                backgroundWorker1.RunWorkerAsync();
+            }
+            else
+            {
+                MessageBox.Show("Tiến trình khác đang chạy, thử lại sau ");
+            }
 
 
         }
@@ -169,6 +168,7 @@ namespace AutoClick
             newcode.ins_empl = EMPL_NO;
             newcode.bom = dataGridView1;
             newcode.old_g_code = label38.Text;  
+            
             
             try
             {
@@ -1092,6 +1092,7 @@ namespace AutoClick
         {           
             if (label38.Text.Length == 8)
             {
+
                 updateCODEANDBOM();
             }
             else
@@ -1237,6 +1238,44 @@ namespace AutoClick
             {
                 MessageBox.Show("Chọn code để sửa bom");
             }
+        }
+
+        private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
+        {
+            ProductBLL pro = new ProductBLL();
+            dtgv1_data = pro.report_getCustomerList();
+            /*
+            comboBox7.DataSource = dtgv1_data;
+            comboBox7.ValueMember = "CUST_CD";
+            comboBox7.DisplayMember = "CUST_NAME_KD";
+            */
+
+            dtgv2_data = pro.report_MaterialList();
+            /*
+            comboBox9.DataSource = dtgv2_data;
+            comboBox9.ValueMember = "M_CODE";
+            comboBox9.DisplayMember = "M_NAME_SIZEZ";
+            */
+           
+
+        }
+
+        private void backgroundWorker1_ProgressChanged(object sender, ProgressChangedEventArgs e)
+        {
+
+        }
+
+        private void backgroundWorker1_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+
+            comboBox7.DataSource = dtgv1_data;
+            comboBox7.ValueMember = "CUST_CD";
+            comboBox7.DisplayMember = "CUST_NAME_KD";
+            
+            comboBox9.DataSource = dtgv2_data;
+            comboBox9.ValueMember = "M_CODE";
+            comboBox9.DisplayMember = "M_NAME_SIZEZ";
+            radioButton1.Checked = true;
         }
     }
     public class CMSCODE
@@ -1537,7 +1576,7 @@ namespace AutoClick
             }
             else
             {
-                string m100_values = $"('002','{new_g_code}','{this.g_name}','{dactinh}','{next_seq_no}','{nextVer}','{packingtype}','{this.cust_cd}','{this.g_name}','','','{phanloai}','AA','','{print_yn}','{this.print_times}','',{this.packing_qty},{this.width},{this.length},0.0,{this.cavity_cot},{this.k_c_hang},{this.k_c_liner_trai},{this.k_c_liner_phai},{this.k_c_cot},'{this.remark}','{use_yn}','{this.ins_empl}', GETDATE(),'{this.ins_empl}',GETDATE(),'{this.project}','{this.model}','{this.g_name_kd}','{this.draw_path}','{this.eq1}','{this.eq2}','{this.steps}', '{this.feeding}','{this.knife}','{this.knife_lifecycle}','{this.knife_price}','{this.rpm}','{this.pin_distance}','{this.process_type}','{this.cavity_hang}','{this.description}','{this.main_material}','{this.prod_type}')";
+                string m100_values = $"('002','{new_g_code}','{this.g_name}','{dactinh}','{next_seq_no}','{nextVer}','{packingtype}','{this.cust_cd}','{this.g_name}','','','{phanloai}','AA','','{print_yn}','{this.print_times}','',{this.packing_qty},{this.width},{this.length},0.0,{this.cavity_cot},{this.k_c_hang},{this.k_c_liner_trai},{this.k_c_liner_phai},{this.k_c_cot},'{this.remark}','{use_yn}','{this.ins_empl}', GETDATE(),'{this.ins_empl}',GETDATE(),'{this.project}','{this.model}','{this.g_name_kd}','{this.draw_path}','{this.eq1}','{this.eq2}','{this.steps}', '{this.feeding}','{this.knife}','{this.knife_lifecycle}','{this.knife_price}','{this.rpm}','{this.pin_distance}','{this.process_type}','{this.cavity_hang}','{this.description}','{this.main_material}','{this.prod_type}','N','N')";
                 //MessageBox.Show(m100_values);
                 this.remark = m100_values;
                 try
@@ -1678,20 +1717,42 @@ namespace AutoClick
                 nextVer = this.old_g_code.Substring(7, 1);
             }
            
-  string m100_values = $" CTR_CD='002',G_CODE='{this.old_g_code}',G_NAME='{this.g_name}',CODE_12='{dactinh}',SEQ_NO='{next_seq_no}',REV_NO='{nextVer}',CODE_33='{packingtype}',CUST_CD='{this.cust_cd}',G_CODE_C='{this.g_name}',G_CODE_V='',G_CODE_K='',CODE_27='{phanloai}',CODE_28='AA',PRT_DRT='',PRT_YN='{print_yn}',PROD_PRINT_TIMES='{this.print_times}',PACK_DRT='',ROLE_EA_QTY={this.packing_qty},G_WIDTH={this.width},G_LENGTH={this.length},G_R=0.0,G_C={this.cavity_cot},G_LG={this.k_c_hang},G_SG_L={this.k_c_liner_trai},G_SG_R={this.k_c_liner_phai},G_CG={this.k_c_cot},REMK='{this.remark}',USE_YN='{use_yn}',INS_EMPL='{this.ins_empl}', INS_DATE= GETDATE(),UPD_EMPL='{this.ins_empl}',UPD_DATE=GETDATE(),PROD_PROJECT='{this.project}',PROD_MODEL='{this.model}',G_NAME_KD='{this.g_name_kd}',DRAW_LINK='{this.draw_path}',EQ1='{this.eq1}',EQ2='{this.eq2}',PROD_DIECUT_STEP='{this.steps}',PD= '{this.feeding}',KNIFE_TYPE='{this.knife}',KNIFE_LIFECYCLE='{this.knife_lifecycle}',KNIFE_PRICE='{this.knife_price}',RPM='{this.rpm}',PIN_DISTANCE='{this.pin_distance}',PROCESS_TYPE='{this.process_type}',G_C_R='{this.cavity_hang}',DESCR='{this.description}',PROD_MAIN_MATERIAL='{this.main_material}', PROD_TYPE='{this.prod_type}' WHERE G_CODE = '{this.old_g_code}'";
-                //MessageBox.Show(m100_values);
-                this.remark = m100_values;
-                try
+            DataTable dtktra = new DataTable();
+            dtktra = pro.checkvaokiem(this.old_g_code);
+            string m100_values = "";
+            
+            if(dtktra.Rows.Count >0)
+            {
+                if(this.ins_empl == "NHU1903" || this.ins_empl == "NVH1011" || this.ins_empl == "NTS1908" || this.ins_empl == "NBN1905")
                 {
-                    pro.M100_update(m100_values);
-                    result = true;
+                    m100_values = $" CTR_CD='002',G_CODE='{this.old_g_code}',G_NAME='{this.g_name}',CODE_12='{dactinh}',SEQ_NO='{next_seq_no}',REV_NO='{nextVer}',CODE_33='{packingtype}',CUST_CD='{this.cust_cd}',G_CODE_V='',G_CODE_K='',CODE_27='{phanloai}',CODE_28='AA',PRT_DRT='',PRT_YN='{print_yn}',PROD_PRINT_TIMES='{this.print_times}',PACK_DRT='',ROLE_EA_QTY={this.packing_qty},G_WIDTH={this.width},G_LENGTH={this.length},G_R=0.0,G_C={this.cavity_cot},G_LG={this.k_c_hang},G_SG_L={this.k_c_liner_trai},G_SG_R={this.k_c_liner_phai},G_CG={this.k_c_cot},REMK='{this.remark}',USE_YN='{use_yn}',INS_EMPL='{this.ins_empl}', INS_DATE= GETDATE(),UPD_EMPL='{this.ins_empl}',UPD_DATE=GETDATE(),PROD_PROJECT='{this.project}',PROD_MODEL='{this.model}',G_NAME_KD='{this.g_name_kd}',DRAW_LINK='{this.draw_path}',EQ1='{this.eq1}',EQ2='{this.eq2}',PROD_DIECUT_STEP='{this.steps}',PD= '{this.feeding}',KNIFE_TYPE='{this.knife}',KNIFE_LIFECYCLE='{this.knife_lifecycle}',KNIFE_PRICE='{this.knife_price}',RPM='{this.rpm}',PIN_DISTANCE='{this.pin_distance}',PROCESS_TYPE='{this.process_type}',G_C_R='{this.cavity_hang}',DESCR='{this.description}',PROD_MAIN_MATERIAL='{this.main_material}', PROD_TYPE='{this.prod_type}',  PDBV='P' WHERE G_CODE = '{this.old_g_code}'";
                 }
-                catch (Exception ex)
+                else
                 {
-                    MessageBox.Show("Lỗi ngoại lệ: " + ex.ToString());
-                    result = false;
+                    MessageBox.Show("Hàng đã vào kiểm, sẽ sửa thông tin trừ tên code");
+                    m100_values = $" CTR_CD='002',G_CODE='{this.old_g_code}',CODE_12='{dactinh}',SEQ_NO='{next_seq_no}',REV_NO='{nextVer}',CODE_33='{packingtype}',CUST_CD='{this.cust_cd}',G_CODE_V='',G_CODE_K='',CODE_27='{phanloai}',CODE_28='AA',PRT_DRT='',PRT_YN='{print_yn}',PROD_PRINT_TIMES='{this.print_times}',PACK_DRT='',ROLE_EA_QTY={this.packing_qty},G_WIDTH={this.width},G_LENGTH={this.length},G_R=0.0,G_C={this.cavity_cot},G_LG={this.k_c_hang},G_SG_L={this.k_c_liner_trai},G_SG_R={this.k_c_liner_phai},G_CG={this.k_c_cot},REMK='{this.remark}',USE_YN='{use_yn}',INS_EMPL='{this.ins_empl}', INS_DATE= GETDATE(),UPD_EMPL='{this.ins_empl}',UPD_DATE=GETDATE(),PROD_PROJECT='{this.project}',PROD_MODEL='{this.model}',G_NAME_KD='{this.g_name_kd}',DRAW_LINK='{this.draw_path}',EQ1='{this.eq1}',EQ2='{this.eq2}',PROD_DIECUT_STEP='{this.steps}',PD= '{this.feeding}',KNIFE_TYPE='{this.knife}',KNIFE_LIFECYCLE='{this.knife_lifecycle}',KNIFE_PRICE='{this.knife_price}',RPM='{this.rpm}',PIN_DISTANCE='{this.pin_distance}',PROCESS_TYPE='{this.process_type}',G_C_R='{this.cavity_hang}',DESCR='{this.description}',PROD_MAIN_MATERIAL='{this.main_material}', PROD_TYPE='{this.prod_type}', PDBV='P' WHERE G_CODE = '{this.old_g_code}'";
                 }
+            }
+            else
+            {
+                m100_values = $" CTR_CD='002',G_CODE='{this.old_g_code}',G_CODE_C='{this.old_g_code}',G_NAME='{this.g_name}',CODE_12='{dactinh}',SEQ_NO='{next_seq_no}',REV_NO='{nextVer}',CODE_33='{packingtype}',CUST_CD='{this.cust_cd}',G_CODE_V='',G_CODE_K='',CODE_27='{phanloai}',CODE_28='AA',PRT_DRT='',PRT_YN='{print_yn}',PROD_PRINT_TIMES='{this.print_times}',PACK_DRT='',ROLE_EA_QTY={this.packing_qty},G_WIDTH={this.width},G_LENGTH={this.length},G_R=0.0,G_C={this.cavity_cot},G_LG={this.k_c_hang},G_SG_L={this.k_c_liner_trai},G_SG_R={this.k_c_liner_phai},G_CG={this.k_c_cot},REMK='{this.remark}',USE_YN='{use_yn}',INS_EMPL='{this.ins_empl}', INS_DATE= GETDATE(),UPD_EMPL='{this.ins_empl}',UPD_DATE=GETDATE(),PROD_PROJECT='{this.project}',PROD_MODEL='{this.model}',G_NAME_KD='{this.g_name_kd}',DRAW_LINK='{this.draw_path}',EQ1='{this.eq1}',EQ2='{this.eq2}',PROD_DIECUT_STEP='{this.steps}',PD= '{this.feeding}',KNIFE_TYPE='{this.knife}',KNIFE_LIFECYCLE='{this.knife_lifecycle}',KNIFE_PRICE='{this.knife_price}',RPM='{this.rpm}',PIN_DISTANCE='{this.pin_distance}',PROCESS_TYPE='{this.process_type}',G_C_R='{this.cavity_hang}',DESCR='{this.description}',PROD_MAIN_MATERIAL='{this.main_material}', PROD_TYPE='{this.prod_type}', PDBV='P' WHERE G_CODE = '{this.old_g_code}'";
+            }
+             
 
+            
+
+            //MessageBox.Show(m100_values);
+            this.remark = m100_values;
+            try
+            {
+                pro.M100_update(m100_values);
+                result = true;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Lỗi ngoại lệ: " + ex.ToString());
+                result = false;
+            }
             
             return result;
         }
@@ -1847,7 +1908,7 @@ namespace AutoClick
             }
             else
             {
-                string m100_values = $"('002','{new_g_code}','{this.g_name}','{dactinh}','{next_seq_no}','A','{packingtype}','{this.cust_cd}','{this.g_name}','','','{phanloai}','AA','','{print_yn}','{this.print_times}','',{this.packing_qty},{this.width},{this.length},0.0,{this.cavity_cot},{this.k_c_hang},{this.k_c_liner_trai},{this.k_c_liner_phai},{this.k_c_cot},'{this.remark}','{use_yn}','{this.ins_empl}', GETDATE(),'{this.ins_empl}',GETDATE(),'{this.project}','{this.model}','{this.g_name_kd}','{this.draw_path}','{this.eq1}','{this.eq2}','{this.steps}', '{this.feeding}','{this.knife}','{this.knife_lifecycle}','{this.knife_price}','{this.rpm}','{this.pin_distance}','{this.process_type}','{this.cavity_hang}','{this.description}','{this.main_material}', '{this.prod_type}')";
+                string m100_values = $"('002','{new_g_code}','{this.g_name}','{dactinh}','{next_seq_no}','A','{packingtype}','{this.cust_cd}','{this.g_name}','','','{phanloai}','AA','','{print_yn}','{this.print_times}','',{this.packing_qty},{this.width},{this.length},0.0,{this.cavity_cot},{this.k_c_hang},{this.k_c_liner_trai},{this.k_c_liner_phai},{this.k_c_cot},'{this.remark}','{use_yn}','{this.ins_empl}', GETDATE(),'{this.ins_empl}',GETDATE(),'{this.project}','{this.model}','{this.g_name_kd}','{this.draw_path}','{this.eq1}','{this.eq2}','{this.steps}', '{this.feeding}','{this.knife}','{this.knife_lifecycle}','{this.knife_price}','{this.rpm}','{this.pin_distance}','{this.process_type}','{this.cavity_hang}','{this.description}','{this.main_material}', '{this.prod_type}','N','N')";
                 //MessageBox.Show(m100_values);
                 this.remark = m100_values;
                 try

@@ -93,6 +93,7 @@ namespace AutoClick
                     string PROD_REQUEST_DATE, CODE_50 = "", CODE_55 = "", G_CODE, RIV_NO, PROD_REQUEST_QTY, CUST_CD, EMPL_NO, REMK, DELIVERY_DT;
                     string CTR_CD = "002";
                     string CODE_03 = "01";
+                    int TP=0, BTP = 0, CK = 0, BLOCK_QTY=0, W1 = 0, W2 = 0, W3 = 0, W4 = 0, W5 = 0, W6 = 0, W7 = 0, W8 = 0, PO_BALANCE=0, TOTAL_FCST=0, PDuyet =0;
                     String ngaygiohethong = pro.getsystemDateTime();
                     String ngayhethong = ngaygiohethong.Substring(0, 4) + ngaygiohethong.Substring(5, 2) + ngaygiohethong.Substring(8, 2);
                     PROD_REQUEST_DATE = ngayhethong;
@@ -186,16 +187,51 @@ namespace AutoClick
                         string checkUSEYN = pro.checkM100UseYN(G_CODE);
 
 
+                        DataTable tonkho_gcode = new DataTable();
+                        DataTable fcst_gcode = new DataTable();
+                        DataTable pobalance_gcode = new DataTable();
+                        tonkho_gcode = pro.checktonkhofull_gcode(G_CODE);
+                        fcst_gcode = pro.checkfcst_gcode(G_CODE);
+                        pobalance_gcode = pro.checkpobalance_gcode(G_CODE);
+
+
                         if (checkUSEYN == "N")
                         {
                             MessageBox.Show("Code " + G_CODE + " đã bị khóa, có thể ver này không còn được sử dụng");
                         }
                         else
                         {
+                            if(tonkho_gcode.Rows.Count>0)
+                            {
+                                TP = int.Parse(tonkho_gcode.Rows[0]["TON_TP"].ToString());
+                                BTP = int.Parse(tonkho_gcode.Rows[0]["BTP"].ToString());
+                                CK = int.Parse(tonkho_gcode.Rows[0]["TONG_TON_KIEM"].ToString());
+                                BLOCK_QTY = int.Parse(tonkho_gcode.Rows[0]["BLOCK_QTY"].ToString());
+                            }
+                            if(fcst_gcode.Rows.Count>0)
+                            {
+                                W1 = int.Parse(fcst_gcode.Rows[0]["W1"].ToString());
+                                W2 = int.Parse(fcst_gcode.Rows[0]["W2"].ToString());
+                                W3 = int.Parse(fcst_gcode.Rows[0]["W3"].ToString());
+                                W4 = int.Parse(fcst_gcode.Rows[0]["W4"].ToString());
+                                W5 = int.Parse(fcst_gcode.Rows[0]["W5"].ToString());
+                                W6 = int.Parse(fcst_gcode.Rows[0]["W6"].ToString());
+                                W7 = int.Parse(fcst_gcode.Rows[0]["W7"].ToString());
+                                W8 = int.Parse(fcst_gcode.Rows[0]["W8"].ToString());
+                                TOTAL_FCST = W1 + W2 + W3 + W4 + W5 + W6 + W7 + W8;
+
+                            }
+                            if(CODE_55=="04") PDuyet = 1;
+                            if (pobalance_gcode.Rows.Count>0)
+                            {
+                                
+                                PO_BALANCE = int.Parse(pobalance_gcode.Rows[0]["PO_BALANCE"].ToString());
+                                if (PO_BALANCE > 0) PDuyet = 1;
+                            }
+
                             if (checkBox1.Checked)
                             {
                                 string process_in_date = "", current_process_in_no = "", next_process_in_no = "";
-
                                 String sDate = DateTime.Now.ToString();
                                 DateTime datevalue = (Convert.ToDateTime(sDate.ToString()));
                                 int dy = datevalue.Day;
@@ -221,16 +257,14 @@ namespace AutoClick
 
                                 string insertvalueP501 = $"('002','{in_date}','{next_process_in_no}','001','001','{next_process_lot_no.Substring(5,3)}','','{next_process_lot_no}',GETDATE(),'{EMPL_NO}',GETDATE(),'{EMPL_NO}')";
 
-                                pro.InsertYCSX(CTR_CD, PROD_REQUEST_DATE, PROD_REQUEST_NO, CODE_50, CODE_03, CODE_55, G_CODE, "A", PROD_REQUEST_QTY, CUST_CD, EMPL_NO, next_process_lot_no, EMPL_NO, EMPL_NO, DELIVERY_DT);
+                                pro.InsertYCSX(CTR_CD, PROD_REQUEST_DATE, PROD_REQUEST_NO, CODE_50, CODE_03, CODE_55, G_CODE, "A", PROD_REQUEST_QTY, CUST_CD, EMPL_NO, next_process_lot_no, EMPL_NO, EMPL_NO, DELIVERY_DT, PO_BALANCE.ToString(), TP.ToString(), BTP.ToString(), CK.ToString(), TOTAL_FCST.ToString(), W1.ToString(), W2.ToString(), W3.ToString(), W4.ToString(), W5.ToString(), W6.ToString(), W7.ToString(), W8.ToString(), PDuyet.ToString(),BLOCK_QTY.ToString());
                                 pro.insertP500(insertvalueP500);
                                 pro.insertP501(insertvalueP501);
                             }
                             else
                             {
-                                pro.InsertYCSX(CTR_CD, PROD_REQUEST_DATE, PROD_REQUEST_NO, CODE_50, CODE_03, CODE_55, G_CODE, "A", PROD_REQUEST_QTY, CUST_CD, EMPL_NO, REMK, EMPL_NO, EMPL_NO, DELIVERY_DT);
+                                pro.InsertYCSX(CTR_CD, PROD_REQUEST_DATE, PROD_REQUEST_NO, CODE_50, CODE_03, CODE_55, G_CODE, "A", PROD_REQUEST_QTY, CUST_CD, EMPL_NO, REMK, EMPL_NO, EMPL_NO, DELIVERY_DT, PO_BALANCE.ToString(), TP.ToString(), BTP.ToString(), CK.ToString(), TOTAL_FCST.ToString(), W1.ToString(), W2.ToString(), W3.ToString(), W4.ToString(), W5.ToString(), W6.ToString(), W7.ToString(), W8.ToString(), PDuyet.ToString(), BLOCK_QTY.ToString());
                             }
-
-                            
                             pro.writeHistory(CTR_CD, EMPL_NO, "YCSX TABLE", "THEM", "THEM YCSX", "0");
                         }
                     }
@@ -238,8 +272,6 @@ namespace AutoClick
                     {
                         MessageBox.Show("Loi");
                     }
-
-
                     MessageBox.Show("Đã hoàn thành thêm yêu cầu sản xuất");
                 }
                 catch (Exception ex)
@@ -264,7 +296,7 @@ namespace AutoClick
             string in_date = new Form1().STYMD(yy, mn, dy);
             //string in_date = STYMD(2022, 04, 27);
             // getlastest process_lot_no from machine name and in_date
-            string LOT_HEADER = machine_name + new Form1().CreateHeader2();
+            
             string NEXT_PROCESS_LOT_NO = machine_name + new Form1().CreateHeader2();
 
             dt = pro.getLastProcessLotNo(machine_name, in_date);

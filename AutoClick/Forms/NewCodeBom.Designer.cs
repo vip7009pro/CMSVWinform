@@ -31,8 +31,6 @@
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.gradientPanel1 = new AutoClick.GradientPanel();
             this.groupBox8 = new System.Windows.Forms.GroupBox();
-            this.button5 = new System.Windows.Forms.Button();
-            this.button4 = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
             this.label39 = new System.Windows.Forms.Label();
             this.label38 = new System.Windows.Forms.Label();
@@ -116,7 +114,9 @@
             this.PROCESS_ORDER = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.REMARK = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.groupBox6 = new System.Windows.Forms.GroupBox();
+            this.button5 = new System.Windows.Forms.Button();
             this.richTextBox1 = new System.Windows.Forms.RichTextBox();
+            this.button4 = new System.Windows.Forms.Button();
             this.checkBox1 = new System.Windows.Forms.CheckBox();
             this.label37 = new System.Windows.Forms.Label();
             this.groupBox5 = new System.Windows.Forms.GroupBox();
@@ -154,6 +154,8 @@
             this.textBox2 = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
+            this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
+            this.fileSystemWatcher1 = new System.IO.FileSystemWatcher();
             this.gradientPanel1.SuspendLayout();
             this.groupBox8.SuspendLayout();
             this.groupBox7.SuspendLayout();
@@ -166,6 +168,7 @@
             this.groupBox5.SuspendLayout();
             this.groupBox3.SuspendLayout();
             this.groupBox1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.fileSystemWatcher1)).BeginInit();
             this.SuspendLayout();
             // 
             // openFileDialog1
@@ -199,45 +202,20 @@
             // groupBox8
             // 
             this.groupBox8.BackColor = System.Drawing.Color.Transparent;
-            this.groupBox8.Controls.Add(this.button5);
-            this.groupBox8.Controls.Add(this.button4);
             this.groupBox8.Controls.Add(this.button2);
             this.groupBox8.Location = new System.Drawing.Point(25, 608);
             this.groupBox8.Name = "groupBox8";
             this.groupBox8.Size = new System.Drawing.Size(328, 91);
             this.groupBox8.TabIndex = 4;
             this.groupBox8.TabStop = false;
-            this.groupBox8.Text = "Sửa - Thêm mới";
-            // 
-            // button5
-            // 
-            this.button5.BackColor = System.Drawing.Color.GreenYellow;
-            this.button5.ForeColor = System.Drawing.Color.Black;
-            this.button5.Location = new System.Drawing.Point(101, 56);
-            this.button5.Name = "button5";
-            this.button5.Size = new System.Drawing.Size(116, 29);
-            this.button5.TabIndex = 3;
-            this.button5.Text = "Add New VER";
-            this.button5.UseVisualStyleBackColor = false;
-            this.button5.Click += new System.EventHandler(this.button5_Click);
-            // 
-            // button4
-            // 
-            this.button4.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(192)))), ((int)(((byte)(255)))));
-            this.button4.Location = new System.Drawing.Point(195, 20);
-            this.button4.Name = "button4";
-            this.button4.Size = new System.Drawing.Size(104, 30);
-            this.button4.TabIndex = 2;
-            this.button4.Text = "Update code info";
-            this.button4.UseVisualStyleBackColor = false;
-            this.button4.Click += new System.EventHandler(this.button4_Click);
+            this.groupBox8.Text = "Thêm mới";
             // 
             // button2
             // 
             this.button2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(255)))), ((int)(((byte)(192)))));
             this.button2.Location = new System.Drawing.Point(10, 20);
             this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(116, 30);
+            this.button2.Size = new System.Drawing.Size(289, 56);
             this.button2.TabIndex = 1;
             this.button2.Text = "New CODE+BOM";
             this.button2.UseVisualStyleBackColor = false;
@@ -759,7 +737,7 @@
             // 
             // button13
             // 
-            this.button13.Location = new System.Drawing.Point(591, 15);
+            this.button13.Location = new System.Drawing.Point(603, 15);
             this.button13.Name = "button13";
             this.button13.Size = new System.Drawing.Size(101, 40);
             this.button13.TabIndex = 12;
@@ -769,7 +747,7 @@
             // 
             // button12
             // 
-            this.button12.Location = new System.Drawing.Point(471, 15);
+            this.button12.Location = new System.Drawing.Point(483, 15);
             this.button12.Name = "button12";
             this.button12.Size = new System.Drawing.Size(114, 40);
             this.button12.TabIndex = 11;
@@ -1052,7 +1030,9 @@
             // 
             this.groupBox6.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)));
             this.groupBox6.BackColor = System.Drawing.Color.Transparent;
+            this.groupBox6.Controls.Add(this.button5);
             this.groupBox6.Controls.Add(this.richTextBox1);
+            this.groupBox6.Controls.Add(this.button4);
             this.groupBox6.Controls.Add(this.checkBox1);
             this.groupBox6.Controls.Add(this.label37);
             this.groupBox6.Location = new System.Drawing.Point(1050, 438);
@@ -1062,16 +1042,38 @@
             this.groupBox6.TabStop = false;
             this.groupBox6.Text = "6. Remark";
             // 
+            // button5
+            // 
+            this.button5.BackColor = System.Drawing.Color.GreenYellow;
+            this.button5.ForeColor = System.Drawing.Color.Black;
+            this.button5.Location = new System.Drawing.Point(14, 217);
+            this.button5.Name = "button5";
+            this.button5.Size = new System.Drawing.Size(102, 33);
+            this.button5.TabIndex = 3;
+            this.button5.Text = "Add New VER";
+            this.button5.UseVisualStyleBackColor = false;
+            this.button5.Click += new System.EventHandler(this.button5_Click);
+            // 
             // richTextBox1
             // 
-            this.richTextBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
+            this.richTextBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.richTextBox1.Location = new System.Drawing.Point(14, 68);
             this.richTextBox1.Name = "richTextBox1";
-            this.richTextBox1.Size = new System.Drawing.Size(93, 177);
+            this.richTextBox1.Size = new System.Drawing.Size(101, 100);
             this.richTextBox1.TabIndex = 5;
             this.richTextBox1.Text = "";
+            // 
+            // button4
+            // 
+            this.button4.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(192)))), ((int)(((byte)(255)))));
+            this.button4.Location = new System.Drawing.Point(15, 179);
+            this.button4.Name = "button4";
+            this.button4.Size = new System.Drawing.Size(101, 32);
+            this.button4.TabIndex = 2;
+            this.button4.Text = "Update code info";
+            this.button4.UseVisualStyleBackColor = false;
+            this.button4.Click += new System.EventHandler(this.button4_Click);
             // 
             // checkBox1
             // 
@@ -1182,6 +1184,7 @@
             // 
             // comboBox6
             // 
+            this.comboBox6.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBox6.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.comboBox6.FormattingEnabled = true;
             this.comboBox6.Items.AddRange(new object[] {
@@ -1197,6 +1200,7 @@
             // 
             // comboBox5
             // 
+            this.comboBox5.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBox5.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.comboBox5.FormattingEnabled = true;
             this.comboBox5.Items.AddRange(new object[] {
@@ -1209,7 +1213,6 @@
             this.comboBox5.Name = "comboBox5";
             this.comboBox5.Size = new System.Drawing.Size(170, 21);
             this.comboBox5.TabIndex = 0;
-            this.comboBox5.Text = "FR";
             // 
             // label31
             // 
@@ -1460,6 +1463,19 @@
             this.label1.TabIndex = 1;
             this.label1.Text = "QUẢN LÝ BOM VÀ CODE";
             // 
+            // backgroundWorker1
+            // 
+            this.backgroundWorker1.WorkerReportsProgress = true;
+            this.backgroundWorker1.WorkerSupportsCancellation = true;
+            this.backgroundWorker1.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorker1_DoWork);
+            this.backgroundWorker1.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.backgroundWorker1_ProgressChanged);
+            this.backgroundWorker1.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.backgroundWorker1_RunWorkerCompleted);
+            // 
+            // fileSystemWatcher1
+            // 
+            this.fileSystemWatcher1.EnableRaisingEvents = true;
+            this.fileSystemWatcher1.SynchronizingObject = this;
+            // 
             // NewCodeBom
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
@@ -1495,6 +1511,7 @@
             this.groupBox3.PerformLayout();
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.fileSystemWatcher1)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -1627,5 +1644,7 @@
         private System.Windows.Forms.Button button13;
         private System.Windows.Forms.Label label43;
         private System.Windows.Forms.Button button12;
+        private System.ComponentModel.BackgroundWorker backgroundWorker1;
+        private System.IO.FileSystemWatcher fileSystemWatcher1;
     }
 }

@@ -17,12 +17,15 @@ namespace AutoClick
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             //Application.Run(new NewYCSX());
+            //Application.Run(new LICHSUSANXUAT());
             Application.Run(new Form2());
+            //Application.Run(new SOPFULL());
+            //Application.Run(new KHOTHANHPHAM());
+            //Application.Run(new DESIGN_AMAZONE());
+            //Application.Run(new BOMAMAZONE());
+            //Application.Run(new AmazoneForm());
             //Application.Run(new QuanLyKhachHang());
-
-
             //Application.Run(new BEP_Info());
-
             //Application.Run(new Chart1());
             //Application.Run(new HomePage());
             //Application.Run(new NewCodeBom());

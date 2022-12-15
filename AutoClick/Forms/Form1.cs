@@ -31,6 +31,8 @@ namespace AutoClick
 
         private void Form1_Load(object sender, EventArgs e)
         {
+            timer1.Start();
+            pictureBox1.Hide();
             checkUpdate();
             int h = Screen.PrimaryScreen.WorkingArea.Height;
             int w = Screen.PrimaryScreen.WorkingArea.Width;
@@ -131,6 +133,16 @@ namespace AutoClick
         }
 
         public int po_flag = 0, invoice_flag = 0, ycsx_flag = 0, fcst_flag = 0, khgh_flag = 0, bom_flag=0; 
+        public int import_excel_flag = 0;
+        public int check_po_flag = 0;
+        public int up_po_flag = 0;
+        public int check_invoice_flag = 0;
+        public int up_invoice_flag = 0;
+        public int check_fcst_flag = 0;
+        public int up_fcst_flag = 0;
+        public int check_plan_flag = 0;
+        public int up_plan_flag = 0;
+
         public string LoginID = "NBT1901";
         public List<string> listchuabanve = null;
         List<YeuCauSanXuat> dsNV = null;
@@ -487,6 +499,7 @@ namespace AutoClick
                             string PROD_REQUEST_DATE, CODE_50, CODE_55, G_CODE, RIV_NO, PROD_REQUEST_QTY, CUST_CD, EMPL_NO, REMK, DELIVERY_DT;
                             string CTR_CD = "002";
                             string CODE_03 = "01";
+                            int TP = 0, BTP = 0, CK = 0, W1 = 0, W2 = 0, W3 = 0, W4 = 0, W5 = 0, W6 = 0, W7 = 0, W8 = 0, PO_BALANCE = 0, TOTAL_FCST = 0, PDuyet = 0;
                             PROD_REQUEST_DATE = Convert.ToString(row.Cells[0].Value);
                             CODE_50 = Convert.ToString(row.Cells[1].Value);
                             CODE_55 = Convert.ToString(row.Cells[2].Value);
@@ -541,7 +554,7 @@ namespace AutoClick
                                     }
 
                                     string PROD_REQUEST_NO = CreateHeader() + lastycsxno;
-                                    pro.InsertYCSX(CTR_CD, PROD_REQUEST_DATE, PROD_REQUEST_NO, CODE_50, CODE_03, CODE_55, G_CODE, RIV_NO, PROD_REQUEST_QTY, CUST_CD, EMPL_NO, REMK, EMPL_NO, EMPL_NO, DELIVERY_DT);
+                                    //pro.InsertYCSX(CTR_CD, PROD_REQUEST_DATE, PROD_REQUEST_NO, CODE_50, CODE_03, CODE_55, G_CODE, RIV_NO, PROD_REQUEST_QTY, CUST_CD, EMPL_NO, REMK, EMPL_NO, EMPL_NO, DELIVERY_DT);
 
 
                                 }
@@ -658,12 +671,8 @@ namespace AutoClick
         }
         private void button6_Click(object sender, EventArgs e)
         {
-            dataGridView1.Show();
-            //traYCSX();
-            YCSX_Manager ycsxmanager = new YCSX_Manager();
-            ycsxmanager.Login_ID = LoginID;
-            ycsxmanager.Show();
-
+            SOPFULL sopfull = new SOPFULL();
+            sopfull.Show(); 
         }
         
 
@@ -1265,7 +1274,8 @@ namespace AutoClick
                 DataTable dttong = new DataTable();
                 dt = pro.traPO(generate_condition());
                 dttong = pro.traPOTotal(generate_condition());
-
+                dataGridView1.DataSource = dt;
+                
                 if (dt.Rows.Count > 0)
                 {
                     this.dataGridView1.DataSource = null;
@@ -1275,7 +1285,6 @@ namespace AutoClick
                     setRowNumber(dataGridView1);
                     button3.Enabled = true;
                     //button5.Enabled = true; 
-
 
                     textBox2.Text = dttong.Rows[0]["PO_QTY"].ToString();
                     textBox2.Text = string.Format("{0:#,##0 EA}", double.Parse(textBox2.Text));
@@ -1310,9 +1319,30 @@ namespace AutoClick
                 else
                 {
                     MessageBox.Show("Không có kết quả nào");
-                }
+                }                
                 button8.Enabled = true;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Lỗi kết nối ! " + ex.ToString());
+            }
+        }
 
+        public void traPO_Async(DoWorkEventArgs e)
+        {
+            try
+            {               
+
+                button4.Enabled = true;
+                string fromdate, todate;
+                fromdate = STYMD(dateTimePicker1.Value.Year, dateTimePicker1.Value.Month, dateTimePicker1.Value.Day);
+                todate = STYMD(dateTimePicker2.Value.Year, dateTimePicker2.Value.Month, dateTimePicker2.Value.Day);
+                ProductBLL pro = new ProductBLL();
+                DataTable dt = new DataTable();
+                DataTable dttong = new DataTable();
+                dtgv1_data = pro.traPO(generate_condition());
+                dtgv1_total_data = pro.traPOTotal(generate_condition());
+               
             }
             catch (Exception ex)
             {
@@ -1335,6 +1365,14 @@ namespace AutoClick
             dataGridView1.Columns["DELIVERED_AMOUNT"].DefaultCellStyle.Format = "c";
             dataGridView1.Columns["BALANCE_AMOUNT"].DefaultCellStyle.Format = "c";
             dataGridView1.Columns["PO_AMOUNT"].DefaultCellStyle.Format = "c";
+
+            dataGridView1.Columns["TON_KIEM"].DefaultCellStyle.Format = "#,0";
+            dataGridView1.Columns["BTP"].DefaultCellStyle.Format = "#,0";
+            dataGridView1.Columns["TP"].DefaultCellStyle.Format = "#,0";
+            dataGridView1.Columns["BLOCK_QTY"].DefaultCellStyle.Format = "#,0";
+            dataGridView1.Columns["GRAND_TOTAL_STOCK"].DefaultCellStyle.Format = "#,0";
+
+
 
             dataGridView1.Columns["PO_QTY"].DefaultCellStyle.ForeColor = Color.White;
             dataGridView1.Columns["PO_QTY"].DefaultCellStyle.BackColor = Color.Gray;
@@ -1364,6 +1402,28 @@ namespace AutoClick
             dataGridView1.Columns["CUST_NAME_KD"].DefaultCellStyle.BackColor = Color.Aqua;
             dataGridView1.Columns["G_NAME"].DefaultCellStyle.BackColor = Color.Brown;
             dataGridView1.Columns["G_NAME"].DefaultCellStyle.ForeColor = Color.Yellow;
+
+            dataGridView1.Columns["GRAND_TOTAL_STOCK"].DefaultCellStyle.ForeColor = Color.Black;
+            dataGridView1.Columns["GRAND_TOTAL_STOCK"].DefaultCellStyle.BackColor = Color.GreenYellow;
+            dataGridView1.Columns["GRAND_TOTAL_STOCK"].DefaultCellStyle.Font = new Font("tahoma", 9, FontStyle.Bold);
+
+
+            dataGridView1.Columns["TON_KIEM"].DefaultCellStyle.ForeColor = Color.Blue;
+            dataGridView1.Columns["TON_KIEM"].DefaultCellStyle.BackColor = Color.Aqua;
+            dataGridView1.Columns["TON_KIEM"].DefaultCellStyle.Font = new Font("tahoma", 9, FontStyle.Regular);
+
+            dataGridView1.Columns["BTP"].DefaultCellStyle.ForeColor = Color.Blue;
+            dataGridView1.Columns["BTP"].DefaultCellStyle.BackColor = Color.Aqua;
+            dataGridView1.Columns["BTP"].DefaultCellStyle.Font = new Font("tahoma", 9, FontStyle.Regular);
+
+            dataGridView1.Columns["TP"].DefaultCellStyle.ForeColor = Color.Blue;
+            dataGridView1.Columns["TP"].DefaultCellStyle.BackColor = Color.Aqua;
+            dataGridView1.Columns["TP"].DefaultCellStyle.Font = new Font("tahoma", 9, FontStyle.Regular);
+
+            dataGridView1.Columns["BLOCK_QTY"].DefaultCellStyle.ForeColor = Color.Yellow;
+            dataGridView1.Columns["BLOCK_QTY"].DefaultCellStyle.BackColor = Color.Red;
+            dataGridView1.Columns["BLOCK_QTY"].DefaultCellStyle.Font = new Font("tahoma", 9, FontStyle.Regular);
+
 
         }
 
@@ -1667,10 +1727,86 @@ namespace AutoClick
 
 
 
+        public void tracuu_KD(DoWorkEventArgs e)
+        {
+            
+            if (po_flag ==1)
+            {
+                pictureBox1.Show();
+                traPO_Async(e);                
+            }
+            else if (invoice_flag == 1)
+            {
+                pictureBox1.Show();
+                traInvoice_Async(e);
+            }
+            else if (fcst_flag == 1)
+            {
+                pictureBox1.Show();
+                traFCST_Async(e);
+            }
+            else if (khgh_flag == 1)
+            {
+                pictureBox1.Show();
+                traPLAN_Async(e);
+            }
+            else if (ycsx_flag == 1)
+            {
+
+            }
+            else if (bom_flag == 1)
+            {
+                pictureBox1.Show();
+                traBOM_Async(e);
+            }
+            else if (check_po_flag == 1)
+            {
+                pictureBox1.Show();
+                checkPO_Async(e);
+            }
+            else if (check_invoice_flag == 1)
+            {
+                pictureBox1.Show();
+                checkInvoice_Async(e);
+            }
+            else if (check_fcst_flag == 1)
+            {
+                pictureBox1.Show();
+                checkFCST_Async(e);
+            }
+            else if (check_plan_flag == 1)
+            {
+                pictureBox1.Show();
+                checkPLAN_Async(e);
+            }
+            else if (up_po_flag == 1)
+            {
+                pictureBox1.Show();
+                upPOhangloat_Async(e);
+            }
+            else if (up_invoice_flag == 1)
+            {
+                pictureBox1.Show();
+                upInvoicehangloat_Async(e);
+            }
+            else if (up_fcst_flag == 1)
+            {
+                pictureBox1.Show();
+                uploadFCST_Async(e);
+            }
+            else if (up_plan_flag == 1)
+            {
+                pictureBox1.Show();
+                upPLAN_Async(e);
+            }
+        }
+
+      
         private void button21_Click(object sender, EventArgs e)
         {
             dataGridView1.Show();
-            traPO();
+            traPO();          
+
         }
 
         private void button25_Click(object sender, EventArgs e)
@@ -1979,7 +2115,7 @@ namespace AutoClick
                                     }
                                     else
                                     {
-                                        pro.InsertYCSX(CTR_CD, PROD_REQUEST_DATE, PROD_REQUEST_NO, CODE_50, CODE_03, CODE_55, G_CODE, "A", PROD_REQUEST_QTY, CUST_CD, EMPL_NO, REMK, EMPL_NO, EMPL_NO, DELIVERY_DT);
+                                        //pro.InsertYCSX(CTR_CD, PROD_REQUEST_DATE, PROD_REQUEST_NO, CODE_50, CODE_03, CODE_55, G_CODE, "A", PROD_REQUEST_QTY, CUST_CD, EMPL_NO, REMK, EMPL_NO, EMPL_NO, DELIVERY_DT);
                                         pro.writeHistory(CTR_CD, EMPL_NO, "YCSX TABLE", "THEM", "THEM YCSX", "0");
                                     }
 
@@ -2279,6 +2415,83 @@ namespace AutoClick
             }
         }
 
+        public void upPOhangloat_Async(DoWorkEventArgs e)
+        {
+            if (dataGridView1 == null || dataGridView1.Rows.Count == 0)
+            {
+                MessageBox.Show("Import data vào trước  !");
+            }
+            else
+            {
+                try
+                {
+                    foreach (DataGridViewRow row in dataGridView1.Rows)
+                    {
+                        if (!row.IsNewRow)
+                        {
+                            string CUST_CD, EMPL_NO, G_CODE, PO_NO, PO_QTY, PO_DATE, RD_DATE, PROD_PRICE;
+                            string CTR_CD = "002";
+
+                            CUST_CD = Convert.ToString(row.Cells[0].Value);
+                            EMPL_NO = Convert.ToString(row.Cells[1].Value);
+                            G_CODE = Convert.ToString(row.Cells[2].Value);
+                            PO_NO = Convert.ToString(row.Cells[3].Value);
+                            PO_QTY = Convert.ToString(row.Cells[4].Value);
+                            PO_DATE = Convert.ToString(row.Cells[5].Value);
+                            RD_DATE = Convert.ToString(row.Cells[6].Value);
+                            PROD_PRICE = Convert.ToString(row.Cells[7].Value);
+
+                            DateTime podate = DateTime.Parse(PO_DATE);
+                            int check_date = checkDate(podate);
+
+                            if ((CUST_CD == "") || (EMPL_NO == "") || (G_CODE == "") || (PO_NO == "") || (PO_QTY == "") || (PO_DATE == "") || (RD_DATE == "") || (PROD_PRICE == ""))
+                            {
+                                MessageBox.Show("Thông tin của sản phẩm: " + G_CODE + "có thông tin trống, sẽ ko thêm PO này !");
+                            }
+                            else
+                            {
+                                ProductBLL pro = new ProductBLL();
+                                string checkUSEYN = pro.checkM100UseYN(G_CODE);
+
+                                if (pro.checkPOExist(CUST_CD, G_CODE, PO_NO) != -1)
+                                {
+                                    dataGridView1.Rows[row.Index].Cells[8].Value = "NG - Đã tồn tại PO";
+                                    dataGridView1.Rows[row.Index].Cells[8].Style.BackColor = Color.Red;
+
+                                }
+                                else if (check_date == 0)
+                                {
+                                    dataGridView1.Rows[row.Index].Cells[8].Value = "NG - Ngày PO lớn hơn ngày hiện tại";
+                                    dataGridView1.Rows[row.Index].Cells[8].Style.BackColor = Color.Red;
+                                }
+                                else if(checkUSEYN == "N")
+                                {
+                                    dataGridView1.Rows[row.Index].Cells[8].Value = "NG - Ver này đang bị khoá, check lại ver";
+                                    dataGridView1.Rows[row.Index].Cells[8].Style.BackColor = Color.Red;
+                                }
+                                else
+                                {
+                                    
+                                    pro.InsertPO(CTR_CD, CUST_CD, EMPL_NO, G_CODE, PO_NO, PO_QTY, PO_DATE, RD_DATE, PROD_PRICE);
+                                    dataGridView1.Rows[row.Index].Cells[8].Value = "OK";
+                                    dataGridView1.Rows[row.Index].Cells[8].Style.BackColor = Color.LightGreen;
+                                }
+
+
+                            }
+
+                        }
+                    }
+
+                    MessageBox.Show("Đã hoàn thành thêm PO hàng loạt");
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.ToString());
+                }
+            }
+        }
+
         public void upthongtincodeQLSXhangloat()
         {
             if (dataGridView1 == null || dataGridView1.Rows.Count == 0)
@@ -2325,6 +2538,25 @@ namespace AutoClick
 
                             int checkflag = 0;
 
+                            if (FACTORY != "NM1" && FACTORY != "NM3" && FACTORY != "NM4")
+                            {
+                                checkflag = 1;
+                            }
+                           
+                            if (checkflag == 1)
+                            {
+                                MessageBox.Show("Không đc để trống nhà máy, ko thêm code này : " + G_CODE);
+                            }
+                            else
+                            {
+                                pro.updateInfoQLSX(G_CODE, FACTORY, EQ1, EQ2, SETTING1, SETTING2, UPH1, UPH2, STEP1, STEP2, NOTE);
+                            }
+
+
+
+                            /*
+                            int checkflag = 0;
+
                             if (FACTORY != "NM1" || FACTORY != "NM3" || FACTORY != "NM4")
                             {
                                 checkflag = 1;
@@ -2356,6 +2588,8 @@ namespace AutoClick
                             {                                
                                 pro.updateInfoQLSX(G_CODE, FACTORY, EQ1, EQ2, SETTING1, SETTING2, UPH1, UPH2, STEP1, STEP2, NOTE);
                             }
+
+                            */
 
                         }
                         startprogress = startprogress + 1;
@@ -2468,6 +2702,95 @@ namespace AutoClick
 
             }
         }
+
+        public void upInvoicehangloat_Async(DoWorkEventArgs e)
+        {
+            if (dataGridView1 == null || dataGridView1.Rows.Count == 0)
+            {
+                MessageBox.Show("Import data vào trước  !");
+            }
+            else
+            {
+                foreach (DataGridViewRow row in dataGridView1.Rows)
+                {
+                    if (!row.IsNewRow)
+                    {
+                        ProductBLL pro = new ProductBLL();
+                        string CUST_CD, EMPL_NO, G_CODE, PO_NO, DELIVERY_QTY, DELIVERY_DATE, NOCANCEL;
+                        string CTR_CD = "002";
+                        try
+                        {
+                            CUST_CD = Convert.ToString(row.Cells[0].Value);
+                            EMPL_NO = Convert.ToString(row.Cells[1].Value);
+                            G_CODE = Convert.ToString(row.Cells[2].Value);
+                            PO_NO = Convert.ToString(row.Cells[3].Value);
+                            DELIVERY_QTY = Convert.ToString(row.Cells[4].Value);
+                            DELIVERY_DATE = Convert.ToString(row.Cells[5].Value);
+                            NOCANCEL = Convert.ToString(row.Cells[6].Value);
+
+
+                            DateTime dlidate = DateTime.Parse(DELIVERY_DATE);
+                            int check_date = checkDate(dlidate);
+                            DateTime podate = DateTime.Parse(pro.getPODDate(G_CODE, PO_NO)); // get podate and convert to datetime
+                            int checkinvoicedatevspodate = checkInvoicevsPODate(dlidate, podate);
+
+                            if ((CUST_CD == "") || (EMPL_NO == "") || (G_CODE == "") || (PO_NO == "") || (DELIVERY_QTY == "") || (DELIVERY_DATE == "") || (NOCANCEL == ""))
+                            {
+                                MessageBox.Show("Thông tin của sản phẩm: " + G_CODE + "có thông tin trống, sẽ ko thêm PO này !");
+                            }
+                            else
+                            {
+
+                                int po_balance = pro.checkPOBalance(CUST_CD, G_CODE, PO_NO);
+
+                                if (check_date == 0)
+                                {
+                                    dataGridView1.Rows[row.Index].Cells[8].Value = "NG - Ngày Invoice lớn hơn ngày hiện tại";
+                                    dataGridView1.Rows[row.Index].Cells[8].Style.BackColor = Color.Red;
+                                }
+                                else if (checkinvoicedatevspodate == 0)
+                                {
+                                    dataGridView1.Rows[row.Index].Cells[8].Value = "NG - Ngày Invoice nhỏ hơn ngày PO";
+                                    dataGridView1.Rows[row.Index].Cells[8].Style.BackColor = Color.Red;
+                                }
+                                else if (int.Parse(DELIVERY_QTY) > po_balance)
+                                {
+                                    dataGridView1.Rows[row.Index].Cells[8].Value = "NG - Giao hàng nhiều hơn PO";
+                                    dataGridView1.Rows[row.Index].Cells[8].Style.BackColor = Color.Red;
+                                }
+                                else if (int.Parse(DELIVERY_QTY) <= po_balance)
+                                {
+                                    pro.InsertInvoice(CTR_CD, CUST_CD, EMPL_NO, G_CODE, PO_NO, DELIVERY_QTY, DELIVERY_DATE, NOCANCEL);
+                                    dataGridView1.Rows[row.Index].Cells[8].Value = "OK";
+                                    dataGridView1.Rows[row.Index].Cells[8].Style.BackColor = Color.Green;
+                                }
+
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+
+                            if (ex.GetType().FullName == "System.IndexOutOfRangeException")
+                            {
+                                dataGridView1.Rows[row.Index].Cells[7].Value = "NG-Không có PO";
+                                dataGridView1.Rows[row.Index].Cells[7].Style.BackColor = Color.Red;
+                            }
+                            else
+                            {
+                                dataGridView1.Rows[row.Index].Cells[7].Style.BackColor = Color.Red;
+                                dataGridView1.Rows[row.Index].Cells[7].Value = "NG-" + ex.ToString();
+                            }
+
+
+                        }
+                    }
+                }
+                MessageBox.Show("Đã hoàn thành thêm PO hàng loạt");
+
+
+
+            }
+        }
         private void uploadInvoiceHàngLoạtToolStripMenuItem_Click(object sender, EventArgs e)
         {
             upInvoicehangloat();
@@ -2482,13 +2805,13 @@ namespace AutoClick
             string ngaythang = "PO_DATE BETWEEN '" + fromdate + "' AND '" + todate + "' ";
             if(checkBox2.Checked ==true)
             {
-                ngaythang = "1=1 ";
+                ngaythang = " 1=1 ";
             }
 
             string code;
             if (textBox1.Text != "")
             {
-                code = "AND G_NAME LIKE '%" + textBox1.Text + "%' ";
+                code = "AND M100.G_NAME LIKE '%" + textBox1.Text + "%' ";
             }
             else
             {
@@ -2540,7 +2863,7 @@ namespace AutoClick
 
             if (textBox12.Text != "")
             {
-                material = "AND PROD_MAIN_MATERIAL LIKE '%" + textBox12.Text + "%' ";
+                material = "AND M100.PROD_MAIN_MATERIAL LIKE '%" + textBox12.Text + "%' ";
             }
             else
             {
@@ -3130,6 +3453,28 @@ namespace AutoClick
                 MessageBox.Show("Lỗi kết nối ! " + ex.ToString());
             }
         }
+
+        public void traInvoice_Async(DoWorkEventArgs e)
+        {
+            try
+            {               
+                button4.Enabled = true;
+                string fromdate, todate;
+                fromdate = STYMD(dateTimePicker1.Value.Year, dateTimePicker1.Value.Month, dateTimePicker1.Value.Day);
+                todate = STYMD(dateTimePicker2.Value.Year, dateTimePicker2.Value.Month, dateTimePicker2.Value.Day);
+                ProductBLL pro = new ProductBLL();
+                DataTable dt = new DataTable();
+                DataTable dttong = new DataTable();
+                dtgv1_data = pro.traInvoice(generate_condition_invoice());
+                dtgv1_total_data = pro.traInvoiceTotal(generate_condition_invoice());
+                button8.Enabled = true;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Lỗi kết nối ! " + ex.ToString());
+            }
+        }
+
         private void button24_Click(object sender, EventArgs e)
         {
             dataGridView1.Show();
@@ -3199,6 +3544,16 @@ namespace AutoClick
             khgh_flag = 0;
             fcst_flag = 0;
             ycsx_flag = 0;
+            import_excel_flag = 0;
+            check_po_flag = 0;
+            up_po_flag = 0;
+            check_invoice_flag = 0;
+            up_invoice_flag = 0;
+            check_fcst_flag = 0;
+            up_fcst_flag = 0;
+            check_plan_flag = 0;
+            up_plan_flag = 0;
+
             try
             {
                 OpenFileDialog ofd = new OpenFileDialog();
@@ -3215,11 +3570,7 @@ namespace AutoClick
                     button4.Enabled = true;
                     button3.Enabled = true;
                     button16.Enabled = true;
-                    /*
-                    dataGridView1.Columns[0].HeaderText = "Mã Nhân Viên";
-                    dataGridView1.Columns[1].HeaderText = "Tên Nhân Viên";
-                    dataGridView1.Columns[2].HeaderText = "Tuổi Nhân Viên";
-                    */
+                    import_excel_flag = 0;                  
 
                 }
 
@@ -3246,7 +3597,7 @@ namespace AutoClick
 
         private void uploadKHGHHàngLoạtToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            insertKHGH(1);
+            //insertKHGH(1);
 
         }
 
@@ -3381,6 +3732,28 @@ namespace AutoClick
                 MessageBox.Show("Lỗi kết nối ! " + ex.ToString());
             }
         }
+
+        public void traFCST_Async(DoWorkEventArgs e)
+        {          
+            try
+            {
+                button4.Enabled = true;
+                string fromdate, todate;
+                fromdate = STYMD(dateTimePicker1.Value.Year, dateTimePicker1.Value.Month, dateTimePicker1.Value.Day);
+                todate = STYMD(dateTimePicker2.Value.Year, dateTimePicker2.Value.Month, dateTimePicker2.Value.Day);
+                ProductBLL pro = new ProductBLL();
+                DataTable dt = new DataTable();
+                DataTable dttong = new DataTable();
+               
+                dtgv1_data = pro.traFCST(generate_condition_fsct());
+             
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Lỗi kết nối ! " + ex.ToString());
+            }
+        }
+
         private void button23_Click(object sender, EventArgs e)
         {
             dataGridView1.Show();
@@ -3429,6 +3802,27 @@ namespace AutoClick
             }
         }
 
+        public void traPLAN_Async(DoWorkEventArgs e)
+        {
+            try
+            {               
+                button4.Enabled = true;
+                string fromdate, todate;
+                fromdate = STYMD(dateTimePicker1.Value.Year, dateTimePicker1.Value.Month, dateTimePicker1.Value.Day);
+                todate = STYMD(dateTimePicker2.Value.Year, dateTimePicker2.Value.Month, dateTimePicker2.Value.Day);
+                ProductBLL pro = new ProductBLL();
+                DataTable dt = new DataTable();
+                DataTable dttong = new DataTable();
+                //MessageBox.Show(generate_condition());
+                dtgv1_data = pro.traPlan(generate_condition_plan());
+                //dttong = pro.traPOTotal(generate_condition());
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Không có dữ liệu");
+            }
+        }
+
         private void button22_Click(object sender, EventArgs e)
         {
             dataGridView1.Show();
@@ -3463,7 +3857,7 @@ namespace AutoClick
 
                         foreach (var row in selectedRows)
                         {
-                            string delivery_id = row.Cells[15].Value.ToString();
+                            string delivery_id = row.Cells["DELIVERY_ID"].Value.ToString(); // cell 15
                             dt = pro.DeleteInvoice(delivery_id);
                             pro.writeHistory("002", LoginID, "DELIVERY TABLE", "XOA", "XOA INVOICE", "" + delivery_id);
 
@@ -3595,6 +3989,104 @@ namespace AutoClick
                 MessageBox.Show("Check choác cái gì ! ?, import data từ file vào r mới check !");
             }
         }
+
+        public void checkInvoice_Async(DoWorkEventArgs e)
+        {           
+            if (import_excel_flag == 1)
+            {
+                if (dataGridView1 == null || dataGridView1.Rows.Count == 0)
+                {
+                    MessageBox.Show("Import data vào trước  !");
+                }
+                else
+                {
+                    foreach (DataGridViewRow row in dataGridView1.Rows)
+                    {
+                        if (!row.IsNewRow)
+                        {
+                            ProductBLL pro = new ProductBLL();
+                            string CUST_CD, EMPL_NO, G_CODE, PO_NO, DELIVERY_QTY, DELIVERY_DATE, NOCANCEL;
+                            string CTR_CD = "002";
+                            try
+                            {
+                                CUST_CD = Convert.ToString(row.Cells[0].Value);
+                                EMPL_NO = Convert.ToString(row.Cells[1].Value);
+                                G_CODE = Convert.ToString(row.Cells[2].Value);
+                                PO_NO = Convert.ToString(row.Cells[3].Value);
+                                DELIVERY_QTY = Convert.ToString(row.Cells[4].Value);
+                                DELIVERY_DATE = Convert.ToString(row.Cells[5].Value);
+                                NOCANCEL = Convert.ToString(row.Cells[6].Value);
+
+                                DateTime dlidate = DateTime.Parse(DELIVERY_DATE);          // convert delivery date to datetime                     
+                                int check_date = checkDate(dlidate); // so sanh delivery date vs today
+                                DateTime podate = DateTime.Parse(pro.getPODDate(G_CODE, PO_NO)); // get podate and convert to datetime
+                                int checkinvoicedatevspodate = checkInvoicevsPODate(dlidate, podate);
+
+
+
+                                if ((CUST_CD == "") || (EMPL_NO == "") || (G_CODE == "") || (PO_NO == "") || (DELIVERY_QTY == "") || (DELIVERY_DATE == "") || (NOCANCEL == ""))
+                                {
+                                    MessageBox.Show("Thông tin của sản phẩm: " + G_CODE + "có thông tin trống, sẽ ko thêm PO này !");
+                                }
+                                else
+                                {
+
+                                    int po_balance = pro.checkPOBalance(CUST_CD, G_CODE, PO_NO);
+
+                                    if (check_date == 0)
+                                    {
+                                        dataGridView1.Rows[row.Index].Cells[8].Value = "NG - Ngày Invoice lớn hơn ngày hiện tại";
+                                        dataGridView1.Rows[row.Index].Cells[8].Style.BackColor = Color.Red;
+                                    }
+                                    else if (checkinvoicedatevspodate == 0)
+                                    {
+                                        dataGridView1.Rows[row.Index].Cells[8].Value = "NG - Ngày Invoice Nhỏ hơn ngày PO";
+                                        dataGridView1.Rows[row.Index].Cells[8].Style.BackColor = Color.Red;
+                                    }
+                                    else if (int.Parse(DELIVERY_QTY) > po_balance)
+                                    {
+                                        dataGridView1.Rows[row.Index].Cells[8].Value = "NG - Giao hàng nhiều hơn PO";
+                                        dataGridView1.Rows[row.Index].Cells[8].Style.BackColor = Color.Red;
+                                    }
+                                    else if (int.Parse(DELIVERY_QTY) <= po_balance)
+                                    {
+                                        //pro.InsertInvoice(CTR_CD, CUST_CD, EMPL_NO, G_CODE, PO_NO, DELIVERY_QTY, DELIVERY_DATE, NOCANCEL);
+                                        dataGridView1.Rows[row.Index].Cells[8].Value = "OK";
+                                        dataGridView1.Rows[row.Index].Cells[8].Style.BackColor = Color.LightGreen;
+                                    }
+
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                //MessageBox.Show(ex.ToString());   
+                                //if(ex.InnerException is System.IndexOutOfRangeException)
+                                // MessageBox.Show(ex.GetType().FullName.ToString());
+                                if (ex.GetType().FullName == "System.IndexOutOfRangeException")
+                                {
+                                    dataGridView1.Rows[row.Index].Cells[7].Value = "NG-Không có PO";
+                                    dataGridView1.Rows[row.Index].Cells[7].Style.BackColor = Color.Red;
+                                }
+                                else
+                                {
+                                    dataGridView1.Rows[row.Index].Cells[7].Style.BackColor = Color.Red;
+                                    dataGridView1.Rows[row.Index].Cells[7].Value = "NG-" + ex.ToString();
+                                }
+
+
+                            }
+                        }
+                    }
+                    MessageBox.Show("Đã hoàn thành check Invoice hàng loạt");
+
+                }
+            }
+            else
+            {
+                MessageBox.Show("Check choác cái gì ! ?, import data từ file vào r mới check !");
+            }
+        }
+
         private void checkInvoiceToolStripMenuItem_Click(object sender, EventArgs e)
         {
             checkInvoice();                
@@ -3675,6 +4167,88 @@ namespace AutoClick
             }
         }
 
+        public void checkPO_Async(DoWorkEventArgs e)
+        {            
+            if (import_excel_flag == 1)
+            {
+                if (dataGridView1 == null || dataGridView1.Rows.Count == 0)
+                {
+                    MessageBox.Show("Import data vào trước  !");
+                }
+                else
+                {
+                    try
+                    {
+                        foreach (DataGridViewRow row in dataGridView1.Rows)
+                        {
+                            if (!row.IsNewRow)
+                            {
+                                string CUST_CD, EMPL_NO, G_CODE, PO_NO, PO_QTY, PO_DATE, RD_DATE, PROD_PRICE;
+                                string CTR_CD = "002";
+
+                                CUST_CD = Convert.ToString(row.Cells[0].Value);
+                                EMPL_NO = Convert.ToString(row.Cells[1].Value);
+                                G_CODE = Convert.ToString(row.Cells[2].Value);
+                                PO_NO = Convert.ToString(row.Cells[3].Value);
+                                PO_QTY = Convert.ToString(row.Cells[4].Value);
+                                PO_DATE = Convert.ToString(row.Cells[5].Value);
+                                RD_DATE = Convert.ToString(row.Cells[6].Value);
+                                PROD_PRICE = Convert.ToString(row.Cells[7].Value);
+
+                                DateTime podate = DateTime.Parse(PO_DATE);
+                                int check_date = checkDate(podate);
+                                
+                                if ((CUST_CD == "") || (EMPL_NO == "") || (G_CODE == "") || (PO_NO == "") || (PO_QTY == "") || (PO_DATE == "") || (RD_DATE == "") || (PROD_PRICE == ""))
+                                {
+                                    MessageBox.Show("Thông tin của sản phẩm: " + G_CODE + "có thông tin trống, sẽ ko thêm PO này !");
+                                }
+                                else
+                                {
+                                    ProductBLL pro = new ProductBLL();
+                                    string checkUSEYN = pro.checkM100UseYN(G_CODE);
+
+                                    if (pro.checkPOExist(CUST_CD, G_CODE, PO_NO) != -1)
+                                    {
+                                        dataGridView1.Rows[row.Index].Cells[8].Value = "NG - Đã tồn tại PO";
+                                        dataGridView1.Rows[row.Index].Cells[8].Style.BackColor = Color.Red;                                        
+                                    }
+                                    else if (check_date == 0)
+                                    {
+                                        dataGridView1.Rows[row.Index].Cells[8].Value = "NG - Ngày PO lớn hơn ngày hiện tại";
+                                        dataGridView1.Rows[row.Index].Cells[8].Style.BackColor = Color.Red;
+                                    }
+                                    else if(checkUSEYN=="N")
+                                    {
+                                        dataGridView1.Rows[row.Index].Cells[8].Value = "NG - Ver này đã bị khoá, check lại ver final";
+                                        dataGridView1.Rows[row.Index].Cells[8].Style.BackColor = Color.Red;
+                                    }
+                                    else
+                                    {
+                                        dataGridView1.Rows[row.Index].Cells[8].Value = "OK";
+                                        dataGridView1.Rows[row.Index].Cells[8].Style.BackColor = Color.LightGreen;
+                                    }
+
+                                }
+
+                            }
+                        }
+
+                        MessageBox.Show("Đã hoàn thành check PO hàng loạt");
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show(ex.ToString());
+                    }
+                }
+
+            }
+            else
+            {
+                MessageBox.Show("Check choác cái gì ? Import vào r mới check được chứ ?!");
+            }
+        }
+
+
         private void checkPOToolStripMenuItem_Click(object sender, EventArgs e)
         {
             checkPO();
@@ -3683,7 +4257,7 @@ namespace AutoClick
 
 
 
-        public void insertKHGH(int check)
+        public void insertKHGH(int check, DoWorkEventArgs e)
         {
             if (check == 1)
             {
@@ -3716,7 +4290,6 @@ namespace AutoClick
                                 D8 = Convert.ToString(row.Cells[11].Value);
                                 REMARK = Convert.ToString(row.Cells[12].Value);
 
-
                                 if (D1.IndexOf("-", 0) == 0 || D2.IndexOf("-", 0) == 0 || D3.IndexOf("-", 0) == 0 || D4.IndexOf("-", 0) == 0 || D5.IndexOf("-", 0) == 0 || D6.IndexOf("-", 0) == 0 || D7.IndexOf("-", 0) == 0 || D8.IndexOf("-", 0) == 0 )
                                 {
                                     MessageBox.Show("Không được phép có giá trị âm, bỏ qua dòng này");
@@ -3730,17 +4303,23 @@ namespace AutoClick
                                 else
                                 {
                                     ProductBLL pro = new ProductBLL();
-                                    if (pro.checkKHGHExist(CUST_CD, G_CODE, PLAN_DATE) == -1)
+                                    string checkUSEYN = pro.checkM100UseYN(G_CODE);
+                                    if (pro.checkKHGHExist(CUST_CD, G_CODE, PLAN_DATE) != -1)
                                     {
-                                        pro.InsertPlan(CTR_CD, EMPL_NO, CUST_CD, G_CODE, PLAN_DATE,D1,D2,D3,D4,D5,D6,D7,D8,REMARK);
-                                        pro.writeHistory(CTR_CD, LoginID, "PLAN TABLE", "THEM", "THEM PLAN GIAO HANG", "0");
-                                        dataGridView1.Rows[row.Index].Cells[13].Value = "OK";
-                                        dataGridView1.Rows[row.Index].Cells[13].Style.BackColor = Color.LightGreen;
+                                        dataGridView1.Rows[row.Index].Cells[13].Value = "NG - Đã tồn tại KHGH";
+                                        dataGridView1.Rows[row.Index].Cells[13].Style.BackColor = Color.Red;
+                                    }
+                                    else if(checkUSEYN == "N")
+                                    {
+                                        dataGridView1.Rows[row.Index].Cells[13].Value = "NG - Ver này đã bị khoá, check lại ver code này";
+                                        dataGridView1.Rows[row.Index].Cells[13].Style.BackColor = Color.Red;
                                     }
                                     else
                                     {
-                                        dataGridView1.Rows[row.Index].Cells[13].Value = "NG - Đã tồn tại FCST";
-                                        dataGridView1.Rows[row.Index].Cells[13].Style.BackColor = Color.Red;
+                                        pro.InsertPlan(CTR_CD, EMPL_NO, CUST_CD, G_CODE, PLAN_DATE, D1, D2, D3, D4, D5, D6, D7, D8, REMARK);
+                                        pro.writeHistory(CTR_CD, LoginID, "PLAN TABLE", "THEM", "THEM PLAN GIAO HANG", "0");
+                                        dataGridView1.Rows[row.Index].Cells[13].Value = "OK";
+                                        dataGridView1.Rows[row.Index].Cells[13].Style.BackColor = Color.LightGreen;
                                     }
 
 
@@ -3803,18 +4382,22 @@ namespace AutoClick
                                 else
                                 {
                                     ProductBLL pro = new ProductBLL();
-                                    if (pro.checkKHGHExist(CUST_CD, G_CODE, PLAN_DATE) == -1)
+                                    string checkUSEYN = pro.checkM100UseYN(G_CODE);
+                                    if (pro.checkKHGHExist(CUST_CD, G_CODE, PLAN_DATE) != -1)
                                     {
-                                        //pro.InsertPlan(CTR_CD, EMPL_NO, CUST_CD, G_CODE, PLAN_DATE, D1, D2, D3, D4, D5, D6, D7, D8);
+                                        dataGridView1.Rows[row.Index].Cells[13].Value = "NG - Đã tồn tại KHGH";
+                                        dataGridView1.Rows[row.Index].Cells[13].Style.BackColor = Color.Red;
+                                    }
+                                    else if (checkUSEYN == "N")
+                                    {
+                                        dataGridView1.Rows[row.Index].Cells[13].Value = "NG - Ver này đã bị khoá, check lại ver code này";
+                                        dataGridView1.Rows[row.Index].Cells[13].Style.BackColor = Color.Red;
+                                    }
+                                    else
+                                    {                                        
                                         dataGridView1.Rows[row.Index].Cells[13].Value = "OK";
                                         dataGridView1.Rows[row.Index].Cells[13].Style.BackColor = Color.LightGreen;
                                     }
-                                    else
-                                    {
-                                        dataGridView1.Rows[row.Index].Cells[13].Value = "NG - Đã tồn tại PLAN";
-                                        dataGridView1.Rows[row.Index].Cells[13].Style.BackColor = Color.Red;
-                                    }
-
 
                                 }
 
@@ -3835,7 +4418,7 @@ namespace AutoClick
 
 
 
-        public void insertFCST(int check)
+        public void insertFCST(int check, DoWorkEventArgs e)
         {
             if(check == 1)
             {
@@ -3895,16 +4478,22 @@ namespace AutoClick
                                 else
                                 {
                                     ProductBLL pro = new ProductBLL();
-                                    if (pro.checkFCSTExist(CUST_CD, G_CODE, YEAR,WEEKNO) == -1)
-                                    {
-                                        pro.InsertFCST(CTR_CD,EMPL_NO, CUST_CD, G_CODE, PROD_PRICE, YEAR, WEEKNO, W1, W2, W3, W4, W5, W6, W7, W8, W9, W10, W11, W12, W13, W14, W15, W16, W17, W18, W19, W20, W21, W22);
-                                        dataGridView1.Rows[row.Index].Cells[29].Value = "OK";
-                                        dataGridView1.Rows[row.Index].Cells[29].Style.BackColor = Color.LightGreen;
-                                    }
-                                    else
+                                    string checkUSEYN = pro.checkM100UseYN(G_CODE);
+                                    if (pro.checkFCSTExist(CUST_CD, G_CODE, YEAR,WEEKNO) != -1)
                                     {
                                         dataGridView1.Rows[row.Index].Cells[29].Value = "NG - Đã tồn tại FCST";
                                         dataGridView1.Rows[row.Index].Cells[29].Style.BackColor = Color.Red;
+                                    }
+                                    else if(checkUSEYN == "N")
+                                    {
+                                        dataGridView1.Rows[row.Index].Cells[29].Value = "NG - Ver này đã bị khoá, check lại ver final đi";
+                                        dataGridView1.Rows[row.Index].Cells[29].Style.BackColor = Color.Red;
+                                    }
+                                    else
+                                    {
+                                        pro.InsertFCST(CTR_CD, EMPL_NO, CUST_CD, G_CODE, PROD_PRICE, YEAR, WEEKNO, W1, W2, W3, W4, W5, W6, W7, W8, W9, W10, W11, W12, W13, W14, W15, W16, W17, W18, W19, W20, W21, W22);
+                                        dataGridView1.Rows[row.Index].Cells[29].Value = "OK";
+                                        dataGridView1.Rows[row.Index].Cells[29].Style.BackColor = Color.LightGreen;
                                     }
 
 
@@ -3981,26 +4570,31 @@ namespace AutoClick
                                 }
                                 else
                                 {
+
                                     ProductBLL pro = new ProductBLL();
-                                    if (pro.checkFCSTExist(CUST_CD, G_CODE, YEAR, WEEKNO) == -1)
-                                    {
-                                       // pro.InsertFCST(CTR_CD, EMPL_NO, CUST_CD, G_CODE, PROD_PRICE, YEAR, WEEKNO, W1, W2, W3, W4, W5, W6, W7, W8, W9, W10, W11, W12, W13, W14, W15, W16, W17, W18, W19, W20, W21, W22);
-                                        dataGridView1.Rows[row.Index].Cells[29].Value = "OK";
-                                        dataGridView1.Rows[row.Index].Cells[29].Style.BackColor = Color.LightGreen;
-                                    }
-                                    else
+                                    string checkUSEYN = pro.checkM100UseYN(G_CODE);
+                                    if (pro.checkFCSTExist(CUST_CD, G_CODE, YEAR, WEEKNO) != -1)
                                     {
                                         dataGridView1.Rows[row.Index].Cells[29].Value = "NG - Đã tồn tại FCST";
                                         dataGridView1.Rows[row.Index].Cells[29].Style.BackColor = Color.Red;
                                     }
-
+                                    else if (checkUSEYN == "N")
+                                    {
+                                        dataGridView1.Rows[row.Index].Cells[29].Value = "NG - Ver này đã bị khoá, check lại ver final đi";
+                                        dataGridView1.Rows[row.Index].Cells[29].Style.BackColor = Color.Red;
+                                    }
+                                    else
+                                    {                                        
+                                        dataGridView1.Rows[row.Index].Cells[29].Value = "OK";
+                                        dataGridView1.Rows[row.Index].Cells[29].Style.BackColor = Color.LightGreen;
+                                    }
 
                                 }
 
                             }
                         }
 
-                        MessageBox.Show("Đã hoàn thành thêm PO hàng loạt");
+                        MessageBox.Show("Đã hoàn thành check FCST hàng loạt");
                     }
                     catch (Exception ex)
                     {
@@ -4013,7 +4607,7 @@ namespace AutoClick
         }
         private void tạo1FCSTToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            insertFCST(1);
+            //insertFCST(1);
         }
 
         private void checkFCSTToolStripMenuItem_Click(object sender, EventArgs e)
@@ -4022,7 +4616,7 @@ namespace AutoClick
             if (total_flag == 0)
             {
 
-                insertFCST(0);
+                //insertFCST(0);
             }
             else
             {
@@ -4055,7 +4649,7 @@ namespace AutoClick
 
                             foreach (var row in selectedRows)
                             {
-                                string fcst_id = row.Cells[0].Value.ToString();
+                                string fcst_id = row.Cells["FCST_ID"].Value.ToString(); //cell 0
                                 dt = pro.DeleteFCST(fcst_id);
                                 pro.writeHistory("002", LoginID, "FCST TABLE", "XOA", "Xoa FCST", "" + fcst_id);
                                 startprogress = startprogress + 1;
@@ -4096,7 +4690,7 @@ namespace AutoClick
             int total_flag = po_flag + invoice_flag + fcst_flag + khgh_flag;
             if (total_flag == 0)
             {
-                insertKHGH(0);
+                //insertKHGH(0);
             }
             else
             {
@@ -4128,7 +4722,7 @@ namespace AutoClick
 
                             foreach (var row in selectedRows)
                             {
-                                string plan_id = row.Cells[0].Value.ToString();
+                                string plan_id = row.Cells["PLAN_ID"].Value.ToString(); // cell 0
                                 dt = pro.DeletePlan(plan_id);
                                 pro.writeHistory("002", LoginID, "PLAN TABLE", "XOA", "Xoa PLAN", "" + plan_id);
 
@@ -4239,14 +4833,14 @@ namespace AutoClick
                         string CTR_CD = "002";
                         try
                         {
-                            CUST_CD = Convert.ToString(row.Cells[0].Value);
-                            EMPL_NO = Convert.ToString(row.Cells[1].Value);
-                            G_CODE = Convert.ToString(row.Cells[2].Value);
-                            PO_NO = Convert.ToString(row.Cells[3].Value);
-                            DELIVERY_QTY = Convert.ToString(row.Cells[4].Value);
-                            DELIVERY_DATE = Convert.ToString(row.Cells[5].Value);
-                            NOCANCEL = Convert.ToString(row.Cells[6].Value);
-                            INVOICE_NO = Convert.ToString(row.Cells[7].Value);
+                            CUST_CD = Convert.ToString(row.Cells["CUST_CD"].Value);
+                            EMPL_NO = Convert.ToString(row.Cells["EMPL_NO"].Value);
+                            G_CODE = Convert.ToString(row.Cells["G_CODE"].Value);
+                            PO_NO = Convert.ToString(row.Cells["PO_NO"].Value);
+                            DELIVERY_QTY = Convert.ToString(row.Cells["DELIVERY_QTY"].Value);
+                            DELIVERY_DATE = Convert.ToString(row.Cells["DELIVERY_DATE"].Value);
+                            NOCANCEL = Convert.ToString(row.Cells["NOCANCEL"].Value);
+                            INVOICE_NO = Convert.ToString(row.Cells["INVOICE_NO"].Value);
 
 
                             if ((CUST_CD == "") || (EMPL_NO == "") || (G_CODE == "") || (PO_NO == "") || (DELIVERY_QTY == "") || (DELIVERY_DATE == "") || (NOCANCEL == ""))
@@ -4508,8 +5102,9 @@ namespace AutoClick
                 xoaPO();                      
         }
 
-        private void button27_Click(object sender, EventArgs e)
+        public void traBOM()
         {
+
             bom_flag = 1;
             fcst_flag = 0;
             invoice_flag = 0;
@@ -4524,9 +5119,9 @@ namespace AutoClick
             this.dataGridView1.DataSource = null;
             this.dataGridView1.Columns.Clear();
             dataGridView1.DataSource = dt;
-            if(dt.Rows.Count >0)
+            if (dt.Rows.Count > 0)
             {
-                MessageBox.Show("Đã load "+ dt.Rows.Count + " dòng, double click vào code để xem BOM");
+                MessageBox.Show("Đã load " + dt.Rows.Count + " dòng, double click vào code để xem BOM");
 
             }
             else
@@ -4539,6 +5134,19 @@ namespace AutoClick
             fcst_flag = 0;
             ycsx_flag = 0;
             bom_flag = 1;
+
+        }
+        public void traBOM_Async(DoWorkEventArgs e)
+        {
+            ProductBLL pro = new ProductBLL();
+            DataTable dt = new DataTable();
+            dtgv1_data = pro.info_getCODEInfo(textBox1.Text);           
+
+        }
+
+        private void button27_Click(object sender, EventArgs e)
+        {
+            traBOM();
         }
 
         private void xóaLanToolStripMenuItem_Click(object sender, EventArgs e)
@@ -4575,7 +5183,8 @@ namespace AutoClick
                 fcst_flag = 0;
                 ycsx_flag = 0;
                 try
-                {  
+                {
+                    dataGridView1.Columns.Clear();
                     if (file != "")
                     {
                         dsNV = ExcelFactory.readFromExcelFile(file);
@@ -4585,6 +5194,7 @@ namespace AutoClick
                         button4.Enabled = true;
                         button3.Enabled = true;
                         button16.Enabled = true;
+                        import_excel_flag = 1;
                     }
                 }
                 catch (Exception ex)
@@ -5101,13 +5711,13 @@ namespace AutoClick
 
         private void button29_Click(object sender, EventArgs e)
         {
-            
+            dataGridView1.Columns.Clear();
             checkBTP();
         }
 
         private void button30_Click(object sender, EventArgs e)
-        {            
-            
+        {
+            dataGridView1.Columns.Clear();
             checkCK();
         }
         public int hideshow = 0;
@@ -5120,7 +5730,8 @@ namespace AutoClick
 
         private void button28_Click(object sender, EventArgs e)
         {
-            MessageBox.Show("Đang phát triển");
+            KHOTHANHPHAM ktp = new KHOTHANHPHAM();
+            ktp.Show();
         }
 
         private void button31_Click_1(object sender, EventArgs e)
@@ -5130,11 +5741,13 @@ namespace AutoClick
 
         private void button33_Click(object sender, EventArgs e)
         {
+            dataGridView1.Columns.Clear();
             checkCK2();
         }
 
         private void button32_Click(object sender, EventArgs e)
         {
+            dataGridView1.Columns.Clear();
             checkBTP2();
         }
 
@@ -5212,7 +5825,26 @@ namespace AutoClick
 
         private void button34_Click(object sender, EventArgs e)
         {
-            MessageBox.Show(process_lot_no_generate("SR"));
+            //MessageBox.Show(process_lot_no_generate("SR"));
+            /*if(pictureBox1.Visible == true)
+            {
+                pictureBox1.Hide();
+            }
+            else
+            {
+                pictureBox1.Show();
+            }
+            */
+            if(!backgroundWorker1.IsBusy)
+            {
+                
+                backgroundWorker1.RunWorkerAsync();
+            }
+            else
+            {
+                MessageBox.Show("Đang chạy tiến trình khác, đợi tiến trình đó chạy xong đã rồi thử lại");
+            }           
+
         }
 
         private void sXToolStripMenuItem_Click(object sender, EventArgs e)
@@ -5283,7 +5915,7 @@ namespace AutoClick
             if (total_flag == 0)
             {
 
-                insertFCST(0);
+                //insertFCST(0);
             }
             else
             {
@@ -5293,12 +5925,12 @@ namespace AutoClick
 
         private void tạo1FCSTToolStripMenuItem_Click_1(object sender, EventArgs e)
         {
-            insertFCST(1);
+            //insertFCST(1);
         }
 
         private void uploadKHGHHàngLoạtToolStripMenuItem_Click_1(object sender, EventArgs e)
         {
-            insertKHGH(1);
+            //insertKHGH(1);
         }
 
         private void tạo1KHGHMớiToolStripMenuItem_Click_1(object sender, EventArgs e)
@@ -5306,7 +5938,7 @@ namespace AutoClick
             int total_flag = po_flag + invoice_flag + fcst_flag + khgh_flag;
             if (total_flag == 0)
             {
-                insertKHGH(0);
+                //insertKHGH(0);
             }
             else
             {
@@ -5396,7 +6028,7 @@ namespace AutoClick
 
         private void upThôngTinHàngLoạtToolStripMenuItem_Click_1(object sender, EventArgs e)
         {
-
+            updatecodeinfo();
         }
 
         private void checkCodeThiếuDataToolStripMenuItem_Click_1(object sender, EventArgs e)
@@ -5430,6 +6062,7 @@ namespace AutoClick
             ProductBLL pro = new ProductBLL();
             DataTable dt = new DataTable();
             dt = pro.report_QLSX();
+            dataGridView1.Columns.Clear();
             this.dataGridView1.DataSource = null;
             this.dataGridView1.Rows.Clear();
             this.dataGridView1.DataSource = dt;
@@ -5447,6 +6080,7 @@ namespace AutoClick
             ProductBLL pro = new ProductBLL();
             DataTable dt = new DataTable();
             dt = pro.report_QLSX_validating();
+            dataGridView1.Columns.Clear();
             this.dataGridView1.DataSource = null;
             this.dataGridView1.Rows.Clear();
             this.dataGridView1.DataSource = dt;
@@ -5457,6 +6091,850 @@ namespace AutoClick
         private void updateDatadòngĐcChọnToolStripMenuItem_Click_1(object sender, EventArgs e)
         {
             upthongtincodeQLSXhangloat();
+        }
+
+        private void checkPOToolStripMenuItem1_Click(object sender, EventArgs e)
+        {            
+            po_flag = 0;
+            bom_flag = 0;
+            fcst_flag = 0;
+            invoice_flag = 0;
+            ycsx_flag = 0;
+            khgh_flag = 0;
+
+            
+            check_po_flag = 1;
+            up_po_flag = 0;
+            check_invoice_flag = 0;
+            up_invoice_flag = 0;
+            check_fcst_flag = 0;
+            up_fcst_flag = 0;
+            check_plan_flag = 0;
+            up_plan_flag = 0;
+            if (!backgroundWorker1.IsBusy)
+            {
+                backgroundWorker1.RunWorkerAsync();
+            }
+            else
+            {
+                MessageBox.Show("Tiến trình khác đang chạy, thử lại sau");
+            }
+
+        }
+
+        private void pOToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            POForm poform = new POForm();
+            poform.loginIDpoForm = LoginID;
+            poform.Show();
+        }
+
+        private void nhiềuPOToolStripMenuItem_Click(object sender, EventArgs e)
+        {            
+            po_flag = 0;
+            bom_flag = 0;
+            fcst_flag = 0;
+            invoice_flag = 0;
+            ycsx_flag = 0;
+            khgh_flag = 0;
+
+            import_excel_flag = 0;
+            check_po_flag = 0;
+            up_po_flag = 1;
+            check_invoice_flag = 0;
+            up_invoice_flag = 0;
+            check_fcst_flag = 0;
+            up_fcst_flag = 0;
+            check_plan_flag = 0;
+            up_plan_flag = 0;
+            if (!backgroundWorker1.IsBusy)
+            {
+                backgroundWorker1.RunWorkerAsync();
+            }
+            else
+            {
+                MessageBox.Show("Tiến trình khác đang chạy, thử lại sau");
+            }
+        }
+
+        private void invoiceToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            InvoiceForm invoiceform = new InvoiceForm();
+            invoiceform.loginIDInvoiceForm = LoginID;
+            invoiceform.Show();
+        }
+
+        private void checkInvoiceToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            //checkInvoice();
+            po_flag = 0;
+            bom_flag = 0;
+            fcst_flag = 0;
+            invoice_flag = 0;
+            ycsx_flag = 0;
+            khgh_flag = 0;
+
+            
+            check_po_flag = 0;
+            up_po_flag = 0;
+            check_invoice_flag = 1;
+            up_invoice_flag = 0;
+            check_fcst_flag = 0;
+            up_fcst_flag = 0;
+            check_plan_flag = 0;
+            up_plan_flag = 0;
+            if (!backgroundWorker1.IsBusy)
+            {
+                backgroundWorker1.RunWorkerAsync();
+            }
+            else
+            {
+                MessageBox.Show("Tiến trình khác đang chạy, thử lại sau");
+            }
+        }
+
+        private void upInvoiceHàngLoạtToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            //upInvoicehangloat();
+            po_flag = 0;
+            bom_flag = 0;
+            fcst_flag = 0;
+            invoice_flag = 0;
+            ycsx_flag = 0;
+            khgh_flag = 0;
+
+            import_excel_flag = 0;
+            check_po_flag = 0;
+            up_po_flag = 0;
+            check_invoice_flag = 0;
+            up_invoice_flag = 1;
+            check_fcst_flag = 0;
+            up_fcst_flag = 0;
+            check_plan_flag = 0;
+            up_plan_flag = 0;
+            if (!backgroundWorker1.IsBusy)
+            {
+                backgroundWorker1.RunWorkerAsync();
+            }
+            else
+            {
+                MessageBox.Show("Tiến trình khác đang chạy, thử lại sau");
+            }
+        }
+
+        private void upInvoiceNoToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            updateINVOICENO();
+        }
+
+        public void checkFCST_Async(DoWorkEventArgs e)
+        {
+            
+            if (import_excel_flag == 1)
+            {
+
+                insertFCST(0,e);
+            }
+            else
+            {
+                MessageBox.Show("Check choác gì ! ?, import vào r mới check được !");
+            }
+        }
+        private void checkFCSTToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            po_flag = 0;
+            bom_flag = 0;
+            fcst_flag = 0;
+            invoice_flag = 0;
+            ycsx_flag = 0;
+            khgh_flag = 0;
+
+            
+            check_po_flag = 0;
+            up_po_flag = 0;
+            check_invoice_flag = 0;
+            up_invoice_flag = 0;
+            check_fcst_flag = 1;
+            up_fcst_flag = 0;
+            check_plan_flag = 0;
+            up_plan_flag = 0;
+            if (!backgroundWorker1.IsBusy)
+            {
+                backgroundWorker1.RunWorkerAsync();
+            }
+            else
+            {
+                MessageBox.Show("Tiến trình khác đang chạy, thử lại sau");
+            }
+
+
+        }
+
+        public void uploadFCST_Async(DoWorkEventArgs e)
+        {
+            insertFCST(1,e);
+        }
+        private void upFCSTHàngLoạtToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            //insertFCST(1);
+            po_flag = 0;
+            bom_flag = 0;
+            fcst_flag = 0;
+            invoice_flag = 0;
+            ycsx_flag = 0;
+            khgh_flag = 0;
+
+            import_excel_flag = 0;
+            check_po_flag = 0;
+            up_po_flag = 0;
+            check_invoice_flag = 0;
+            up_invoice_flag = 0;
+            check_fcst_flag = 0;
+            up_fcst_flag = 1;
+            check_plan_flag = 0;
+            up_plan_flag = 0;
+            if (!backgroundWorker1.IsBusy)
+            {
+                backgroundWorker1.RunWorkerAsync();
+            }
+            else
+            {
+                MessageBox.Show("Tiến trình khác đang chạy, thử lại sau");
+            }
+        }
+
+        public void checkPLAN_Async(DoWorkEventArgs e)
+        {
+           // MessageBox.Show("import_excel_flag=" + import_excel_flag);
+            if (import_excel_flag == 1)
+            {
+                insertKHGH(0,e);
+            }
+            else
+            {
+                MessageBox.Show("Check choác gì, import file vào mới check được !");
+
+            }
+        }
+        private void checkPLANToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            po_flag = 0;
+            bom_flag = 0;
+            fcst_flag = 0;
+            invoice_flag = 0;
+            ycsx_flag = 0;
+            khgh_flag = 0;
+            
+            check_po_flag = 0;
+            up_po_flag = 0;
+            check_invoice_flag = 0;
+            up_invoice_flag = 0;
+            check_fcst_flag = 0;
+            up_fcst_flag = 0;
+            check_plan_flag = 1;
+            up_plan_flag = 0;
+            if (!backgroundWorker1.IsBusy)
+            {
+                backgroundWorker1.RunWorkerAsync();
+            }
+            else
+            {
+                MessageBox.Show("Tiến trình khác đang chạy, thử lại sau");
+            }
+        }
+
+        public void upPLAN_Async(DoWorkEventArgs e)
+        {
+            insertKHGH(1,e);
+        }
+        private void upPlanHàngLoạtToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            //insertKHGH(1);
+            po_flag = 0;
+            bom_flag = 0;
+            fcst_flag = 0;
+            invoice_flag = 0;
+            ycsx_flag = 0;
+            khgh_flag = 0;
+
+            import_excel_flag = 0;
+            check_po_flag = 0;
+            up_po_flag = 0;
+            check_invoice_flag = 0;
+            up_invoice_flag = 0;
+            check_fcst_flag = 0;
+            up_fcst_flag = 0;
+            check_plan_flag = 0;
+            up_plan_flag = 1;
+            if (!backgroundWorker1.IsBusy)
+            {
+                backgroundWorker1.RunWorkerAsync();
+            }
+            else
+            {
+                MessageBox.Show("Tiến trình khác đang chạy, thử lại sau");
+            }
+        }
+
+        private void sửaPOToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            suaPO();
+        }
+
+        private void sửaInvoiceToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            suainvoice();
+        }
+
+        private void xóaPOToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            xoaPO();
+        }
+
+        private void xóaInvoiceToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            xoaInvoice();
+        }
+
+        private void xóaPlanToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            xoaplan();
+        }
+
+        private void xóaFCSTToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            xoaFCST();
+        }
+
+        private void thêmGiaoHàngChoPOToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            if (po_flag == 1)
+            {
+                InvoiceForm invoiceform = new InvoiceForm();
+                invoiceform.loginIDInvoiceForm = LoginID;
+
+                var selectedRows = dataGridView1.SelectedRows
+                      .OfType<DataGridViewRow>()
+                      .Where(row => !row.IsNewRow)
+                      .ToArray();
+                foreach (var row in selectedRows)
+                {
+                    try
+                    {
+                        string CUST_CD, EMPL_NO, G_CODE, PO_NO, DELIVERY_QTY, DELIVERY_DATE, NOCANCEL, REMARK, G_NAME, CUST_NAME;
+                        string CTR_CD = "002";
+                        G_CODE = row.Cells["G_CODE"].Value.ToString();
+                        DELIVERY_QTY = "";
+                        CUST_CD = row.Cells["CUST_CD"].Value.ToString();
+                        EMPL_NO = row.Cells["EMPL_NO"].Value.ToString();
+                        //DELIVERY_DATE = STYMD(DateTime.Today.Year, DateTime.Today.Month, DateTime.Today.Day); 
+                        DateTime today = DateTime.Today;
+                        today = today.AddDays(-1);
+                        DELIVERY_DATE = today.ToString("yyyy-MM-dd");
+                        PO_NO = row.Cells["PO_NO"].Value.ToString();
+                        REMARK = "";
+                        G_NAME = row.Cells["G_NAME"].Value.ToString();
+                        CUST_NAME = row.Cells["CUST_NAME_KD"].Value.ToString();
+                        NOCANCEL = "1";
+
+                        invoiceform.CUST_CD = CUST_CD;
+                        invoiceform.EMPL_NO = EMPL_NO;
+                        invoiceform.G_CODE = G_CODE;
+                        invoiceform.PO_NO = PO_NO;
+                        invoiceform.DELIVERY_QTY = DELIVERY_QTY;
+                        invoiceform.DELIVERY_DATE = DELIVERY_DATE;
+                        invoiceform.NOCANCEL = NOCANCEL;
+                        invoiceform.G_NAME = G_NAME;
+                        invoiceform.CUST_NAME = CUST_NAME;
+
+
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show(ex.ToString());
+                    }
+
+
+                }
+                invoiceform.updateform();
+                invoiceform.Show();
+            }
+            else
+            {
+                MessageBox.Show("Không phải bảng PO, ko thêm được giao hàng");
+            }
+
+        }
+
+        private void tồnKiểmToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            checkCK();
+        }
+
+        private void tồnKiểmRútGọnToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            checkCK2();
+        }
+
+        private void bTPToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            
+        }
+
+        private void bTPChiTiếtToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            checkBTP();
+        }
+
+        private void bTPRútGọnToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            checkBTP2();
+        }
+
+        private void thêmBOMAmazoneToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            BOMAMAZONE bOMAMAZONE = new BOMAMAZONE();
+            bOMAMAZONE.Login_ID = LoginID;
+            bOMAMAZONE.Show();
+        }
+
+        private void thiếtKếAmazoneToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            //MessageBox.Show("Đang phát triển, tạm thời dùng 1 design có sẵn");
+            DESIGN_AMAZONE dESIGN_AMAZONE = new DESIGN_AMAZONE();
+            dESIGN_AMAZONE.Login_ID = LoginID;
+            dESIGN_AMAZONE.Show();
+        }
+
+        private void stockThànhPhẩmToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            KHOTHANHPHAM ktp = new KHOTHANHPHAM();
+            ktp.Show();
+        }
+
+        public DataTable dtgv1_data = new DataTable();
+        public DataTable dtgv1_total_data = new DataTable();
+
+        private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
+        {
+            tracuu_KD(e);            
+        }
+
+        private void backgroundWorker1_ProgressChanged(object sender, ProgressChangedEventArgs e)
+        {
+
+        }
+
+        private void backgroundWorker1_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            pictureBox1.Hide();
+            if (po_flag == 1)
+            {
+                if (dtgv1_data.Rows.Count > 0)
+                {
+                    this.dataGridView1.DataSource = null;
+                    this.dataGridView1.Columns.Clear();
+                    dataGridView1.DataSource = dtgv1_data;
+                    setRowNumber(dataGridView1);
+                    button3.Enabled = true;                   
+
+                    textBox2.Text = dtgv1_total_data.Rows[0]["PO_QTY"].ToString();
+                    textBox2.Text = string.Format("{0:#,##0 EA}", double.Parse(textBox2.Text));
+                    textBox4.Text = dtgv1_total_data.Rows[0]["TOTAL_DELIVERED"].ToString();
+                    textBox4.Text = string.Format("{0:#,##0 EA}", double.Parse(textBox4.Text));
+                    textBox6.Text = dtgv1_total_data.Rows[0]["PO_BALANCE"].ToString();
+                    textBox6.Text = string.Format("{0:#,##0 EA}", double.Parse(textBox6.Text));
+
+                    textBox3.Text = dtgv1_total_data.Rows[0]["PO_AMOUNT"].ToString();
+                    textBox3.Text = string.Format("{0:#,##0.00 $}", double.Parse(textBox3.Text));
+                    textBox5.Text = dtgv1_total_data.Rows[0]["DELIVERED_AMOUNT"].ToString();
+                    textBox5.Text = string.Format("{0:#,##0.00 $}", double.Parse(textBox5.Text));
+                    textBox7.Text = dtgv1_total_data.Rows[0]["BALANCE_AMOUNT"].ToString();
+                    textBox7.Text = string.Format("{0:#,##0.00 $}", double.Parse(textBox7.Text));
+
+                    textBox2.Font = new Font("Microsoft Sans Serif", 15.0f);
+                    textBox4.Font = new Font("Microsoft Sans Serif", 15.0f);
+                    textBox6.Font = new Font("Microsoft Sans Serif", 15.0f);
+                    textBox3.Font = new Font("Microsoft Sans Serif", 15.0f);
+                    textBox5.Font = new Font("Microsoft Sans Serif", 15.0f);
+                    textBox7.Font = new Font("Microsoft Sans Serif", 15.0f);
+
+                    formatDataGridViewtraPO1(dataGridView1);
+                    /*
+                    for (int r = 0; r < dataGridView1.Rows.Count; r++)
+                    {
+                        DataGridViewRow row = dataGridView1.Rows[r];
+                        if (int.Parse(row.Cells["PO_BALANCE"].Value.ToString()) > 0 && (DateTime.Now - DateTime.Parse(row.Cells["PO_DATE"].Value.ToString())).Days >=90)
+                        {
+                           row.DefaultCellStyle.BackColor = Color.Red;
+                            row.DefaultCellStyle.ForeColor = Color.White;
+                        }
+                    }
+                    */
+                    MessageBox.Show("Đã load  " + dtgv1_data.Rows.Count + "dòng");
+                }
+                else
+                {
+                    MessageBox.Show("Không có kết quả nào");
+                }
+                button8.Enabled = true;
+            }
+            else if (invoice_flag == 1)
+            { 
+                if (dtgv1_data.Rows.Count > 0)
+                {
+                    this.dataGridView1.DataSource = null;
+                    this.dataGridView1.Columns.Clear();                   
+                    dataGridView1.DataSource = dtgv1_data;
+                    setRowNumber(dataGridView1);
+                    button3.Enabled = true;
+                  
+
+                    textBox2.Text = "0";
+                    textBox2.Text = string.Format("{0:#,##0 EA}", double.Parse(textBox2.Text));
+                    textBox4.Text = dtgv1_total_data.Rows[0]["DELIVERED_QTY"].ToString();
+                    textBox4.Text = string.Format("{0:#,##0 EA}", double.Parse(textBox4.Text));
+                    textBox6.Text = "0";
+                    textBox6.Text = string.Format("{0:#,##0 EA}", double.Parse(textBox6.Text));
+
+                    textBox3.Text = "0";
+                    textBox3.Text = string.Format("{0:#,##0.00 $}", double.Parse(textBox3.Text));
+                    textBox5.Text = dtgv1_total_data.Rows[0]["DELIVERED_AMOUNT"].ToString();
+                    textBox5.Text = string.Format("{0:#,##0.00 $}", double.Parse(textBox5.Text));
+                    textBox7.Text = "0";
+                    textBox7.Text = string.Format("{0:#,##0.00 $}", double.Parse(textBox7.Text));
+
+                    textBox2.Font = new Font("Microsoft Sans Serif", 15.0f);
+                    textBox4.Font = new Font("Microsoft Sans Serif", 15.0f);
+                    textBox6.Font = new Font("Microsoft Sans Serif", 15.0f);
+                    textBox3.Font = new Font("Microsoft Sans Serif", 15.0f);
+                    textBox5.Font = new Font("Microsoft Sans Serif", 15.0f);
+                    textBox7.Font = new Font("Microsoft Sans Serif", 15.0f);
+                    formatDataGridViewtraInvoice1(dataGridView1);
+                    MessageBox.Show("Đã load  " + dtgv1_data.Rows.Count + "dòng");                   
+                }
+                else
+                {
+                    MessageBox.Show("Không có kết quả nào");
+                }
+
+            }
+            else if (fcst_flag == 1)
+            {
+                if (dtgv1_data.Rows.Count > 0)
+                {
+                    this.dataGridView1.DataSource = null;
+                    this.dataGridView1.Columns.Clear();
+                    dataGridView1.DataSource = dtgv1_data;
+                    setRowNumber(dataGridView1);
+                    formatDataGridViewtraFCST1(dataGridView1);
+                    MessageBox.Show("Đã load  " + dtgv1_data.Rows.Count + "dòng");
+                }
+                else
+                {
+                    MessageBox.Show("Không có kết quả nào");
+                }
+            }
+            else if (khgh_flag == 1)
+            {               
+                if (dtgv1_data.Rows.Count > 0)
+                {
+                    this.dataGridView1.DataSource = null;
+                    this.dataGridView1.Columns.Clear();
+                    dataGridView1.DataSource = dtgv1_data;
+                    setRowNumber(dataGridView1);
+                    formatDataGridViewtraPlan1(dataGridView1);
+                    MessageBox.Show("Đã load  " + dtgv1_data.Rows.Count + "dòng");
+                }
+                else
+                {
+                    MessageBox.Show("Không có kết quả nào");
+                }
+            }
+            else if (ycsx_flag == 1)
+            {
+                
+            }
+            else if (bom_flag == 1)
+            {               
+
+                if (dtgv1_data.Rows.Count > 0)
+                {
+                    this.dataGridView1.DataSource = null;
+                    this.dataGridView1.Columns.Clear();
+                    dataGridView1.DataSource = dtgv1_data;
+                    MessageBox.Show("Đã load " + dtgv1_data.Rows.Count + " dòng, double click vào code để xem BOM");
+                }
+                else
+                {
+                    MessageBox.Show("Không có code này !");
+                }
+
+            }
+        }
+
+        private void button36_Click(object sender, EventArgs e)
+        {
+            dataGridView1.Columns.Clear();
+
+            po_flag = 1;
+            bom_flag = 0;
+            fcst_flag = 0;
+            invoice_flag = 0;
+            ycsx_flag = 0;
+            khgh_flag = 0;
+
+            import_excel_flag = 0;
+            check_po_flag = 0;
+            up_po_flag = 0;
+            check_invoice_flag = 0;
+            up_invoice_flag = 0;
+            check_fcst_flag = 0;
+            up_fcst_flag = 0;
+            check_plan_flag = 0;
+            up_plan_flag = 0;
+            if (!backgroundWorker1.IsBusy)
+            {
+                backgroundWorker1.RunWorkerAsync();
+            }
+            else
+            {
+                MessageBox.Show("Tiến trình khác đang chạy, thử lại sau");
+            }
+        }
+
+        private void button38_Click(object sender, EventArgs e)
+        {
+            dataGridView1.Columns.Clear();
+            po_flag = 0;
+            bom_flag = 0;
+            fcst_flag = 0;
+            invoice_flag = 1;
+            ycsx_flag = 0;
+            khgh_flag = 0;
+
+            import_excel_flag = 0;
+            check_po_flag = 0;
+            up_po_flag = 0;
+            check_invoice_flag = 0;
+            up_invoice_flag = 0;
+            check_fcst_flag = 0;
+            up_fcst_flag = 0;
+            check_plan_flag = 0;
+            up_plan_flag = 0;
+            if (!backgroundWorker1.IsBusy)
+            {
+                backgroundWorker1.RunWorkerAsync();
+            }
+            else
+            {
+                MessageBox.Show("Tiến trình khác đang chạy, thử lại sau");
+            }
+        }
+
+        private void button37_Click(object sender, EventArgs e)
+        {
+            dataGridView1.Columns.Clear();
+            po_flag = 0;
+            bom_flag = 0;
+            fcst_flag = 1;
+            invoice_flag = 0;
+            ycsx_flag = 0;
+            khgh_flag = 0;
+
+            import_excel_flag = 0;
+            check_po_flag = 0;
+            up_po_flag = 0;
+            check_invoice_flag = 0;
+            up_invoice_flag = 0;
+            check_fcst_flag = 0;
+            up_fcst_flag = 0;
+            check_plan_flag = 0;
+            up_plan_flag = 0;
+            if (!backgroundWorker1.IsBusy)
+            {
+                backgroundWorker1.RunWorkerAsync();
+            }
+            else
+            {
+                MessageBox.Show("Tiến trình khác đang chạy, thử lại sau");
+            }
+        }
+
+        private void button35_Click(object sender, EventArgs e)
+        {
+            dataGridView1.Columns.Clear();
+            po_flag = 0;
+            bom_flag = 0;
+            fcst_flag = 0;
+            invoice_flag = 0;
+            ycsx_flag = 0;
+            khgh_flag = 1;
+
+            import_excel_flag = 0;
+            check_po_flag = 0;
+            up_po_flag = 0;
+            check_invoice_flag = 0;
+            up_invoice_flag = 0;
+            check_fcst_flag = 0;
+            up_fcst_flag = 0;
+            check_plan_flag = 0;
+            up_plan_flag = 0;
+            if (!backgroundWorker1.IsBusy)
+            {
+                backgroundWorker1.RunWorkerAsync();
+            }
+            else
+            {
+                MessageBox.Show("Tiến trình khác đang chạy, thử lại sau");
+            }
+        }
+
+        private void button39_Click(object sender, EventArgs e)
+        {
+            dataGridView1.Columns.Clear();
+            po_flag = 0;
+            bom_flag = 1;
+            fcst_flag = 0;
+            invoice_flag = 0;
+            ycsx_flag = 0;
+            khgh_flag = 0;
+
+            import_excel_flag = 0;
+            check_po_flag = 0;
+            up_po_flag = 0;
+            check_invoice_flag = 0;
+            up_invoice_flag = 0;
+            check_fcst_flag = 0;
+            up_fcst_flag = 0;
+            check_plan_flag = 0;
+            up_plan_flag = 0;
+
+            if (!backgroundWorker1.IsBusy)
+            {
+                backgroundWorker1.RunWorkerAsync();
+            }
+            else
+            {
+                MessageBox.Show("Tiến trình khác đang chạy, thử lại sau");
+            }
+        }
+
+        private void checkCodeThiếuDataCapaToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            po_flag = 0;
+            invoice_flag = 0;
+            khgh_flag = 0;
+            fcst_flag = 0;
+            ycsx_flag = 0;
+            ProductBLL pro = new ProductBLL();
+            DataTable dt = new DataTable();
+            dt = pro.report_QLSX();
+            dataGridView1.Columns.Clear();
+            this.dataGridView1.DataSource = null;
+            this.dataGridView1.Rows.Clear();
+            this.dataGridView1.DataSource = dt;
+            MessageBox.Show("Đã load : " + dt.Rows.Count + " dòng");
+            MessageBox.Show("Đã load danh sách các code còn tồn PO, có xuất hiện trong kế hoạch giao hàng SOP 14 ngày trở lại đây, có xuất hiện trong phòng kiểm tra 14 ngày trở lại đây. Mà vẫn chưa được update thông tin");
+        }
+
+        private void checkCodeSaiQuyTắcCapaToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            po_flag = 0;
+            invoice_flag = 0;
+            khgh_flag = 0;
+            fcst_flag = 0;
+            ycsx_flag = 0;
+            ProductBLL pro = new ProductBLL();
+            DataTable dt = new DataTable();
+            dt = pro.report_QLSX_validating();
+            dataGridView1.Columns.Clear();
+            this.dataGridView1.DataSource = null;
+            this.dataGridView1.Rows.Clear();
+            this.dataGridView1.DataSource = dt;
+            MessageBox.Show("Đã load : " + dt.Rows.Count + " dòng");
+            MessageBox.Show("Đã load danh sách các code điền ko đúng quy tắc");
+        }
+
+        private void updateDatadòngĐượcChọnToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            upthongtincodeQLSXhangloat();
+        }
+
+        public void traBOMCAPA()
+        {
+            po_flag = 0;
+            invoice_flag = 0;
+            khgh_flag = 0;
+            fcst_flag = 0;
+            ycsx_flag = 0;
+            ProductBLL pro = new ProductBLL();
+            DataTable dt = new DataTable();
+            dt = pro.traBOMCAPA(traBOMcondition());
+            dataGridView1.Columns.Clear();
+            this.dataGridView1.DataSource = null;
+            this.dataGridView1.Rows.Clear();
+            this.dataGridView1.DataSource = dt;
+            MessageBox.Show("Đã load : " + dt.Rows.Count + " dòng");
+           
+
+        }
+        public string traBOMcondition()
+        {
+            string condition = " WHERE 1=1";
+            string G_CODE = "";
+            if(textBox16.Text != "")
+            {
+                G_CODE = $" AND G_CODE= '{textBox16.Text}'";
+            }
+            string G_NAME = "";
+            if (textBox1.Text != "")
+            {
+                G_CODE = $" AND G_NAME LIKE '%{textBox1.Text}%'";
+            }
+            condition += G_CODE + G_NAME;
+            return condition;
+        }
+
+        private void traBOMCapaToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            traBOMCAPA();
+        }
+
+        private void timer1_Tick(object sender, EventArgs e)
+        {
+            ProductBLL pro = new ProductBLL();
+            pro.updateOnline(LoginID);
+        }
+
+        private void dataGridView1_Sorted(object sender, EventArgs e)
+        {
+            /*
+            if(po_flag == 1)
+            {
+                for (int r = 0; r < dataGridView1.Rows.Count; r++)
+                {
+                    DataGridViewRow row = dataGridView1.Rows[r];
+                    if (int.Parse(row.Cells["PO_BALANCE"].Value.ToString()) > 0 && (DateTime.Now - DateTime.Parse(row.Cells["RD_DATE"].Value.ToString())).Days >= 60)
+                    {
+                        row.DefaultCellStyle.BackColor = Color.Red;
+                        row.DefaultCellStyle.ForeColor = Color.White;
+                    }
+                }
+            }
+            */
+            
+        }
+
+        private void checkToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            LICHSUSANXUAT lssx = new LICHSUSANXUAT();
+            lssx.Show();
+        }
+
+        private void kinhDoanhToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            //MessageBox.Show("Hãy mở web");
         }
 
         private void xóaYêuCầuSảnXuấtHàngLoạtToolStripMenuItem_Click(object sender, EventArgs e)
@@ -5530,7 +7008,7 @@ namespace AutoClick
 
                         foreach (var row in selectedRows)
                         {
-                            string po_id = row.Cells[22].Value.ToString();
+                            string po_id = row.Cells["PO_ID"].Value.ToString();//cell 22
                             try
                             {
                                 dt = pro.DeletePO(po_id);
@@ -5544,11 +7022,9 @@ namespace AutoClick
                             {
                                 MessageBox.Show("Không thể xóa PO đã phát sinh giao hàng !");
                             }
-
                         }
                         progressBar1.Value = 0;
                         dataGridView1.ClearSelection();
-
                     }
                     catch (Exception ex)
                     {
@@ -5595,18 +7071,18 @@ namespace AutoClick
                     {
                         string CUST_CD, EMPL_NO, G_CODE, PO_NO, DELIVERY_QTY, DELIVERY_DATE, NOCANCEL, REMARK, G_NAME, CUST_NAME;
                         string CTR_CD = "002";
-                        G_CODE = row.Cells[10].Value.ToString();
+                        G_CODE = row.Cells["G_CODE"].Value.ToString();
                         DELIVERY_QTY = "";
-                        CUST_CD = row.Cells[5].Value.ToString(); 
-                        EMPL_NO = row.Cells[8].Value.ToString();
+                        CUST_CD = row.Cells["CUST_CD"].Value.ToString(); 
+                        EMPL_NO = row.Cells["EMPL_NO"].Value.ToString();
                         //DELIVERY_DATE = STYMD(DateTime.Today.Year, DateTime.Today.Month, DateTime.Today.Day); 
                         DateTime today = DateTime.Today;
                         today = today.AddDays(-1);
                         DELIVERY_DATE = today.ToString("yyyy-MM-dd");
-                        PO_NO = row.Cells[0].Value.ToString(); 
+                        PO_NO = row.Cells["PO_NO"].Value.ToString(); 
                         REMARK = "";
-                        G_NAME = row.Cells[7].Value.ToString();
-                        CUST_NAME = row.Cells[6].Value.ToString();
+                        G_NAME = row.Cells["G_NAME"].Value.ToString();
+                        CUST_NAME = row.Cells["CUST_NAME"].Value.ToString();
                         NOCANCEL = "1";
 
                         invoiceform.CUST_CD = CUST_CD;
@@ -5931,7 +7407,7 @@ namespace AutoClick
                         MySheet.Range["AE5"].Value = "SAMPLE";
                         break;
                     default:
-                        break;
+                        break;  
                 }
 
                 // Phan loai giao hang
@@ -5968,7 +7444,7 @@ namespace AutoClick
                 MySheet.Range["E13"].Value = dt.Rows[0]["G_C"].ToString() + "EA";
 
                 //packing type
-                switch (dt.Rows[0]["CODE_33"].ToString())
+                switch (dt.Rows[0]["CODE_33"].ToString())   
                 {
                     case "01": //EA
                         MySheet.Range["Q10"].Value =  "EA";
@@ -6371,6 +7847,45 @@ namespace AutoClick
             }
         }
 
+        public static DataTable readFromExcelFileToAmazoneTable(string path)
+        {
+            DataTable dt = new DataTable();
+            dt.Columns.Add("DATA", typeof(string));
+            try
+            {
+                eX.Workbook MyBook = null;
+                Microsoft.Office.Interop.Excel.Application MyApp = null;
+                eX.Worksheet MySheet = null;
+                MyApp = new Microsoft.Office.Interop.Excel.Application();
+                MyApp.Visible = false;
+                MyBook = MyApp.Workbooks.Open(path);
+                MySheet = (eX.Worksheet)MyBook.Sheets[1];
+
+                int lastRow = MySheet.Cells.SpecialCells(eX.XlCellType.xlCellTypeLastCell).Row;
+                int lastColumn = MySheet.Cells.SpecialCells(eX.XlCellType.xlCellTypeLastCell).Column;
+
+                for (int i = 1; i <= lastRow; i++)
+                {
+                    YeuCauSanXuat nv = new YeuCauSanXuat();
+                    string AMAZONE_DATA;
+                    AMAZONE_DATA = MySheet.Range["A" + i].Value + "";
+                    DataRow dr = dt.NewRow();
+                    dr["DATA"] = AMAZONE_DATA;
+                    dt.Rows.Add(dr);                                      
+                }
+
+                MyBook.Close(true);
+                MyApp.Quit();
+                releaseObject(MySheet);
+                releaseObject(MyBook);
+                releaseObject(MyApp);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            return dt;
+        }
 
 
         public static List<YeuCauSanXuat> readFromExcelFile(string path)
@@ -6501,7 +8016,6 @@ namespace AutoClick
                 xlexcel.DisplayAlerts = false;
                 Microsoft.Office.Interop.Excel.Workbook xlWorkBook = xlexcel.Workbooks.Add(misValue);
                 Microsoft.Office.Interop.Excel.Worksheet xlWorkSheet = (Microsoft.Office.Interop.Excel.Worksheet)xlWorkBook.Worksheets.get_Item(1);
-
                
                 for (int i=0; i<8;i++)
                 {
@@ -6906,8 +8420,9 @@ namespace AutoClick
             DataTable result = new DataTable();
             DataConfig config = new DataConfig();
             //string strQuery = "SELECT G_Code,G_Name FROM M100 where G_Code='" + item + "'";
-            string strQuery = "INSERT INTO M100 (CTR_CD,G_CODE,G_NAME,CODE_12,SEQ_NO,REV_NO,CODE_33,CUST_CD,G_CODE_C,G_CODE_V,G_CODE_K,CODE_27,CODE_28,PRT_DRT,PRT_YN,PROD_PRINT_TIMES,PACK_DRT,ROLE_EA_QTY,G_WIDTH,G_LENGTH,G_R,G_C,G_LG,G_SG_L,G_SG_R,G_CG,REMK,USE_YN, INS_EMPL, INS_DATE, UPD_EMPL, UPD_DATE, PROD_PROJECT, PROD_MODEL, G_NAME_KD, DRAW_LINK, EQ1, EQ2, PROD_DIECUT_STEP, PD, KNIFE_TYPE, KNIFE_LIFECYCLE, KNIFE_PRICE, RPM, PIN_DISTANCE, PROCESS_TYPE, G_C_R, DESCR, PROD_MAIN_MATERIAL, PROD_TYPE) VALUES " + values;
+            string strQuery = "INSERT INTO M100 (CTR_CD,G_CODE,G_NAME,CODE_12,SEQ_NO,REV_NO,CODE_33,CUST_CD,G_CODE_C,G_CODE_V,G_CODE_K,CODE_27,CODE_28,PRT_DRT,PRT_YN,PROD_PRINT_TIMES,PACK_DRT,ROLE_EA_QTY,G_WIDTH,G_LENGTH,G_R,G_C,G_LG,G_SG_L,G_SG_R,G_CG,REMK,USE_YN, INS_EMPL, INS_DATE, UPD_EMPL, UPD_DATE, PROD_PROJECT, PROD_MODEL, G_NAME_KD, DRAW_LINK, EQ1, EQ2, PROD_DIECUT_STEP, PD, KNIFE_TYPE, KNIFE_LIFECYCLE, KNIFE_PRICE, RPM, PIN_DISTANCE, PROCESS_TYPE, G_C_R, DESCR, PROD_MAIN_MATERIAL, PROD_TYPE,BANVE,NO_INSPECTION) VALUES " + values;
             result = config.GetData(strQuery);
+            //MessageBox.Show(strQuery);
             return result;
         }
         public DataTable M100_update(string values)
@@ -6919,6 +8434,37 @@ namespace AutoClick
             result = config.GetData(strQuery);
             return result;
         }
+
+        public DataTable checktonkhofull_gcode(string G_CODE)
+        {
+            DataTable result = new DataTable();
+            DataConfig config = new DataConfig();
+            //string strQuery = "SELECT G_Code,G_Name FROM M100 where G_Code='" + item + "'";
+            string strQuery = $"SELECT M100.G_CODE, isnull(TONKIEM.INSPECT_BALANCE_QTY,0) AS CHO_KIEM, isnull(TONKIEM.WAIT_CS_QTY,0) AS CHO_CS_CHECK,isnull(TONKIEM.WAIT_SORTING_RMA,0) CHO_KIEM_RMA, isnull(TONKIEM.TOTAL_WAIT,0) AS TONG_TON_KIEM, isnull(BTP.BTP_QTY_EA,0) AS BTP, isnull(THANHPHAM.TONKHO,0) AS TON_TP, isnull(tbl_Block_table2.Block_Qty,0) AS BLOCK_QTY, (isnull(TONKIEM.TOTAL_WAIT,0) + isnull(BTP.BTP_QTY_EA,0)+ isnull(THANHPHAM.TONKHO,0) - isnull(tbl_Block_table2.Block_Qty,0)) AS GRAND_TOTAL_STOCK FROM M100 LEFT JOIN ( SELECT Product_MaVach, isnull([IN],0) AS NHAPKHO, isnull([OUT],0) AS XUATKHO, (isnull([IN],0)- isnull([OUT],0)) AS TONKHO FROM ( SELECT Product_Mavach, IO_Type, IO_Qty FROM tbl_InputOutput ) AS SourceTable PIVOT ( SUM(IO_Qty) FOR IO_Type IN ([IN], [OUT]) ) AS PivotTable ) AS THANHPHAM ON (THANHPHAM.Product_MaVach = M100.G_CODE) LEFT JOIN ( SELECT ZTB_WAIT_INSPECT.G_CODE, M100.G_NAME, M100.G_NAME_KD, SUM(INSPECT_BALANCE_QTY) AS INSPECT_BALANCE_QTY, SUM(WAIT_CS_QTY) AS WAIT_CS_QTY, SUM(WAIT_SORTING_RMA) AS WAIT_SORTING_RMA, SUM(INSPECT_BALANCE_QTY+ WAIT_CS_QTY+ WAIT_SORTING_RMA) AS TOTAL_WAIT FROM ZTB_WAIT_INSPECT JOIN M100 ON ( M100.G_CODE = ZTB_WAIT_INSPECT.G_CODE) WHERE UPDATE_DATE=CONVERT(date,GETDATE()) AND CALAMVIEC = 'DEM' GROUP BY ZTB_WAIT_INSPECT.G_CODE, M100.G_NAME, M100.G_NAME_KD) AS TONKIEM ON (THANHPHAM.Product_MaVach = TONKIEM.G_CODE) LEFT JOIN ( SELECT Product_MaVach, SUM(Block_Qty) AS Block_Qty from tbl_Block2 GROUP BY Product_MaVach ) AS tbl_Block_table2 ON (tbl_Block_table2.Product_MaVach= M100.G_CODE) LEFT JOIN ( SELECT ZTB_HALF_GOODS.G_CODE, M100.G_NAME, SUM(BTP_QTY_EA) AS BTP_QTY_EA FROM ZTB_HALF_GOODS JOIN M100 ON (M100.G_CODE = ZTB_HALF_GOODS.G_CODE) WHERE UPDATE_DATE = CONVERT(date,GETDATE()) GROUP BY ZTB_HALF_GOODS.G_CODE, M100.G_NAME) AS BTP ON (BTP.G_CODE = THANHPHAM.Product_MaVach) WHERE M100.G_CODE='{G_CODE}'";
+            result = config.GetData(strQuery);
+            return result;
+        }
+
+        public DataTable checkpobalance_gcode(string G_CODE)
+        {
+            DataTable result = new DataTable();
+            DataConfig config = new DataConfig();
+            //string strQuery = "SELECT G_Code,G_Name FROM M100 where G_Code='" + item + "'";
+            string strQuery = $"SELECT AA.G_CODE, (SUM(ZTBPOTable.PO_QTY)-SUM(AA.TotalDelivered)) As PO_BALANCE FROM (SELECT ZTBPOTable.EMPL_NO, ZTBPOTable.CUST_CD, ZTBPOTable.G_CODE, ZTBPOTable.PO_NO, isnull(SUM(ZTBDelivery.DELIVERY_QTY),0) AS TotalDelivered FROM ZTBPOTable LEFT JOIN ZTBDelivery ON (ZTBDelivery.CTR_CD = ZTBPOTable.CTR_CD AND ZTBDelivery.CUST_CD = ZTBPOTable.CUST_CD AND ZTBDelivery.G_CODE = ZTBPOTable.G_CODE AND ZTBDelivery.PO_NO = ZTBPOTable.PO_NO) GROUP BY ZTBPOTable.CTR_CD,ZTBPOTable.EMPL_NO,ZTBPOTable.G_CODE,ZTBPOTable.CUST_CD,ZTBPOTable.PO_NO) AS AA JOIN ZTBPOTable ON ( AA.CUST_CD = ZTBPOTable.CUST_CD AND AA.G_CODE = ZTBPOTable.G_CODE AND AA.PO_NO = ZTBPOTable.PO_NO) WHERE AA.G_CODE='{G_CODE}' GROUP BY AA.G_CODE";
+            result = config.GetData(strQuery);
+            return result;
+        }
+
+        public DataTable checkfcst_gcode(string G_CODE)
+        {
+            DataTable result = new DataTable();
+            DataConfig config = new DataConfig();
+            //string strQuery = "SELECT G_Code,G_Name FROM M100 where G_Code='" + item + "'";
+            string strQuery = $"SELECT G_CODE, SUM(W1) AS W1, SUM(W2) AS W2, SUM(W3) AS W3, SUM(W4) AS W4, SUM(W5) AS W5, SUM(W6) AS W6, SUM(W7) AS W7, SUM(W8) AS W8 FROM ZTBFCSTTB WHERE FCSTYEAR = YEAR(GETDATE()) AND FCSTWEEKNO = (SELECT MAX(FCSTWEEKNO)FROM ZTBFCSTTB WHERE FCSTYEAR = YEAR(GETDATE()) ) AND G_CODE='{G_CODE}' GROUP BY G_CODE";
+            result = config.GetData(strQuery);
+            return result;
+        }
+
 
 
         public DataTable pqc2_insert(string values)
@@ -7063,7 +8609,7 @@ namespace AutoClick
             DataTable result = new DataTable();
             DataConfig config = new DataConfig();
             //string strQuery = "SELECT G_Code,G_Name FROM M100 where G_Code='" + item + "'";
-            string strQuery = "SELECT P400.G_CODE, M100.G_NAME, M010.EMPL_NAME, M110.CUST_NAME_KD, P400.PROD_REQUEST_NO, P400.PROD_REQUEST_DATE, P400.PROD_REQUEST_QTY, isnull(INSPECT_BALANCE_TB.LOT_TOTAL_INPUT_QTY_EA,0) AS LOT_TOTAL_INPUT_QTY_EA, isnull(INSPECT_BALANCE_TB.LOT_TOTAL_OUTPUT_QTY_EA,0) AS LOT_TOTAL_OUTPUT_QTY_EA,isnull(INSPECT_BALANCE_TB.INSPECT_BALANCE,0) AS INSPECT_BALANCE, isnull(P400.PROD_REQUEST_QTY - INSPECT_BALANCE_TB.LOT_TOTAL_INPUT_QTY_EA,0) AS SHORTAGE_YCSX, (CASE WHEN P400.YCSX_PENDING = 1 THEN 'PENDING' WHEN P400.YCSX_PENDING = 0 THEN 'CLOSED' END) AS YCSX_PENDING,  (CASE WHEN P400.CODE_55='01' THEN 'Thong Thuong' WHEN P400.CODE_55='02' THEN 'SDI' WHEN P400.CODE_55='03' THEN 'GC' WHEN P400.CODE_55='04' THEN 'SAMPLE' END) AS PHAN_LOAI, P400.REMK AS REMARK FROM P400 LEFT JOIN M100 ON (P400.G_CODE = M100.G_CODE) LEFT JOIN M010 ON (M010.EMPL_NO = P400.EMPL_NO) LEFT JOIN M110 ON (P400.CUST_CD = M110.CUST_CD)  LEFT JOIN ( 	SELECT M010.EMPL_NAME, M110.CUST_NAME_KD, M100.G_CODE, M100.G_NAME, P400.PROD_REQUEST_NO, P400.PROD_REQUEST_QTY, INOUT.LOT_TOTAL_INPUT_QTY_EA, INOUT.LOT_TOTAL_OUTPUT_QTY_EA, INOUT.INSPECT_BALANCE  FROM 	( 	SELECT  P400.PROD_REQUEST_NO ,  SUM(CC.LOT_TOTAL_INPUT_QTY_EA) AS LOT_TOTAL_INPUT_QTY_EA , SUM(CC.LOT_TOTAL_OUTPUT_QTY_EA) AS LOT_TOTAL_OUTPUT_QTY_EA , SUM(CC.INSPECT_BALANCE) AS  INSPECT_BALANCE FROM( 		SELECT  AA.PROCESS_LOT_NO,  AA.LOT_TOTAL_QTY_KG, AA.LOT_TOTAL_INPUT_QTY_EA, isnull(BB.LOT_TOTAL_OUTPUT_QTY_EA,0) AS LOT_TOTAL_OUTPUT_QTY_EA, ( AA.LOT_TOTAL_INPUT_QTY_EA- isnull(BB.LOT_TOTAL_OUTPUT_QTY_EA,0)) AS INSPECT_BALANCE FROM 		(SELECT PROCESS_LOT_NO, SUM(INPUT_QTY_EA) As LOT_TOTAL_INPUT_QTY_EA, SUM(INPUT_QTY_KG) AS LOT_TOTAL_QTY_KG  FROM ZTBINSPECTINPUTTB GROUP BY PROCESS_LOT_NO) AS AA 		 LEFT JOIN 		(SELECT PROCESS_LOT_NO, SUM(OUTPUT_QTY_EA) As LOT_TOTAL_OUTPUT_QTY_EA  FROM ZTBINSPECTOUTPUTTB GROUP BY PROCESS_LOT_NO) AS BB 		ON (AA.PROCESS_LOT_NO = BB.PROCESS_LOT_NO) 	) AS CC 	LEFT JOIN P501 ON (CC.PROCESS_LOT_NO = P501.PROCESS_LOT_NO) 	LEFT JOIN (SELECT DISTINCT PROD_REQUEST_NO, PROCESS_IN_DATE, PROCESS_IN_NO FROM P500) AS P500_A ON (P500_A.PROCESS_IN_DATE = P501.PROCESS_IN_DATE AND P500_A.PROCESS_IN_NO = P501.PROCESS_IN_NO) 	LEFT JOIN P400 ON (P500_A.PROD_REQUEST_NO = P400.PROD_REQUEST_NO) 	GROUP BY P400.PROD_REQUEST_NO 	) AS INOUT 	LEFT JOIN P400 ON (INOUT.PROD_REQUEST_NO = P400.PROD_REQUEST_NO) 	LEFT JOIN M110 ON (M110.CUST_CD = P400.CUST_CD)  	LEFT JOIN M100 ON (M100.G_CODE = P400.G_CODE) 	LEFT JOIN M010 ON (M010.EMPL_NO = P400.EMPL_NO) ) AS INSPECT_BALANCE_TB ON (INSPECT_BALANCE_TB.PROD_REQUEST_NO = P400.PROD_REQUEST_NO)" + condition + " ORDER BY P400.INS_DATE DESC";
+            string strQuery = "SELECT P400.G_CODE, M100.G_NAME, M010.EMPL_NAME, M110.CUST_NAME_KD, P400.PROD_REQUEST_NO, P400.PROD_REQUEST_DATE, P400.PROD_REQUEST_QTY, isnull( INSPECT_BALANCE_TB.LOT_TOTAL_INPUT_QTY_EA, 0 ) AS LOT_TOTAL_INPUT_QTY_EA, isnull( INSPECT_BALANCE_TB.LOT_TOTAL_OUTPUT_QTY_EA, 0 ) AS LOT_TOTAL_OUTPUT_QTY_EA, isnull( INSPECT_BALANCE_TB.INSPECT_BALANCE, 0 ) AS INSPECT_BALANCE, ( CASE WHEN P400.YCSX_PENDING = 1 THEN (isnull(P400.PROD_REQUEST_QTY ,0)- isnull(INSPECT_BALANCE_TB.LOT_TOTAL_INPUT_QTY_EA,0)) WHEN P400.YCSX_PENDING = 0 THEN 0 END ) AS SHORTAGE_YCSX, ( CASE WHEN P400.YCSX_PENDING = 1 THEN 'PENDING' WHEN P400.YCSX_PENDING = 0 THEN 'CLOSED' END ) AS YCSX_PENDING, ( CASE WHEN P400.CODE_55 = '01' THEN 'Thong Thuong' WHEN P400.CODE_55 = '02' THEN 'SDI' WHEN P400.CODE_55 = '03' THEN 'GC' WHEN P400.CODE_55 = '04' THEN 'SAMPLE' END ) AS PHAN_LOAI, P400.REMK AS REMARK, P400.PO_TDYCSX, (P400.TKHO_TDYCSX+ P400.BTP_TDYCSX+ P400.CK_TDYCSX-  P400.BLOCK_TDYCSX) AS TOTAL_TKHO_TDYCSX, P400.TKHO_TDYCSX, P400.BTP_TDYCSX, P400.CK_TDYCSX, P400.BLOCK_TDYCSX, P400.FCST_TDYCSX, P400.W1,P400.W2,P400.W3,P400.W4,P400.W5,P400.W6,P400.W7,P400.W8, P400.PDUYET FROM P400 LEFT JOIN M100 ON (P400.G_CODE = M100.G_CODE) LEFT JOIN M010 ON (M010.EMPL_NO = P400.EMPL_NO) LEFT JOIN M110 ON (P400.CUST_CD = M110.CUST_CD) LEFT JOIN ( SELECT M010.EMPL_NAME, M110.CUST_NAME_KD, M100.G_CODE, M100.G_NAME, P400.PROD_REQUEST_NO, P400.PROD_REQUEST_QTY, INOUT.LOT_TOTAL_INPUT_QTY_EA, INOUT.LOT_TOTAL_OUTPUT_QTY_EA, INOUT.INSPECT_BALANCE FROM ( SELECT P400.PROD_REQUEST_NO, SUM(CC.LOT_TOTAL_INPUT_QTY_EA) AS LOT_TOTAL_INPUT_QTY_EA, SUM(CC.LOT_TOTAL_OUTPUT_QTY_EA) AS LOT_TOTAL_OUTPUT_QTY_EA, SUM(CC.INSPECT_BALANCE) AS INSPECT_BALANCE FROM ( SELECT AA.PROCESS_LOT_NO, AA.LOT_TOTAL_QTY_KG, AA.LOT_TOTAL_INPUT_QTY_EA, isnull(BB.LOT_TOTAL_OUTPUT_QTY_EA, 0) AS LOT_TOTAL_OUTPUT_QTY_EA, ( AA.LOT_TOTAL_INPUT_QTY_EA - isnull(BB.LOT_TOTAL_OUTPUT_QTY_EA, 0) ) AS INSPECT_BALANCE FROM ( SELECT PROCESS_LOT_NO, SUM(INPUT_QTY_EA) As LOT_TOTAL_INPUT_QTY_EA, SUM(INPUT_QTY_KG) AS LOT_TOTAL_QTY_KG FROM ZTBINSPECTINPUTTB GROUP BY PROCESS_LOT_NO ) AS AA LEFT JOIN ( SELECT PROCESS_LOT_NO, SUM(OUTPUT_QTY_EA) As LOT_TOTAL_OUTPUT_QTY_EA FROM ZTBINSPECTOUTPUTTB GROUP BY PROCESS_LOT_NO ) AS BB ON ( AA.PROCESS_LOT_NO = BB.PROCESS_LOT_NO ) ) AS CC LEFT JOIN P501 ON ( CC.PROCESS_LOT_NO = P501.PROCESS_LOT_NO ) LEFT JOIN ( SELECT DISTINCT PROD_REQUEST_NO, PROCESS_IN_DATE, PROCESS_IN_NO FROM P500 ) AS P500_A ON ( P500_A.PROCESS_IN_DATE = P501.PROCESS_IN_DATE AND P500_A.PROCESS_IN_NO = P501.PROCESS_IN_NO ) LEFT JOIN P400 ON ( P500_A.PROD_REQUEST_NO = P400.PROD_REQUEST_NO ) GROUP BY P400.PROD_REQUEST_NO ) AS INOUT LEFT JOIN P400 ON ( INOUT.PROD_REQUEST_NO = P400.PROD_REQUEST_NO ) LEFT JOIN M110 ON (M110.CUST_CD = P400.CUST_CD) LEFT JOIN M100 ON (M100.G_CODE = P400.G_CODE) LEFT JOIN M010 ON (M010.EMPL_NO = P400.EMPL_NO) ) AS INSPECT_BALANCE_TB ON ( INSPECT_BALANCE_TB.PROD_REQUEST_NO = P400.PROD_REQUEST_NO )" + condition + " ORDER BY P400.INS_DATE DESC";
             result = config.GetData(strQuery);
             return result;
 
@@ -7508,6 +9054,26 @@ namespace AutoClick
             return result;
         }
 
+        public DataTable traBOMCAPA(string condition)
+        {
+            DataTable result = new DataTable();
+            DataConfig config = new DataConfig();
+            //string strQuery = "SELECT G_Code,G_Name FROM M100 where G_Code='" + item + "'";
+            string strQuery = $"SELECT G_CODE, G_NAME, G_NAME_KD, PROD_TYPE, PROD_MODEL, PROD_PROJECT, PROD_MAIN_MATERIAL, FACTORY, EQ1, EQ2, Setting1, Setting2, UPH1, UPH2, Step1, Step2, NOTE FROM M100 " + condition;
+            result = config.GetData(strQuery);
+            return result;
+        }
+
+        public DataTable traLICHSUINPUTLIEU(string condition)
+        {
+            DataTable result = new DataTable();
+            DataConfig config = new DataConfig();
+            //string strQuery = "SELECT G_Code,G_Name FROM M100 where G_Code='" + item + "'";
+            string strQuery = $"SELECT P500.PROCESS_IN_DATE, P500.PROCESS_IN_NO, P500.G_CODE, P500.PROD_REQUEST_NO, P500.PROD_REQUEST_DATE, M100.G_NAME, M090.M_NAME, M090.WIDTH_CD, P500.M_LOT_NO, M010.EMPL_NAME, P500.EQUIPMENT_CD, P500.INS_DATE FROM P500 JOIN P400 ON (P500.PROD_REQUEST_NO = P400.PROD_REQUEST_NO AND P500.PROD_REQUEST_DATE = P400.PROD_REQUEST_DATE) JOIN M100 ON (P500.G_CODE = M100.G_CODE) JOIN M090 ON (M090.M_CODE = P500.M_CODE) JOIN M010 ON (M010.EMPL_NO = P500.EMPL_NO) {condition} ORDER BY P500.INS_DATE DESC";
+            result = config.GetData(strQuery);
+            return result;
+        }
+
         public DataTable report_checkBTP(string condition)
         {
             DataTable result = new DataTable();
@@ -7517,15 +9083,99 @@ namespace AutoClick
             result = config.GetData(strQuery);
             return result;
         }
+
+        public DataTable report_checkUP_BTP_today()
+        {
+            DataTable result = new DataTable();
+            DataConfig config = new DataConfig();
+            //string strQuery = "SELECT G_Code,G_Name FROM M100 where G_Code='" + item + "'";
+            string strQuery = "SELECT * FROM ZTB_HALF_GOODS WHERE UPDATE_DATE = CONVERT(date,GETDATE())";
+            result = config.GetData(strQuery);
+            return result;
+        }
+
+        public DataTable report_checkUP_TONKIEM_today()
+        {
+            DataTable result = new DataTable();
+            DataConfig config = new DataConfig();
+            //string strQuery = "SELECT G_Code,G_Name FROM M100 where G_Code='" + item + "'";
+            string strQuery = "SELECT * FROM ZTB_WAIT_INSPECT WHERE UPDATE_DATE = CONVERT(date,GETDATE()) AND CALAMVIEC='DEM'";
+            result = config.GetData(strQuery);
+            return result;
+        }
+
+
         public DataTable report_checkBTP2(string condition)
         {
             DataTable result = new DataTable();
             DataConfig config = new DataConfig();
             //string strQuery = "SELECT G_Code,G_Name FROM M100 where G_Code='" + item + "'";
             string strQuery = "SELECT ZTB_HALF_GOODS.G_CODE, M100.G_NAME, SUM(BTP_QTY_EA) AS BTP_QTY_EA FROM ZTB_HALF_GOODS JOIN M100 ON (M100.G_CODE = ZTB_HALF_GOODS.G_CODE) " + condition + " GROUP BY ZTB_HALF_GOODS.G_CODE, M100.G_NAME";
+            //MessageBox.Show(strQuery);
             result = config.GetData(strQuery);
             return result;
         }
+
+        public DataTable report_TONKHOFULL(string condition)
+        {
+            DataTable result = new DataTable();
+            DataConfig config = new DataConfig();
+            //string strQuery = "SELECT G_Code,G_Name FROM M100 where G_Code='" + item + "'";
+            string strQuery = $"SELECT M100.G_CODE, M100.G_NAME, M100.G_NAME_KD, isnull(TONKIEM.INSPECT_BALANCE_QTY,0) AS CHO_KIEM, isnull(TONKIEM.WAIT_CS_QTY,0) AS CHO_CS_CHECK,isnull(TONKIEM.WAIT_SORTING_RMA,0) CHO_KIEM_RMA, isnull(TONKIEM.TOTAL_WAIT,0) AS TONG_TON_KIEM, isnull(BTP.BTP_QTY_EA,0) AS BTP, isnull(THANHPHAM.TONKHO,0) AS TON_TP, isnull(tbl_Block_table2.Block_Qty,0) AS BLOCK_QTY, (isnull(TONKIEM.TOTAL_WAIT,0) + isnull(BTP.BTP_QTY_EA,0)+ isnull(THANHPHAM.TONKHO,0) - isnull(tbl_Block_table2.Block_Qty,0)) AS GRAND_TOTAL_STOCK FROM M100 LEFT JOIN ( SELECT Product_MaVach, isnull([IN],0) AS NHAPKHO, isnull([OUT],0) AS XUATKHO, (isnull([IN],0)- isnull([OUT],0)) AS TONKHO FROM ( SELECT Product_Mavach, IO_Type, IO_Qty FROM tbl_InputOutput ) AS SourceTable PIVOT ( SUM(IO_Qty) FOR IO_Type IN ([IN], [OUT]) ) AS PivotTable ) AS THANHPHAM ON (THANHPHAM.Product_MaVach = M100.G_CODE) LEFT JOIN ( SELECT ZTB_WAIT_INSPECT.G_CODE, M100.G_NAME, M100.G_NAME_KD, SUM(INSPECT_BALANCE_QTY) AS INSPECT_BALANCE_QTY, SUM(WAIT_CS_QTY) AS WAIT_CS_QTY, SUM(WAIT_SORTING_RMA) AS WAIT_SORTING_RMA, SUM(INSPECT_BALANCE_QTY+ WAIT_CS_QTY+ WAIT_SORTING_RMA) AS TOTAL_WAIT FROM ZTB_WAIT_INSPECT JOIN M100 ON ( M100.G_CODE = ZTB_WAIT_INSPECT.G_CODE) WHERE UPDATE_DATE=CONVERT(date,GETDATE()) AND CALAMVIEC = 'DEM' GROUP BY ZTB_WAIT_INSPECT.G_CODE, M100.G_NAME, M100.G_NAME_KD) AS TONKIEM ON (THANHPHAM.Product_MaVach = TONKIEM.G_CODE) LEFT JOIN ( SELECT Product_MaVach, SUM(Block_Qty) AS Block_Qty from tbl_Block2 GROUP BY Product_MaVach ) AS tbl_Block_table2 ON (tbl_Block_table2.Product_MaVach= M100.G_CODE) LEFT JOIN ( SELECT ZTB_HALF_GOODS.G_CODE, M100.G_NAME, SUM(BTP_QTY_EA) AS BTP_QTY_EA FROM ZTB_HALF_GOODS JOIN M100 ON (M100.G_CODE = ZTB_HALF_GOODS.G_CODE) WHERE UPDATE_DATE = CONVERT(date,GETDATE()) GROUP BY ZTB_HALF_GOODS.G_CODE, M100.G_NAME) AS BTP ON (BTP.G_CODE = THANHPHAM.Product_MaVach) {condition} ";
+            //MessageBox.Show(strQuery);
+            result = config.GetData(strQuery);
+            return result;
+        }
+
+        public DataTable report_TONKHOFULLKD(string condition)
+        {
+            DataTable result = new DataTable();
+            DataConfig config = new DataConfig();
+            //string strQuery = "SELECT G_Code,G_Name FROM M100 where G_Code='" + item + "'";
+            string strQuery = $"SELECT M100.G_NAME_KD, SUM(isnull(TONKIEM.INSPECT_BALANCE_QTY,0)) AS CHO_KIEM, SUM(isnull(TONKIEM.WAIT_CS_QTY,0)) AS CHO_CS_CHECK,SUM(isnull(TONKIEM.WAIT_SORTING_RMA,0)) AS CHO_KIEM_RMA, SUM(isnull(TONKIEM.TOTAL_WAIT,0)) AS TONG_TON_KIEM, SUM(isnull(BTP.BTP_QTY_EA,0)) AS BTP, SUM(isnull(THANHPHAM.TONKHO,0)) AS TON_TP, SUM(isnull(tbl_Block_table2.Block_Qty,0)) AS BLOCK_QTY, SUM((isnull(TONKIEM.TOTAL_WAIT,0)) + isnull(BTP.BTP_QTY_EA,0)+ isnull(THANHPHAM.TONKHO,0) - isnull(tbl_Block_table2.Block_Qty,0)) AS GRAND_TOTAL_STOCK FROM M100 LEFT JOIN ( SELECT Product_MaVach, isnull([IN],0) AS NHAPKHO, isnull([OUT],0) AS XUATKHO, (isnull([IN],0)- isnull([OUT],0)) AS TONKHO FROM ( SELECT Product_Mavach, IO_Type, IO_Qty FROM tbl_InputOutput ) AS SourceTable PIVOT ( SUM(IO_Qty) FOR IO_Type IN ([IN], [OUT]) ) AS PivotTable ) AS THANHPHAM ON (THANHPHAM.Product_MaVach = M100.G_CODE) LEFT JOIN ( SELECT ZTB_WAIT_INSPECT.G_CODE, M100.G_NAME, M100.G_NAME_KD, SUM(INSPECT_BALANCE_QTY) AS INSPECT_BALANCE_QTY, SUM(WAIT_CS_QTY) AS WAIT_CS_QTY, SUM(WAIT_SORTING_RMA) AS WAIT_SORTING_RMA, SUM(INSPECT_BALANCE_QTY+ WAIT_CS_QTY+ WAIT_SORTING_RMA) AS TOTAL_WAIT FROM ZTB_WAIT_INSPECT JOIN M100 ON ( M100.G_CODE = ZTB_WAIT_INSPECT.G_CODE) WHERE UPDATE_DATE=CONVERT(date,GETDATE()) AND CALAMVIEC = 'DEM' GROUP BY ZTB_WAIT_INSPECT.G_CODE, M100.G_NAME, M100.G_NAME_KD) AS TONKIEM ON (THANHPHAM.Product_MaVach = TONKIEM.G_CODE) LEFT JOIN ( SELECT Product_MaVach, SUM(Block_Qty) AS Block_Qty from tbl_Block2 GROUP BY Product_MaVach ) AS tbl_Block_table2 ON (tbl_Block_table2.Product_MaVach= M100.G_CODE) LEFT JOIN ( SELECT ZTB_HALF_GOODS.G_CODE, M100.G_NAME, SUM(BTP_QTY_EA) AS BTP_QTY_EA FROM ZTB_HALF_GOODS JOIN M100 ON (M100.G_CODE = ZTB_HALF_GOODS.G_CODE) WHERE UPDATE_DATE = CONVERT(date,GETDATE()) GROUP BY ZTB_HALF_GOODS.G_CODE, M100.G_NAME) AS BTP ON (BTP.G_CODE = THANHPHAM.Product_MaVach) {condition} GROUP BY M100.G_NAME_KD";
+            //MessageBox.Show(strQuery);
+            result = config.GetData(strQuery);
+            return result;
+        }
+
+
+        public DataTable report_TONKHOTACH(string condition)
+        {
+            DataTable result = new DataTable();
+            DataConfig config = new DataConfig();
+            //string strQuery = "SELECT G_Code,G_Name FROM M100 where G_Code='" + item + "'";
+            string strQuery = $"SELECT isnull(THANHPHAM.WH_Name,'NO_STOCK') AS KHO_NAME, tbl_Location.LC_Name, M100.G_CODE, M100.G_NAME, M100.G_NAME_KD, isnull(THANHPHAM.NHAPKHO,0) AS NHAPKHO, isnull(THANHPHAM.XUATKHO,0) AS XUATKHO, isnull(THANHPHAM.TONKHO,0) AS TONKHO, isnull(tbl_Block_table2.Block_Qty,0) AS BLOCK_QTY, ( isnull(THANHPHAM.TONKHO,0)-isnull(tbl_Block_table2.Block_Qty,0)) AS GRAND_TOTAL_TP FROM M100 LEFT JOIN ( SELECT Product_MaVach, WH_Name, isnull([IN],0) AS NHAPKHO, isnull([OUT],0) AS XUATKHO, (isnull([IN],0)- isnull([OUT],0)) AS TONKHO FROM ( SELECT Product_Mavach, WH_Name, IO_Type, IO_Qty FROM tbl_InputOutput ) AS SourceTable PIVOT ( SUM(IO_Qty) FOR IO_Type IN ([IN], [OUT]) ) AS PivotTable ) AS THANHPHAM ON (THANHPHAM.Product_MaVach = M100.G_CODE) LEFT JOIN ( SELECT Product_MaVach, WH_Name, SUM(Block_Qty) AS Block_Qty from tbl_Block2 GROUP BY Product_MaVach,WH_Name ) AS tbl_Block_table2 ON (tbl_Block_table2.Product_MaVach= THANHPHAM.Product_MaVach AND tbl_Block_table2.WH_Name= THANHPHAM.WH_Name) LEFT JOIN tbl_Location ON (tbl_Location.Product_MaVach = THANHPHAM.Product_MaVach AND tbl_Location.WH_Name = THANHPHAM.WH_Name) {condition} ";
+            //MessageBox.Show(strQuery);
+            result = config.GetData(strQuery);
+            return result;
+        }
+
+
+        public DataTable report_TONKHO_INPUT(string condition)
+        {
+            DataTable result = new DataTable();
+            DataConfig config = new DataConfig();
+            //string strQuery = "SELECT G_Code,G_Name FROM M100 where G_Code='" + item + "'";
+            string strQuery = $"SELECT tbl_InputOutput.Product_MaVach, M100.G_NAME, M100.G_NAME_KD, tbl_InputOutput.Customer_ShortName, tbl_InputOutput.IO_Date, CONVERT(datetime,tbl_InputOutput.IO_Time) AS INPUT_DATETIME, tbl_InputOutput.IO_Shift ,tbl_InputOutput.IO_Type, tbl_InputOutput.IO_Qty FROM tbl_InputOutput LEFT JOIN M100 ON (M100.G_CODE= tbl_InputOutput.Product_MaVach) {condition} ORDER BY tbl_InputOutput.IO_Time DESC ";
+            //MessageBox.Show(strQuery);
+            result = config.GetData(strQuery);
+            return result;
+        }
+
+        public DataTable report_TONKHO_OUTPUT(string condition)
+        {
+            DataTable result = new DataTable();
+            DataConfig config = new DataConfig();
+            //string strQuery = "SELECT G_Code,G_Name FROM M100 where G_Code='" + item + "'";
+            string strQuery = $"SELECT tbl_InputOutput.Product_MaVach, M100.G_NAME, M100.G_NAME_KD, tbl_InputOutput.Customer_ShortName, tbl_InputOutput.IO_Date, CONVERT(datetime,tbl_InputOutput.IO_Time) AS OUTPUT_DATETIME, tbl_InputOutput.IO_Shift ,tbl_InputOutput.IO_Type, tbl_InputOutput.IO_Qty FROM tbl_InputOutput LEFT JOIN M100 ON (M100.G_CODE= tbl_InputOutput.Product_MaVach) {condition} ORDER BY tbl_InputOutput.IO_Time DESC ";
+            //MessageBox.Show(strQuery);
+            result = config.GetData(strQuery);
+            return result;
+        }
+
+
+
+
         public DataTable report_checkCK(string condition)
         {
             DataTable result = new DataTable();
@@ -7766,6 +9416,18 @@ namespace AutoClick
 
         }
 
+        public DataTable updateOnline(string EMPL_NO)
+        {
+            DataTable result = new DataTable();
+            DataConfig config = new DataConfig();
+            //string strQuery = "SELECT G_Code,G_Name FROM M100 where G_Code='" + item + "'";
+            string strQuery = $"UPDATE M010 SET ONLINE_DATETIME=GETDATE() WHERE EMPL_NO='{EMPL_NO}'";
+            result = config.GetData(strQuery);
+            return result;
+
+        }
+
+
         public DataTable updateInfo(string G_CODE, string G_CODE_KD, string PROD_TYPE,string PROD_MODEL, string PROD_PROJECT, string PROD_MAIN_MATERIAL)
         {
             DataTable result = new DataTable();
@@ -7782,6 +9444,7 @@ namespace AutoClick
             DataConfig config = new DataConfig();
             //string strQuery = "SELECT G_Code,G_Name FROM M100 where G_Code='" + item + "'";
             string strQuery = "UPDATE M100 SET FACTORY = '" + FACTORY + "', EQ1 = '" + EQ1 + "', EQ2 = '" + EQ2 + "', SETTING1 = '" + SETTING1 + "', SETTING2 = '" + SETTING2 + "', UPH1 = '" + UPH1 + "', UPH2 = '" + UPH2 + "', STEP1 = '" + STEP1 + "',STEP2 = '" + STEP2 + "', NOTE = '" + NOTE + "' WHERE G_CODE = '" + G_CODE + "'";
+            //MessageBox.Show(strQuery);
             result = config.GetData(strQuery);
             return result;
 
@@ -7888,11 +9551,40 @@ namespace AutoClick
         {
             DataTable result = new DataTable();
             DataConfig config = new DataConfig();
-            // string strQuery = "SELECT AA.PO_NO,  M100.PROD_TYPE, M100.PROD_MAIN_MATERIAL, ZTBPOTable.PO_DATE,ZTBPOTable.RD_DATE, M110.CUST_CD, M110.CUST_NAME_KD, M100.G_NAME, M010.EMPL_NO, M010.EMPL_NAME, AA.G_CODE, ZTBPOTable.PO_QTY, ZTBPOTable.PROD_PRICE, AA.TotalDelivered as TOTAL_DELIVERED, (ZTBPOTable.PO_QTY-AA.TotalDelivered) As PO_BALANCE,(ZTBPOTable.PO_QTY*ZTBPOTable.PROD_PRICE) As PO_AMOUNT , (AA.TotalDelivered*ZTBPOTable.PROD_PRICE) As DELIVERED_AMOUNT, ((ZTBPOTable.PO_QTY-AA.TotalDelivered)*ZTBPOTable.PROD_PRICE) As BALANCE_AMOUNT,DATEPART( MONTH, PO_DATE) AS POMONTH, DATEPART( ISOWK, PO_DATE) AS POWEEKNUM, CASE WHEN (ZTBPOTable.RD_DATE < GETDATE()-1) AND ((ZTBPOTable.PO_QTY-AA.TotalDelivered) <>0) THEN 'OVER'  ELSE 'OK' END AS OVERDUE, ZTBPOTable.REMARK, ZTBPOTable.PO_ID FROM (SELECT ZTBPOTable.EMPL_NO, ZTBPOTable.CUST_CD, ZTBPOTable.G_CODE, ZTBPOTable.PO_NO, isnull(SUM(ZTBDelivery.DELIVERY_QTY),0) AS TotalDelivered FROM ZTBPOTable  LEFT JOIN ZTBDelivery ON (ZTBDelivery.CTR_CD = ZTBPOTable.CTR_CD AND ZTBDelivery.CUST_CD = ZTBPOTable.CUST_CD AND ZTBDelivery.G_CODE = ZTBPOTable.G_CODE AND ZTBDelivery.PO_NO = ZTBPOTable.PO_NO) GROUP BY ZTBPOTable.CTR_CD,ZTBPOTable.EMPL_NO,ZTBPOTable.G_CODE,ZTBPOTable.CUST_CD,ZTBPOTable.PO_NO) AS AA LEFT JOIN M010 ON (M010.EMPL_NO = AA.EMPL_NO) LEFT JOIN M100 ON (M100.G_CODE = AA.G_CODE) LEFT JOIN ZTBPOTable ON (AA.CUST_CD = ZTBPOTable.CUST_CD AND AA.G_CODE = ZTBPOTable.G_CODE AND AA.PO_NO = ZTBPOTable.PO_NO) JOIN M110 ON (M110.CUST_CD = AA.CUST_CD) " + condition;
-            string strQuery = "SELECT AA.PO_NO,  M100.PROD_TYPE, M100.PROD_MAIN_MATERIAL, ZTBPOTable.PO_DATE,ZTBPOTable.RD_DATE, M110.CUST_CD, M110.CUST_NAME_KD, M100.G_NAME, M010.EMPL_NO, M010.EMPL_NAME, AA.G_CODE, ZTBPOTable.PO_QTY, ZTBPOTable.PROD_PRICE, AA.TotalDelivered as TOTAL_DELIVERED, (ZTBPOTable.PO_QTY-AA.TotalDelivered) As PO_BALANCE,(ZTBPOTable.PO_QTY*ZTBPOTable.PROD_PRICE) As PO_AMOUNT , (AA.TotalDelivered*ZTBPOTable.PROD_PRICE) As DELIVERED_AMOUNT, ((ZTBPOTable.PO_QTY-AA.TotalDelivered)*ZTBPOTable.PROD_PRICE) As BALANCE_AMOUNT,DATEPART( MONTH, PO_DATE) AS POMONTH, DATEPART( ISOWK, PO_DATE) AS POWEEKNUM, CASE WHEN (ZTBPOTable.RD_DATE < GETDATE()-1) AND ((ZTBPOTable.PO_QTY-AA.TotalDelivered) <>0) THEN 'OVER'  ELSE 'OK' END AS OVERDUE, ZTBPOTable.REMARK, ZTBPOTable.PO_ID, M100.G_NAME_KD FROM (SELECT ZTBPOTable.EMPL_NO, ZTBPOTable.CUST_CD, ZTBPOTable.G_CODE, ZTBPOTable.PO_NO, isnull(SUM(ZTBDelivery.DELIVERY_QTY),0) AS TotalDelivered FROM ZTBPOTable  LEFT JOIN ZTBDelivery ON (ZTBDelivery.CTR_CD = ZTBPOTable.CTR_CD AND ZTBDelivery.CUST_CD = ZTBPOTable.CUST_CD AND ZTBDelivery.G_CODE = ZTBPOTable.G_CODE AND ZTBDelivery.PO_NO = ZTBPOTable.PO_NO) GROUP BY ZTBPOTable.CTR_CD,ZTBPOTable.EMPL_NO,ZTBPOTable.G_CODE,ZTBPOTable.CUST_CD,ZTBPOTable.PO_NO) AS AA LEFT JOIN M010 ON (M010.EMPL_NO = AA.EMPL_NO) LEFT JOIN M100 ON (M100.G_CODE = AA.G_CODE) LEFT JOIN ZTBPOTable ON (AA.CUST_CD = ZTBPOTable.CUST_CD AND AA.G_CODE = ZTBPOTable.G_CODE AND AA.PO_NO = ZTBPOTable.PO_NO) JOIN M110 ON (M110.CUST_CD = AA.CUST_CD)" + condition;
+
+            //string strQuery = $"SELECT  ZTBPOTable.PO_ID, M110.CUST_NAME_KD,AA.PO_NO,   M100.G_NAME,M100.G_NAME_KD, AA.G_CODE, ZTBPOTable.PO_DATE, ZTBPOTable.RD_DATE, ZTBPOTable.PROD_PRICE, ZTBPOTable.PO_QTY, AA.TotalDelivered as TOTAL_DELIVERED, (ZTBPOTable.PO_QTY-AA.TotalDelivered) As PO_BALANCE,(ZTBPOTable.PO_QTY*ZTBPOTable.PROD_PRICE) As PO_AMOUNT , (AA.TotalDelivered*ZTBPOTable.PROD_PRICE) As DELIVERED_AMOUNT, ((ZTBPOTable.PO_QTY-AA.TotalDelivered)*ZTBPOTable.PROD_PRICE) As BALANCE_AMOUNT, M010.EMPL_NAME, M100.PROD_TYPE, KKK.M_NAME_FULLBOM,M100.PROD_MAIN_MATERIAL, M110.CUST_CD,  M010.EMPL_NO,    DATEPART( MONTH, PO_DATE) AS POMONTH, DATEPART( ISOWK, PO_DATE) AS POWEEKNUM, CASE WHEN (ZTBPOTable.RD_DATE < GETDATE()-1) AND ((ZTBPOTable.PO_QTY-AA.TotalDelivered) <>0) THEN 'OVER'  ELSE 'OK' END AS OVERDUE, ZTBPOTable.REMARK FROM (SELECT ZTBPOTable.EMPL_NO, ZTBPOTable.CUST_CD, ZTBPOTable.G_CODE, ZTBPOTable.PO_NO, isnull(SUM(ZTBDelivery.DELIVERY_QTY),0) AS TotalDelivered FROM ZTBPOTable LEFT JOIN ZTBDelivery ON (ZTBDelivery.CTR_CD = ZTBPOTable.CTR_CD AND ZTBDelivery.CUST_CD = ZTBPOTable.CUST_CD AND ZTBDelivery.G_CODE = ZTBPOTable.G_CODE AND ZTBDelivery.PO_NO = ZTBPOTable.PO_NO) GROUP BY ZTBPOTable.CTR_CD,ZTBPOTable.EMPL_NO,ZTBPOTable.G_CODE,ZTBPOTable.CUST_CD,ZTBPOTable.PO_NO) AS AA LEFT JOIN M010 ON (M010.EMPL_NO = AA.EMPL_NO) LEFT JOIN M100 ON (M100.G_CODE = AA.G_CODE) LEFT JOIN ZTBPOTable ON (AA.CUST_CD = ZTBPOTable.CUST_CD AND AA.G_CODE = ZTBPOTable.G_CODE AND AA.PO_NO = ZTBPOTable.PO_NO) LEFT JOIN M110 ON (M110.CUST_CD = AA.CUST_CD) LEFT JOIN (SELECT BBB.G_CODE, string_agg(BBB.M_NAME, ', ') AS M_NAME_FULLBOM FROM  (SELECT DISTINCT AAA.G_CODE, M090.M_NAME FROM 	( 		(SELECT DISTINCT G_CODE, M_CODE FROM M140) AS AAA LEFT JOIN M090 ON (AAA.M_CODE = M090.M_CODE) 	) ) AS BBB GROUP BY BBB.G_CODE ) AS KKK ON (KKK.G_CODE = ZTBPOTable.G_CODE) {condition} ";
+            string strQuery = $"SELECT ZTBPOTable.PO_ID, M110.CUST_NAME_KD,AA.PO_NO, M100.G_NAME,M100.G_NAME_KD, AA.G_CODE, ZTBPOTable.PO_DATE, ZTBPOTable.RD_DATE, ZTBPOTable.PROD_PRICE, ZTBPOTable.PO_QTY, AA.TotalDelivered as TOTAL_DELIVERED, (ZTBPOTable.PO_QTY-AA.TotalDelivered) As PO_BALANCE,(ZTBPOTable.PO_QTY*ZTBPOTable.PROD_PRICE) As PO_AMOUNT , (AA.TotalDelivered*ZTBPOTable.PROD_PRICE) As DELIVERED_AMOUNT, ((ZTBPOTable.PO_QTY-AA.TotalDelivered)*ZTBPOTable.PROD_PRICE) As BALANCE_AMOUNT, isnull(TONKHOFULL.TONG_TON_KIEM,0) AS TON_KIEM , isnull(TONKHOFULL.BTP,0) AS BTP ,isnull(TONKHOFULL.TON_TP,0) AS TP , isnull(TONKHOFULL.BLOCK_QTY,0) AS BLOCK_QTY , isnull(TONKHOFULL.GRAND_TOTAL_STOCK,0) AS GRAND_TOTAL_STOCK , M010.EMPL_NAME, M100.PROD_TYPE, KKK.M_NAME_FULLBOM,M100.PROD_MAIN_MATERIAL, M110.CUST_CD, M010.EMPL_NO, DATEPART( MONTH, PO_DATE) AS POMONTH, DATEPART( ISOWK, PO_DATE) AS POWEEKNUM, CASE WHEN (ZTBPOTable.RD_DATE < GETDATE()-1) AND ((ZTBPOTable.PO_QTY-AA.TotalDelivered) <>0) THEN 'OVER' ELSE 'OK' END AS OVERDUE, ZTBPOTable.REMARK FROM (SELECT ZTBPOTable.EMPL_NO, ZTBPOTable.CUST_CD, ZTBPOTable.G_CODE, ZTBPOTable.PO_NO, isnull(SUM(ZTBDelivery.DELIVERY_QTY),0) AS TotalDelivered FROM ZTBPOTable LEFT JOIN ZTBDelivery ON (ZTBDelivery.CTR_CD = ZTBPOTable.CTR_CD AND ZTBDelivery.CUST_CD = ZTBPOTable.CUST_CD AND ZTBDelivery.G_CODE = ZTBPOTable.G_CODE AND ZTBDelivery.PO_NO = ZTBPOTable.PO_NO) GROUP BY ZTBPOTable.CTR_CD,ZTBPOTable.EMPL_NO,ZTBPOTable.G_CODE,ZTBPOTable.CUST_CD,ZTBPOTable.PO_NO) AS AA LEFT JOIN M010 ON (M010.EMPL_NO = AA.EMPL_NO) LEFT JOIN M100 ON (M100.G_CODE = AA.G_CODE) LEFT JOIN ZTBPOTable ON (AA.CUST_CD = ZTBPOTable.CUST_CD AND AA.G_CODE = ZTBPOTable.G_CODE AND AA.PO_NO = ZTBPOTable.PO_NO) LEFT JOIN M110 ON (M110.CUST_CD = AA.CUST_CD) LEFT JOIN (SELECT BBB.G_CODE, string_agg(BBB.M_NAME, ', ') AS M_NAME_FULLBOM FROM (SELECT DISTINCT AAA.G_CODE, M090.M_NAME FROM ( (SELECT DISTINCT G_CODE, M_CODE FROM M140) AS AAA LEFT JOIN M090 ON (AAA.M_CODE = M090.M_CODE) ) ) AS BBB GROUP BY BBB.G_CODE ) AS KKK ON (KKK.G_CODE = ZTBPOTable.G_CODE) LEFT JOIN ( SELECT M100.G_CODE, M100.G_NAME, M100.G_NAME_KD, isnull(TONKIEM.INSPECT_BALANCE_QTY,0) AS CHO_KIEM, isnull(TONKIEM.WAIT_CS_QTY,0) AS CHO_CS_CHECK,isnull(TONKIEM.WAIT_SORTING_RMA,0) CHO_KIEM_RMA, isnull(TONKIEM.TOTAL_WAIT,0) AS TONG_TON_KIEM, isnull(BTP.BTP_QTY_EA,0) AS BTP, isnull(THANHPHAM.TONKHO,0) AS TON_TP, isnull(tbl_Block_table2.Block_Qty,0) AS BLOCK_QTY, (isnull(TONKIEM.TOTAL_WAIT,0) + isnull(BTP.BTP_QTY_EA,0)+ isnull(THANHPHAM.TONKHO,0) - isnull(tbl_Block_table2.Block_Qty,0)) AS GRAND_TOTAL_STOCK FROM M100 LEFT JOIN ( SELECT Product_MaVach, isnull([IN],0) AS NHAPKHO, isnull([OUT],0) AS XUATKHO, (isnull([IN],0)- isnull([OUT],0)) AS TONKHO FROM ( SELECT Product_Mavach, IO_Type, IO_Qty FROM tbl_InputOutput ) AS SourceTable PIVOT ( SUM(IO_Qty) FOR IO_Type IN ([IN], [OUT]) ) AS PivotTable ) AS THANHPHAM ON (THANHPHAM.Product_MaVach = M100.G_CODE) LEFT JOIN ( SELECT ZTB_WAIT_INSPECT.G_CODE, M100.G_NAME, M100.G_NAME_KD, SUM(INSPECT_BALANCE_QTY) AS INSPECT_BALANCE_QTY, SUM(WAIT_CS_QTY) AS WAIT_CS_QTY, SUM(WAIT_SORTING_RMA) AS WAIT_SORTING_RMA, SUM(INSPECT_BALANCE_QTY+ WAIT_CS_QTY+ WAIT_SORTING_RMA) AS TOTAL_WAIT FROM ZTB_WAIT_INSPECT JOIN M100 ON ( M100.G_CODE = ZTB_WAIT_INSPECT.G_CODE) WHERE UPDATE_DATE=CONVERT(date,GETDATE()) AND CALAMVIEC = 'DEM' GROUP BY ZTB_WAIT_INSPECT.G_CODE, M100.G_NAME, M100.G_NAME_KD) AS TONKIEM ON (THANHPHAM.Product_MaVach = TONKIEM.G_CODE) LEFT JOIN ( SELECT Product_MaVach, SUM(Block_Qty) AS Block_Qty from tbl_Block2 GROUP BY Product_MaVach ) AS tbl_Block_table2 ON (tbl_Block_table2.Product_MaVach= M100.G_CODE) LEFT JOIN ( SELECT ZTB_HALF_GOODS.G_CODE, M100.G_NAME, SUM(BTP_QTY_EA) AS BTP_QTY_EA FROM ZTB_HALF_GOODS JOIN M100 ON (M100.G_CODE = ZTB_HALF_GOODS.G_CODE) WHERE UPDATE_DATE = CONVERT(date,GETDATE()) GROUP BY ZTB_HALF_GOODS.G_CODE, M100.G_NAME) AS BTP ON (BTP.G_CODE = THANHPHAM.Product_MaVach) ) AS TONKHOFULL ON (TONKHOFULL.G_CODE = ZTBPOTable.G_CODE) {condition}";
+
+            //MessageBox.Show(strQuery);
             result = config.GetData(strQuery);
             return result;
         }
+
+        public DataTable traPO_TONKHO(string condition)
+        {
+            DataTable result = new DataTable();
+            DataConfig config = new DataConfig();
+
+            string strQuery = $" SELECT PO_TABLE_1.G_CODE,TONKHOFULL.G_NAME,TONKHOFULL.G_NAME_KD, PO_TABLE_1.PO_QTY, TOTAL_DELIVERED, PO_TABLE_1.PO_BALANCE, TONKHOFULL.CHO_KIEM, TONKHOFULL.CHO_CS_CHECK, TONKHOFULL.CHO_KIEM_RMA, TONKHOFULL.TONG_TON_KIEM, TONKHOFULL.BTP, TONKHOFULL.TON_TP, TONKHOFULL.BLOCK_QTY, TONKHOFULL.GRAND_TOTAL_STOCK, (TONKHOFULL.GRAND_TOTAL_STOCK-PO_TABLE_1.PO_BALANCE) AS THUA_THIEU FROM ( SELECT G_CODE, SUM(PO_QTY) AS PO_QTY, SUM(TOTAL_DELIVERED) AS TOTAL_DELIVERED, SUM(PO_BALANCE) AS PO_BALANCE FROM ( SELECT AA.G_CODE, ZTBPOTable.PO_QTY, AA.TotalDelivered as TOTAL_DELIVERED, (ZTBPOTable.PO_QTY-AA.TotalDelivered) As PO_BALANCE FROM (SELECT ZTBPOTable.EMPL_NO, ZTBPOTable.CUST_CD, ZTBPOTable.G_CODE, ZTBPOTable.PO_NO, isnull(SUM(ZTBDelivery.DELIVERY_QTY),0) AS TotalDelivered FROM ZTBPOTable LEFT JOIN ZTBDelivery ON (ZTBDelivery.CTR_CD = ZTBPOTable.CTR_CD AND ZTBDelivery.CUST_CD = ZTBPOTable.CUST_CD AND ZTBDelivery.G_CODE = ZTBPOTable.G_CODE AND ZTBDelivery.PO_NO = ZTBPOTable.PO_NO) GROUP BY ZTBPOTable.CTR_CD,ZTBPOTable.EMPL_NO,ZTBPOTable.G_CODE,ZTBPOTable.CUST_CD,ZTBPOTable.PO_NO) AS AA LEFT JOIN ZTBPOTable ON (AA.CUST_CD = ZTBPOTable.CUST_CD AND AA.G_CODE = ZTBPOTable.G_CODE AND AA.PO_NO = ZTBPOTable.PO_NO) ) AS PO_BALANCE_TABLE GROUP BY G_CODE ) AS PO_TABLE_1 LEFT JOIN ( SELECT M100.G_CODE, M100.G_NAME, M100.G_NAME_KD, isnull(TONKIEM.INSPECT_BALANCE_QTY,0) AS CHO_KIEM, isnull(TONKIEM.WAIT_CS_QTY,0) AS CHO_CS_CHECK,isnull(TONKIEM.WAIT_SORTING_RMA,0) CHO_KIEM_RMA, isnull(TONKIEM.TOTAL_WAIT,0) AS TONG_TON_KIEM, isnull(BTP.BTP_QTY_EA,0) AS BTP, isnull(THANHPHAM.TONKHO,0) AS TON_TP, isnull(tbl_Block_table2.Block_Qty,0) AS BLOCK_QTY, (isnull(TONKIEM.TOTAL_WAIT,0) + isnull(BTP.BTP_QTY_EA,0)+ isnull(THANHPHAM.TONKHO,0) - isnull(tbl_Block_table2.Block_Qty,0)) AS GRAND_TOTAL_STOCK FROM M100 LEFT JOIN ( SELECT Product_MaVach, isnull([IN],0) AS NHAPKHO, isnull([OUT],0) AS XUATKHO, (isnull([IN],0)- isnull([OUT],0)) AS TONKHO FROM ( SELECT Product_Mavach, IO_Type, IO_Qty FROM tbl_InputOutput ) AS SourceTable PIVOT ( SUM(IO_Qty) FOR IO_Type IN ([IN], [OUT]) ) AS PivotTable ) AS THANHPHAM ON (THANHPHAM.Product_MaVach = M100.G_CODE) LEFT JOIN ( SELECT ZTB_WAIT_INSPECT.G_CODE, M100.G_NAME, M100.G_NAME_KD, SUM(INSPECT_BALANCE_QTY) AS INSPECT_BALANCE_QTY, SUM(WAIT_CS_QTY) AS WAIT_CS_QTY, SUM(WAIT_SORTING_RMA) AS WAIT_SORTING_RMA, SUM(INSPECT_BALANCE_QTY+ WAIT_CS_QTY+ WAIT_SORTING_RMA) AS TOTAL_WAIT FROM ZTB_WAIT_INSPECT JOIN M100 ON ( M100.G_CODE = ZTB_WAIT_INSPECT.G_CODE) WHERE UPDATE_DATE=CONVERT(date,GETDATE()) AND CALAMVIEC = 'DEM' GROUP BY ZTB_WAIT_INSPECT.G_CODE, M100.G_NAME, M100.G_NAME_KD) AS TONKIEM ON (THANHPHAM.Product_MaVach = TONKIEM.G_CODE) LEFT JOIN ( SELECT Product_MaVach, SUM(Block_Qty) AS Block_Qty from tbl_Block2 GROUP BY Product_MaVach ) AS tbl_Block_table2 ON (tbl_Block_table2.Product_MaVach= M100.G_CODE) LEFT JOIN ( SELECT ZTB_HALF_GOODS.G_CODE, M100.G_NAME, SUM(BTP_QTY_EA) AS BTP_QTY_EA FROM ZTB_HALF_GOODS JOIN M100 ON (M100.G_CODE = ZTB_HALF_GOODS.G_CODE) WHERE UPDATE_DATE = CONVERT(date,GETDATE()) GROUP BY ZTB_HALF_GOODS.G_CODE, M100.G_NAME) AS BTP ON (BTP.G_CODE = THANHPHAM.Product_MaVach) ) AS TONKHOFULL ON (TONKHOFULL.G_CODE = PO_TABLE_1.G_CODE) {condition}";
+
+
+            //MessageBox.Show(strQuery);
+            result = config.GetData(strQuery);
+            return result;
+        }
+
+        public DataTable traPO_TONKHOKD(string condition)
+        {
+            DataTable result = new DataTable();
+            DataConfig config = new DataConfig();
+
+            string strQuery = $"SELECT TONKHOFULL.G_NAME_KD, SUM(PO_TABLE_1.PO_QTY) AS PO_QTY , SUM(TOTAL_DELIVERED) AS TOTAL_DELIVERED, SUM(PO_TABLE_1.PO_BALANCE) AS PO_BALANCE, SUM(TONKHOFULL.CHO_KIEM) AS CHO_KIEM, SUM(TONKHOFULL.CHO_CS_CHECK) AS CHO_CS_CHECK, SUM(TONKHOFULL.CHO_KIEM_RMA) AS CHO_KIEM_RMA, SUM(TONKHOFULL.TONG_TON_KIEM) AS TONG_TON_KIEM, SUM(TONKHOFULL.BTP) AS BTP, SUM(TONKHOFULL.TON_TP) AS TON_TP, SUM(TONKHOFULL.BLOCK_QTY) AS BLOCK_QTY, SUM(TONKHOFULL.GRAND_TOTAL_STOCK) AS GRAND_TOTAL_STOCK, SUM((TONKHOFULL.GRAND_TOTAL_STOCK-PO_TABLE_1.PO_BALANCE)) AS THUA_THIEU FROM ( SELECT G_CODE, SUM(PO_QTY) AS PO_QTY, SUM(TOTAL_DELIVERED) AS TOTAL_DELIVERED, SUM(PO_BALANCE) AS PO_BALANCE FROM ( SELECT AA.G_CODE, ZTBPOTable.PO_QTY, AA.TotalDelivered as TOTAL_DELIVERED, (ZTBPOTable.PO_QTY-AA.TotalDelivered) As PO_BALANCE FROM (SELECT ZTBPOTable.EMPL_NO, ZTBPOTable.CUST_CD, ZTBPOTable.G_CODE, ZTBPOTable.PO_NO, isnull(SUM(ZTBDelivery.DELIVERY_QTY),0) AS TotalDelivered FROM ZTBPOTable LEFT JOIN ZTBDelivery ON (ZTBDelivery.CTR_CD = ZTBPOTable.CTR_CD AND ZTBDelivery.CUST_CD = ZTBPOTable.CUST_CD AND ZTBDelivery.G_CODE = ZTBPOTable.G_CODE AND ZTBDelivery.PO_NO = ZTBPOTable.PO_NO) GROUP BY ZTBPOTable.CTR_CD,ZTBPOTable.EMPL_NO,ZTBPOTable.G_CODE,ZTBPOTable.CUST_CD,ZTBPOTable.PO_NO) AS AA LEFT JOIN ZTBPOTable ON (AA.CUST_CD = ZTBPOTable.CUST_CD AND AA.G_CODE = ZTBPOTable.G_CODE AND AA.PO_NO = ZTBPOTable.PO_NO) ) AS PO_BALANCE_TABLE GROUP BY G_CODE ) AS PO_TABLE_1 LEFT JOIN ( SELECT M100.G_CODE, M100.G_NAME, M100.G_NAME_KD, isnull(TONKIEM.INSPECT_BALANCE_QTY,0) AS CHO_KIEM, isnull(TONKIEM.WAIT_CS_QTY,0) AS CHO_CS_CHECK,isnull(TONKIEM.WAIT_SORTING_RMA,0) CHO_KIEM_RMA, isnull(TONKIEM.TOTAL_WAIT,0) AS TONG_TON_KIEM, isnull(BTP.BTP_QTY_EA,0) AS BTP, isnull(THANHPHAM.TONKHO,0) AS TON_TP, isnull(tbl_Block_table2.Block_Qty,0) AS BLOCK_QTY, (isnull(TONKIEM.TOTAL_WAIT,0) + isnull(BTP.BTP_QTY_EA,0)+ isnull(THANHPHAM.TONKHO,0) - isnull(tbl_Block_table2.Block_Qty,0)) AS GRAND_TOTAL_STOCK FROM M100 LEFT JOIN ( SELECT Product_MaVach, isnull([IN],0) AS NHAPKHO, isnull([OUT],0) AS XUATKHO, (isnull([IN],0)- isnull([OUT],0)) AS TONKHO FROM ( SELECT Product_Mavach, IO_Type, IO_Qty FROM tbl_InputOutput ) AS SourceTable PIVOT ( SUM(IO_Qty) FOR IO_Type IN ([IN], [OUT]) ) AS PivotTable ) AS THANHPHAM ON (THANHPHAM.Product_MaVach = M100.G_CODE) LEFT JOIN ( SELECT ZTB_WAIT_INSPECT.G_CODE, M100.G_NAME, M100.G_NAME_KD, SUM(INSPECT_BALANCE_QTY) AS INSPECT_BALANCE_QTY, SUM(WAIT_CS_QTY) AS WAIT_CS_QTY, SUM(WAIT_SORTING_RMA) AS WAIT_SORTING_RMA, SUM(INSPECT_BALANCE_QTY+ WAIT_CS_QTY+ WAIT_SORTING_RMA) AS TOTAL_WAIT FROM ZTB_WAIT_INSPECT JOIN M100 ON ( M100.G_CODE = ZTB_WAIT_INSPECT.G_CODE) WHERE UPDATE_DATE=CONVERT(date,GETDATE()) AND CALAMVIEC = 'DEM' GROUP BY ZTB_WAIT_INSPECT.G_CODE, M100.G_NAME, M100.G_NAME_KD) AS TONKIEM ON (THANHPHAM.Product_MaVach = TONKIEM.G_CODE) LEFT JOIN ( SELECT Product_MaVach, SUM(Block_Qty) AS Block_Qty from tbl_Block2 GROUP BY Product_MaVach ) AS tbl_Block_table2 ON (tbl_Block_table2.Product_MaVach= M100.G_CODE) LEFT JOIN ( SELECT ZTB_HALF_GOODS.G_CODE, M100.G_NAME, SUM(BTP_QTY_EA) AS BTP_QTY_EA FROM ZTB_HALF_GOODS JOIN M100 ON (M100.G_CODE = ZTB_HALF_GOODS.G_CODE) WHERE UPDATE_DATE = CONVERT(date,GETDATE()) GROUP BY ZTB_HALF_GOODS.G_CODE, M100.G_NAME) AS BTP ON (BTP.G_CODE = THANHPHAM.Product_MaVach) ) AS TONKHOFULL ON (TONKHOFULL.G_CODE = PO_TABLE_1.G_CODE)   {condition} GROUP BY TONKHOFULL.G_NAME_KD";
+
+            //MessageBox.Show(strQuery);
+            result = config.GetData(strQuery);
+            return result;
+        }
+
         public DataTable traFCST(string condition)
         {
             DataTable result = new DataTable();
@@ -7962,7 +9654,7 @@ namespace AutoClick
             DataTable result = new DataTable();
             DataConfig config = new DataConfig();
             //string strQuery = "SELECT G_Code,G_Name FROM M100 where G_Code='" + item + "'";
-            string strQuery = "SELECT ZTBDelivery.G_CODE, M010.EMPL_NAME, M110.CUST_NAME_KD, ZTBDelivery.DELIVERY_DATE, M100.G_NAME, M100.PROD_MAIN_MATERIAL, ZTBDelivery.DELIVERY_QTY, ZTBPOTable.PROD_PRICE, ZTBDelivery.PO_NO, (ZTBPOTable.PROD_PRICE * ZTBDelivery.DELIVERY_QTY) As DELIVERED_AMOUNT, M100.PROD_TYPE, DATEPART( MONTH, ZTBDelivery.DELIVERY_DATE) AS DELMONTH, DATEPART( ISOWK,  ZTBDelivery.DELIVERY_DATE) AS DELWEEKNUM ,ZTBDelivery.NOCANCEL ,ZTBDelivery.REMARK, ZTBDelivery.DELIVERY_ID, ZTBDelivery.INVOICE_NO, ZTBDelivery.CUST_CD, ZTBDelivery.EMPL_NO, M100.G_NAME_KD  FROM ZTBDelivery JOIN ZTBPOTable ON (ZTBDelivery.G_CODE = ZTBPOTable.G_CODE AND ZTBDelivery.CUST_CD = ZTBPOTable.CUST_CD AND ZTBDelivery.PO_NO = ZTBPOTable.PO_NO) JOIN M010 ON ZTBDelivery.EMPL_NO = M010.EMPL_NO JOIN M100 ON ZTBDelivery.G_CODE = M100.G_CODE JOIN M110 ON M110.CUST_CD = ZTBDelivery.CUST_CD " + condition;
+            string strQuery = "SELECT ZTBDelivery.DELIVERY_ID,M110.CUST_NAME_KD, ZTBDelivery.PO_NO, ZTBDelivery.G_CODE,  M100.G_NAME, M100.G_NAME_KD,ZTBDelivery.DELIVERY_DATE, ZTBPOTable.PROD_PRICE,  ZTBDelivery.DELIVERY_QTY,  (ZTBPOTable.PROD_PRICE * ZTBDelivery.DELIVERY_QTY) As DELIVERED_AMOUNT, M010.EMPL_NAME,   M100.PROD_MAIN_MATERIAL,  M100.PROD_TYPE, DATEPART( MONTH, ZTBDelivery.DELIVERY_DATE) AS DELMONTH, DATEPART( ISOWK,  ZTBDelivery.DELIVERY_DATE) AS DELWEEKNUM ,ZTBDelivery.NOCANCEL ,ZTBDelivery.REMARK,  ZTBDelivery.INVOICE_NO, ZTBDelivery.CUST_CD, ZTBDelivery.EMPL_NO  FROM ZTBDelivery JOIN ZTBPOTable ON (ZTBDelivery.G_CODE = ZTBPOTable.G_CODE AND ZTBDelivery.CUST_CD = ZTBPOTable.CUST_CD AND ZTBDelivery.PO_NO = ZTBPOTable.PO_NO) JOIN M010 ON ZTBDelivery.EMPL_NO = M010.EMPL_NO JOIN M100 ON ZTBDelivery.G_CODE = M100.G_CODE JOIN M110 ON M110.CUST_CD = ZTBDelivery.CUST_CD  " + condition;
             result = config.GetData(strQuery);
             return result;
 
@@ -8014,6 +9706,36 @@ namespace AutoClick
 
         }
 
+        public DataTable traDelivery(string fromdate, string todate)
+        {
+            DataTable result = new DataTable();
+            DataConfig config = new DataConfig();
+            //string strQuery = "SELECT G_Code,G_Name FROM M100 where G_Code='" + item + "'";
+            string strQuery = $"SELECT AA.DELIVERY_DATE AS DELIVERY_DATE, AA.DELIVERY_QTY, BB.DELIVERY_AMOUNT FROM (SELECT DISTINCT DELIVERY_DATE, SUM(DELIVERY_QTY) AS DELIVERY_QTY FROM ZTBDelivery WHERE DELIVERY_DATE >= '{fromdate}' AND DELIVERY_DATE <= '{todate}' GROUP BY DELIVERY_DATE) AS AA JOIN (SELECT DISTINCT ZTBDelivery.DELIVERY_DATE, SUM(ZTBDelivery.DELIVERY_QTY * ZTBPOTable.PROD_PRICE) AS DELIVERY_AMOUNT FROM ZTBDelivery JOIN ZTBPOTable ON (ZTBDelivery.PO_NO = ZTBPOTable.PO_NO AND ZTBDelivery.CUST_CD = ZTBPOTable.CUST_CD AND ZTBDelivery.G_CODE = ZTBPOTable.G_CODE)  WHERE ZTBDelivery.DELIVERY_DATE >= '{fromdate}' AND DELIVERY_DATE <= '{todate}' GROUP BY ZTBDelivery.DELIVERY_DATE) AS BB ON (AA.DELIVERY_DATE = BB.DELIVERY_DATE) ORDER BY AA.DELIVERY_DATE ASC";
+            result = config.GetData(strQuery);
+            return result;
+
+        }
+        public DataTable traDelivery_customer(string fromdate, string todate)
+        {
+            DataTable result = new DataTable();
+            DataConfig config = new DataConfig();
+            //string strQuery = "SELECT G_Code,G_Name FROM M100 where G_Code='" + item + "'";
+            string strQuery = $"SELECT TOP 5 * FROM (SELECT  DISTINCT M110.CUST_NAME_KD, SUM(ZTBDelivery.DELIVERY_QTY * ZTBPOTable.PROD_PRICE) AS DELIVERY_AMOUNT FROM ZTBDelivery JOIN ZTBPOTable ON (ZTBDelivery.PO_NO = ZTBPOTable.PO_NO AND ZTBDelivery.CUST_CD = ZTBPOTable.CUST_CD AND ZTBDelivery.G_CODE = ZTBPOTable.G_CODE) LEFT JOIN M110 ON (M110.CUST_CD = ZTBDelivery.CUST_CD) WHERE ZTBDelivery.DELIVERY_DATE >= '{fromdate}' AND ZTBDelivery.DELIVERY_DATE <= '{todate}'GROUP BY M110.CUST_NAME_KD ) AS AA ORDER BY AA.DELIVERY_AMOUNT DESC";
+            result = config.GetData(strQuery);
+            return result;
+
+        }
+        public DataTable traDelivery_Amount()
+        {
+            DataTable result = new DataTable();
+            DataConfig config = new DataConfig();
+            //string strQuery = "SELECT G_Code,G_Name FROM M100 where G_Code='" + item + "'";
+            string strQuery = "SELECT DISTINCT ZTBDelivery.DELIVERY_DATE, SUM(ZTBDelivery.DELIVERY_QTY * ZTBPOTable.PROD_PRICE) AS DELIVERY_AMOUNT FROM ZTBDelivery JOIN ZTBPOTable ON (ZTBDelivery.PO_NO = ZTBPOTable.PO_NO AND ZTBDelivery.CUST_CD = ZTBPOTable.CUST_CD AND ZTBDelivery.G_CODE = ZTBPOTable.G_CODE)  WHERE ZTBDelivery.DELIVERY_DATE >= '2022-06-01'GROUP BY ZTBDelivery.DELIVERY_DATE ORDER BY ZTBDelivery.DELIVERY_DATE ASC";
+            result = config.GetData(strQuery);
+            return result;
+
+        }
         public int checkDeliveredQTy(string CUST_CD, string G_CODE, string PO_NO)
         {
             DataTable result = new DataTable();
@@ -8088,13 +9810,15 @@ namespace AutoClick
         }
 
 
-        public DataTable InsertYCSX(string CTR_CD, string PROD_REQUEST_DATE, string PROD_REQUEST_NO, string CODE_50, string CODE_03, string CODE_55, string G_CODE, string RIV_NO,string PROD_REQUEST_QTY, string CUST_CD, string EMPL_NO, string REMK, string INS_EMPL, string UPD_EMPL, string DELIVERY_DT)
+        public DataTable InsertYCSX(string CTR_CD, string PROD_REQUEST_DATE, string PROD_REQUEST_NO, string CODE_50, string CODE_03, string CODE_55, string G_CODE, string RIV_NO,string PROD_REQUEST_QTY, string CUST_CD, string EMPL_NO, string REMK, string INS_EMPL, string UPD_EMPL, string DELIVERY_DT, string PO, string TP, string BTP, string CK, string TOTAL_FCST, string W1, string W2, string W3, string W4, string W5, string W6, string W7, string W8, string PDUYET, string BLOCK_QTY)
         {
             DataTable result = new DataTable();
             DataConfig config = new DataConfig();
             //string strQuery = "SELECT G_Code,G_Name FROM M100 where G_Code='" + item + "'";
-            string strQuery = "INSERT INTO P400 (CTR_CD,PROD_REQUEST_DATE,PROD_REQUEST_NO,CODE_50,CODE_03,CODE_55,G_CODE,RIV_NO,PROD_REQUEST_QTY,CUST_CD,EMPL_NO,REMK,INS_EMPL,UPD_EMPL, DELIVERY_DT, G_CODE2) VALUES ('" + CTR_CD + "','"+ PROD_REQUEST_DATE+ "','" + PROD_REQUEST_NO + "','" + CODE_50 + "','" + CODE_03 + "','" + CODE_55 + "','" + G_CODE + "','" + RIV_NO + "','" + PROD_REQUEST_QTY + "','" + CUST_CD + "','" + EMPL_NO + "','" + REMK + "','" + INS_EMPL + "','" + UPD_EMPL + "','" + DELIVERY_DT + "','" + G_CODE+"')" ; 
+            string strQuery = "INSERT INTO P400 (CTR_CD,PROD_REQUEST_DATE,PROD_REQUEST_NO,CODE_50,CODE_03,CODE_55,G_CODE,RIV_NO,PROD_REQUEST_QTY,CUST_CD,EMPL_NO,REMK,INS_EMPL,UPD_EMPL, DELIVERY_DT, G_CODE2, PO_TDYCSX, TKHO_TDYCSX, BTP_TDYCSX, CK_TDYCSX, FCST_TDYCSX, W1, W2, W3, W4, W5, W6, W7, W8, PDUYET, BLOCK_TDYCSX) VALUES ('" + CTR_CD + "','"+ PROD_REQUEST_DATE+ "','" + PROD_REQUEST_NO + "','" + CODE_50 + "','" + CODE_03 + "','" + CODE_55 + "','" + G_CODE + "','" + RIV_NO + "','" + PROD_REQUEST_QTY + "','" + CUST_CD + "','" + EMPL_NO + "','" + REMK + "','" + INS_EMPL + "','" + UPD_EMPL + "','" + DELIVERY_DT + "','" + G_CODE+ "','" + PO + "','" + TP + "','" + BTP + "','" + CK + "','" + TOTAL_FCST + "','" + W1 + "','" + W2 + "','" + W3 + "','" + W4 + "','" + W5 + "','" + W6 + "','" + W7 + "','" + W8 + "' ,'" + PDUYET + "','" + BLOCK_QTY + "')";
+            //MessageBox.Show(strQuery);
             result = config.GetData(strQuery);
+            
             return result;
 
         }
@@ -8180,7 +9904,16 @@ namespace AutoClick
             //MessageBox.Show(strQuery);
             result = config.GetData(strQuery);
             return result;
-
+        }
+        public DataTable getcavity_print(string g_code)
+        {
+            DataTable result = new DataTable();
+            DataConfig config = new DataConfig();
+            //string strQuery = "SELECT G_Code,G_Name FROM M100 where G_Code='" + item + "'";
+            string strQuery = $"SELECT TOP 1 CAVITY_PRINT FROM BOM_AMAZONE LEFT JOIN DESIGN_AMAZONE ON (BOM_AMAZONE.G_CODE_MAU = DESIGN_AMAZONE.G_CODE_MAU AND  BOM_AMAZONE.DOITUONG_NO = DESIGN_AMAZONE.DOITUONG_NO) WHERE BOM_AMAZONE.G_CODE='{g_code}'";
+            //MessageBox.Show(strQuery);
+            result = config.GetData(strQuery);
+            return result;
         }
 
         public DataTable getProductInfo(string keyword)
@@ -8231,6 +9964,25 @@ namespace AutoClick
             DataConfig config = new DataConfig();
             //string strQuery = "SELECT G_Code,G_Name FROM M100 where G_Code='" + item + "'";
             string strQuery = "Select G_NAME,G_CODE From M100 WHERE G_NAME LIKE'%" + keyword + "%'";
+            result = config.GetData(strQuery);
+            return result;
+        }
+
+        public DataTable getamazonedesign()
+        {
+            DataTable result = new DataTable();
+            DataConfig config = new DataConfig();
+            //string strQuery = "SELECT G_Code,G_Name FROM M100 where G_Code='" + item + "'";
+            string strQuery = $"SELECT DISTINCT M100.G_NAME, M100.G_CODE FROM DESIGN_AMAZONE LEFT JOIN M100 ON (M100.G_CODE = DESIGN_AMAZONE.G_CODE_MAU)";
+            result = config.GetData(strQuery);
+            return result;
+        }
+        public DataTable getamazonedesign2(string G_CODE)
+        {
+            DataTable result = new DataTable();
+            DataConfig config = new DataConfig();
+            //string strQuery = "SELECT G_Code,G_Name FROM M100 where G_Code='" + item + "'";
+            string strQuery = $"SELECT DESIGN_AMAZONE.G_CODE_MAU, M100.G_NAME AS TEN_MAU, DOITUONG_NO, DOITUONG_NAME FROM DESIGN_AMAZONE JOIN M100 ON (M100.G_CODE = DESIGN_AMAZONE.G_CODE_MAU) WHERE G_CODE_MAU ='{G_CODE}'";
             result = config.GetData(strQuery);
             return result;
         }
@@ -8444,6 +10196,108 @@ namespace AutoClick
             return result;
         }
 
+        public DataTable checkDataAmazone(string DATA)
+        {
+            DataTable result = new DataTable();
+            DataConfig config = new DataConfig();
+            int kq = 0;
+            string strQuery = $"SELECT * FROM AMAZONE_DATA WHERE (DATA_1='{DATA}' OR DATA_2='{DATA}' OR DATA_3='{DATA}' OR DATA_4='{DATA}')";
+            //MessageBox.Show(strQuery);
+            result = config.GetData(strQuery);
+            return result;
+        }
+        public DataTable checkAMZOriginalCount()
+        {
+            DataTable result = new DataTable();
+            DataConfig config = new DataConfig();
+            int kq = 0;
+            string strQuery = $"SELECT count(AA.code) as originalcodecount FROM (SELECT code FROM ( SELECT DATA_1 FROM AMAZONE_DATA UNION ALL SELECT DATA_2 FROM AMAZONE_DATA ) AS UNIQUEDATA(code) ) as AA";
+            //MessageBox.Show(strQuery);
+            result = config.GetData(strQuery);
+            return result;
+        }
+        public DataTable checkAMZUniqueCount()
+        {
+            DataTable result = new DataTable();
+            DataConfig config = new DataConfig();
+            int kq = 0;
+            string strQuery = $"SELECT count(distinct AA.code) as uniquecodecount FROM (SELECT code FROM ( SELECT DATA_1 FROM AMAZONE_DATA UNION ALL SELECT DATA_2 FROM AMAZONE_DATA ) AS UNIQUEDATA(code) ) as AA";
+            //MessageBox.Show(strQuery);
+            result = config.GetData(strQuery);
+            return result;
+        }
+        public DataTable checkAMZDuplicateCount()
+        {
+            DataTable result = new DataTable();
+            DataConfig config = new DataConfig();
+            int kq = 0;
+            string strQuery = $"SELECT * FROM AMAZONE_DATA WHERE DATA_1 IN( SELECT AAA.originalcodecount FROM ( SELECT AA.code as originalcodecount, COUNT(AA.code) AS COUNT_ FROM (SELECT code FROM ( SELECT DATA_1 FROM AMAZONE_DATA UNION ALL SELECT DATA_2 FROM AMAZONE_DATA ) AS UNIQUEDATA(code) ) as AA GROUP BY AA.code HAVING COUNT(AA.code) >1 ) AS AAA ) UNION SELECT * FROM AMAZONE_DATA WHERE DATA_2 IN( SELECT AAA.originalcodecount FROM ( SELECT AA.code as originalcodecount, COUNT(AA.code) AS COUNT_ FROM (SELECT code FROM ( SELECT DATA_1 FROM AMAZONE_DATA UNION ALL SELECT DATA_2 FROM AMAZONE_DATA ) AS UNIQUEDATA(code) ) as AA GROUP BY AA.code HAVING COUNT(AA.code) >1 ) AS AAA )";
+            //MessageBox.Show(strQuery);
+            result = config.GetData(strQuery);
+            return result;
+        }
+        public DataTable checkModelNameAmazone(string G_CODE)
+        {
+            DataTable result = new DataTable();
+            DataConfig config = new DataConfig();
+            int kq = 0;
+            string strQuery = $"SELECT PROD_MODEL FROM M100 WHERE G_CODE='{G_CODE}'";
+            //MessageBox.Show(strQuery);
+            result = config.GetData(strQuery);
+            return result;
+        }
+
+
+        public DataTable checkNO_IN_Amazone(string NO_IN)
+        {
+            DataTable result = new DataTable();
+            DataConfig config = new DataConfig();
+            int kq = 0;
+            string strQuery = $"SELECT * FROM AMAZONE_DATA WHERE NO_IN='{NO_IN}'";
+            result = config.GetData(strQuery);
+            return result;
+        }
+
+
+        public DataTable checkDESIGNAmazone(string G_CODE_MAU)
+        {
+            DataTable result = new DataTable();
+            DataConfig config = new DataConfig();
+            int kq = 0;
+            string strQuery = $"SELECT G_CODE_MAU,DOITUONG_NO,DOITUONG_NAME,PHANLOAI_DT,DOITUONG_STT,CAVITY_PRINT, GIATRI, FONT_NAME, FONT_SIZE,FONT_STYLE,POS_X,POS_Y,SIZE_W,SIZE_H,ROTATE,REMARK FROM  DESIGN_AMAZONE WHERE G_CODE_MAU='{G_CODE_MAU}'";
+            result = config.GetData(strQuery);
+            return result;
+        }
+
+        public DataTable checkBOMAmazone(string G_CODE)
+        {
+            DataTable result = new DataTable();
+            DataConfig config = new DataConfig();
+            int kq = 0;
+            string strQuery = $"SELECT BOM_AMAZONE.G_CODE, M100.G_NAME, DESIGN_AMAZONE.G_CODE_MAU,  M100_B.G_NAME AS TEN_MAU,BOM_AMAZONE.DOITUONG_NO, DESIGN_AMAZONE.DOITUONG_NAME, BOM_AMAZONE.GIATRI, BOM_AMAZONE.REMARK FROM BOM_AMAZONE LEFT JOIN DESIGN_AMAZONE ON (BOM_AMAZONE.G_CODE_MAU= DESIGN_AMAZONE.G_CODE_MAU AND BOM_AMAZONE.DOITUONG_NO= DESIGN_AMAZONE.DOITUONG_NO) LEFT JOIN M100 ON (M100.G_CODE = BOM_AMAZONE.G_CODE)  LEFT JOIN  (SELECT * FROM M100) AS M100_B ON (M100_B.G_CODE = DESIGN_AMAZONE.G_CODE_MAU) WHERE BOM_AMAZONE.G_CODE='{G_CODE}'";
+            result = config.GetData(strQuery);           
+            return result;
+        }
+
+        public string condition_amazone(string G_NAME, string NO_IN, string YCSX_NO)
+        {
+            string condition = " WHERE 1=1";
+            if (G_NAME != "") condition += $" AND M100.G_NAME LIKE '%{G_NAME}%' ";
+            if (NO_IN != "") condition += $" AND AMAZONE_DATA.NO_IN ='{NO_IN}' ";
+            if (YCSX_NO != "") condition += $" AND AMAZONE_DATA.PROD_REQUEST_NO = '{YCSX_NO}' ";
+            return condition;
+        }
+        public DataTable checkDATAAmazone(string G_NAME, string NO_IN, string YCSX_NO)
+        {
+            DataTable result = new DataTable();
+            DataConfig config = new DataConfig();
+            int kq = 0;
+            string strQuery = $"SELECT M100.G_NAME, AMAZONE_DATA.G_CODE, AMAZONE_DATA.PROD_REQUEST_NO, AMAZONE_DATA.NO_IN, AMAZONE_DATA.ROW_NO, AMAZONE_DATA.DATA_1, AMAZONE_DATA.DATA_2,AMAZONE_DATA.DATA_3,AMAZONE_DATA.DATA_4, AMAZONE_DATA.PRINT_STATUS, AMAZONE_DATA.INLAI_COUNT, AMAZONE_DATA.REMARK, AMAZONE_DATA.INS_DATE, AMAZONE_DATA.INS_EMPL FROM AMAZONE_DATA LEFT JOIN M100 ON (M100.G_CODE = AMAZONE_DATA.G_CODE)" + condition_amazone(G_NAME, NO_IN, YCSX_NO);
+            result = config.GetData(strQuery);
+            //MessageBox.Show(strQuery);
+            return result;
+        }
+
 
         public int checkBOM2(string G_CODE, string RIV_NO)
         {
@@ -8472,6 +10326,19 @@ namespace AutoClick
             }
             return kq;
         }
+
+
+        public DataTable insertAMAZONEDATA(string insertValue)
+        {
+            DataTable result = new DataTable();
+            DataConfig config = new DataConfig();
+            string strQuery = $"INSERT INTO AMAZONE_DATA (CTR_CD,G_CODE,PROD_REQUEST_NO,NO_IN,ROW_NO,DATA_1,DATA_2,DATA_3,DATA_4,PRINT_STATUS,INLAI_COUNT,REMARK,INS_DATE,INS_EMPL,UPD_DATE,UPD_EMPL) VALUES " + insertValue;
+            //MessageBox.Show(strQuery);
+            result = config.GetData(strQuery);
+            return result;
+
+        }
+
 
         public DataTable insertOldBOM(string value)
         {
@@ -8552,6 +10419,36 @@ namespace AutoClick
 
         }
 
+        public DataTable getAmazoneBOM(string G_NAME)
+        {
+            DataTable result = new DataTable();
+            DataConfig config = new DataConfig();
+            string strQuery = $"SELECT DISTINCT(M100.G_NAME), M100.G_CODE FROM BOM_AMAZONE JOIN M100 ON (M100.G_CODE = BOM_AMAZONE.G_CODE) WHERE M100.G_NAME LIKE '%{G_NAME}%'";
+            result = config.GetData(strQuery);
+            return result;
+
+        }
+
+        public DataTable getAmazoneBOM_GCODE(string G_CODE)
+        {
+            DataTable result = new DataTable();
+            DataConfig config = new DataConfig();
+            string strQuery = $"SELECT DISTINCT(M100.G_NAME), M100.G_CODE FROM BOM_AMAZONE JOIN M100 ON (M100.G_CODE = BOM_AMAZONE.G_CODE) WHERE M100.G_CODE = '{G_CODE}'";
+            result = config.GetData(strQuery);
+            return result;
+
+        }
+
+        public DataTable getMassAmazone_GCODE(string G_CODE)
+        {
+            DataTable result = new DataTable();
+            DataConfig config = new DataConfig();
+            string strQuery = $"SELECT * FROM P400 WHERE G_CODE= '{G_CODE}' AND CODE_55 <> '04'";
+            result = config.GetData(strQuery);
+            return result;
+
+        }
+
 
         public DataTable getMcodeInfo(string keyword)
         {
@@ -8561,6 +10458,16 @@ namespace AutoClick
             result = config.GetData(strQuery);
             return result;
                   
+        }
+
+        public DataTable getcodephoiamazone(string keyword)
+        {
+            DataTable result = new DataTable();
+            DataConfig config = new DataConfig();
+            string strQuery = $"SELECT M100.G_CODE, M100.G_NAME FROM M100 WHERE G_CODE LIKE '%{keyword}%' OR G_NAME LIKE '%{keyword}%'";
+            result = config.GetData(strQuery);
+            return result;
+
         }
 
         public DataTable getBaoGiaConfig()
@@ -8754,6 +10661,17 @@ namespace AutoClick
 
         }
 
+        public DataTable PheDuyetYCSX(string ycsxno)
+        {
+            DataTable result = new DataTable();
+            DataConfig config = new DataConfig();
+            //string strQuery = "SELECT G_Code,G_Name FROM M100 where G_Code='" + item + "'";
+            string strQuery = "UPDATE P400 SET PDUYET = 1 WHERE PROD_REQUEST_NO=" + "'" + ycsxno + "'";
+            result = config.GetData(strQuery);
+            return result;
+
+        }
+
         public DataTable checkYCSXO300(string ycsxno)
         {
             DataTable result = new DataTable();
@@ -8762,8 +10680,17 @@ namespace AutoClick
             string strQuery = $"SELECT TOP 1 * FROM O300 WHERE PROD_REQUEST_NO = '{ycsxno}'";
             result = config.GetData(strQuery);
             return result;
-
         }
+        public DataTable checkvaokiem(string g_code)
+        {
+            DataTable result = new DataTable();
+            DataConfig config = new DataConfig();
+            //string strQuery = "SELECT G_Code,G_Name FROM M100 where G_Code='" + item + "'";
+            string strQuery = $"SELECT TOP 1 * FROM ZTBINSPECTNGTB WHERE G_CODE='{g_code}'";
+            result = config.GetData(strQuery);
+            return result;
+        }
+
         public DataTable InsertO300(string insertValue)
         {
             DataTable result = new DataTable();
@@ -8788,6 +10715,63 @@ namespace AutoClick
 
         }
 
+        public DataTable InsertBOMAmazone(string insertValue)
+        {
+            DataTable result = new DataTable();
+            DataConfig config = new DataConfig();
+            //string strQuery = "SELECT G_Code,G_Name FROM M100 where G_Code='" + item + "'";
+            string strQuery = $"INSERT INTO BOM_AMAZONE (CTR_CD,G_CODE,G_CODE_MAU,DOITUONG_NO,GIATRI,REMARK,INS_DATE,INS_EMPL,UPD_DATE,UPD_EMPL) VALUES {insertValue} ";
+            //MessageBox.Show(strQuery);
+            result = config.GetData(strQuery);
+            return result;
+
+        }
+        public DataTable InsertDESIGNAmazone(string insertValue)
+        {
+            DataTable result = new DataTable();
+            DataConfig config = new DataConfig();
+            //string strQuery = "SELECT G_Code,G_Name FROM M100 where G_Code='" + item + "'";
+            string strQuery = $"INSERT INTO DESIGN_AMAZONE (CTR_CD,G_CODE_MAU,DOITUONG_NO,DOITUONG_NAME,PHANLOAI_DT,CAVITY_PRINT,FONT_NAME,POS_X,POS_Y,SIZE_W,SIZE_H,ROTATE,REMARK,INS_DATE,INS_EMPL,UPD_DATE,UPD_EMPL,FONT_SIZE,FONT_STYLE,GIATRI) VALUES {insertValue} ";
+            //MessageBox.Show(strQuery);
+            result = config.GetData(strQuery);
+            return result;
+
+        }
+
+        public DataTable UpdateDESIGNAmazone(string updateValue)
+        {
+            DataTable result = new DataTable();
+            DataConfig config = new DataConfig();
+            //string strQuery = "SELECT G_Code,G_Name FROM M100 where G_Code='" + item + "'";
+            string strQuery = $"UPDATE DESIGN_AMAZONE {updateValue}";
+            //MessageBox.Show(strQuery);
+            result = config.GetData(strQuery);
+            return result;
+
+        }
+        public DataTable DeleteDESIGNAmazone(string G_CODE_MAU)
+        {
+            DataTable result = new DataTable();
+            DataConfig config = new DataConfig();
+            //string strQuery = "SELECT G_Code,G_Name FROM M100 where G_Code='" + item + "'";
+            string strQuery = $"DELETE FROM DESIGN_AMAZONE WHERE G_CODE_MAU='{G_CODE_MAU}'";
+            //MessageBox.Show(strQuery);
+            result = config.GetData(strQuery);
+            return result;
+
+        }
+
+        public DataTable UpdateBOMAmazone(string updateValue)
+        {
+            DataTable result = new DataTable();
+            DataConfig config = new DataConfig();
+            //string strQuery = "SELECT G_Code,G_Name FROM M100 where G_Code='" + item + "'";
+            string strQuery = $"UPDATE BOM_AMAZONE SET " + updateValue;
+            //MessageBox.Show(strQuery);
+            result = config.GetData(strQuery);
+            return result;
+
+        }
 
 
 

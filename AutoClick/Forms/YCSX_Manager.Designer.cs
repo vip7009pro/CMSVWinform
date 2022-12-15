@@ -30,6 +30,7 @@ namespace AutoClick
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(YCSX_Manager));
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.thêmYêuCầuMớiToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -44,12 +45,19 @@ namespace AutoClick
             this.sETPENDINGToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.tRALỊCHSỬXUẤTLIỆUToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
+            this.xóaYCSXToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.testInPdfToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.uploadDataAmazoneChoYCSXToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.phêtDuyệtYCSXToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.myRequestToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.newYCSXToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.thêmNhiềuYCSXToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.updataAmazoneToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.progressBar1 = new System.Windows.Forms.ProgressBar();
             this.gradientPanel1 = new AutoClick.GradientPanel();
+            this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.button2 = new System.Windows.Forms.Button();
             this.checkBox4 = new System.Windows.Forms.CheckBox();
             this.richTextBox1 = new System.Windows.Forms.RichTextBox();
@@ -74,12 +82,12 @@ namespace AutoClick
             this.label6 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
-            this.xóaYCSXToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
+            this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.contextMenuStrip1.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.gradientPanel1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
             // dataGridView1
@@ -97,6 +105,7 @@ namespace AutoClick
             this.dataGridView1.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.dataGridView1.Size = new System.Drawing.Size(1524, 444);
             this.dataGridView1.TabIndex = 0;
+            this.dataGridView1.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellContentClick);
             // 
             // contextMenuStrip1
             // 
@@ -112,9 +121,12 @@ namespace AutoClick
             this.toolStripSeparator2,
             this.tRALỊCHSỬXUẤTLIỆUToolStripMenuItem,
             this.toolStripSeparator3,
-            this.xóaYCSXToolStripMenuItem});
+            this.xóaYCSXToolStripMenuItem,
+            this.testInPdfToolStripMenuItem,
+            this.uploadDataAmazoneChoYCSXToolStripMenuItem,
+            this.phêtDuyệtYCSXToolStripMenuItem});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(200, 242);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(200, 286);
             // 
             // thêmYêuCầuMớiToolStripMenuItem
             // 
@@ -210,10 +222,48 @@ namespace AutoClick
             this.tRALỊCHSỬXUẤTLIỆUToolStripMenuItem.Text = "TRA LỊCH SỬ XUẤT LIỆU";
             this.tRALỊCHSỬXUẤTLIỆUToolStripMenuItem.Click += new System.EventHandler(this.tRALỊCHSỬXUẤTLIỆUToolStripMenuItem_Click);
             // 
+            // toolStripSeparator3
+            // 
+            this.toolStripSeparator3.Name = "toolStripSeparator3";
+            this.toolStripSeparator3.Size = new System.Drawing.Size(196, 6);
+            // 
+            // xóaYCSXToolStripMenuItem
+            // 
+            this.xóaYCSXToolStripMenuItem.Image = global::AutoClick.Properties.Resources.icons8_export_file_58;
+            this.xóaYCSXToolStripMenuItem.Name = "xóaYCSXToolStripMenuItem";
+            this.xóaYCSXToolStripMenuItem.Size = new System.Drawing.Size(199, 22);
+            this.xóaYCSXToolStripMenuItem.Text = "Xóa YCSX";
+            this.xóaYCSXToolStripMenuItem.Click += new System.EventHandler(this.xóaYCSXToolStripMenuItem_Click);
+            // 
+            // testInPdfToolStripMenuItem
+            // 
+            this.testInPdfToolStripMenuItem.Name = "testInPdfToolStripMenuItem";
+            this.testInPdfToolStripMenuItem.Size = new System.Drawing.Size(199, 22);
+            this.testInPdfToolStripMenuItem.Text = "Test in pdf";
+            this.testInPdfToolStripMenuItem.Visible = false;
+            this.testInPdfToolStripMenuItem.Click += new System.EventHandler(this.testInPdfToolStripMenuItem_Click);
+            // 
+            // uploadDataAmazoneChoYCSXToolStripMenuItem
+            // 
+            this.uploadDataAmazoneChoYCSXToolStripMenuItem.Image = global::AutoClick.Properties.Resources.icons8_download_from_cloud_48;
+            this.uploadDataAmazoneChoYCSXToolStripMenuItem.Name = "uploadDataAmazoneChoYCSXToolStripMenuItem";
+            this.uploadDataAmazoneChoYCSXToolStripMenuItem.Size = new System.Drawing.Size(199, 22);
+            this.uploadDataAmazoneChoYCSXToolStripMenuItem.Text = "Upload data Amazone";
+            this.uploadDataAmazoneChoYCSXToolStripMenuItem.Click += new System.EventHandler(this.uploadDataAmazoneChoYCSXToolStripMenuItem_Click);
+            // 
+            // phêtDuyệtYCSXToolStripMenuItem
+            // 
+            this.phêtDuyệtYCSXToolStripMenuItem.Image = global::AutoClick.Properties.Resources.icons8_employee_64;
+            this.phêtDuyệtYCSXToolStripMenuItem.Name = "phêtDuyệtYCSXToolStripMenuItem";
+            this.phêtDuyệtYCSXToolStripMenuItem.Size = new System.Drawing.Size(199, 22);
+            this.phêtDuyệtYCSXToolStripMenuItem.Text = "Phêt duyệt YCSX";
+            this.phêtDuyệtYCSXToolStripMenuItem.Click += new System.EventHandler(this.phêtDuyệtYCSXToolStripMenuItem_Click);
+            // 
             // menuStrip1
             // 
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.myRequestToolStripMenuItem});
+            this.myRequestToolStripMenuItem,
+            this.updataAmazoneToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(1549, 24);
@@ -246,6 +296,14 @@ namespace AutoClick
             this.thêmNhiềuYCSXToolStripMenuItem.Text = "Thêm nhiều YCSX";
             this.thêmNhiềuYCSXToolStripMenuItem.Click += new System.EventHandler(this.thêmNhiềuYCSXToolStripMenuItem_Click);
             // 
+            // updataAmazoneToolStripMenuItem
+            // 
+            this.updataAmazoneToolStripMenuItem.Image = global::AutoClick.Properties.Resources.icons8_add_folder_48;
+            this.updataAmazoneToolStripMenuItem.Name = "updataAmazoneToolStripMenuItem";
+            this.updataAmazoneToolStripMenuItem.Size = new System.Drawing.Size(152, 20);
+            this.updataAmazoneToolStripMenuItem.Text = "Upload data Amazone";
+            this.updataAmazoneToolStripMenuItem.Click += new System.EventHandler(this.updataAmazoneToolStripMenuItem_Click);
+            // 
             // progressBar1
             // 
             this.progressBar1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
@@ -262,6 +320,7 @@ namespace AutoClick
             this.gradientPanel1.AutoScroll = true;
             this.gradientPanel1.ColorBottom = System.Drawing.Color.Lime;
             this.gradientPanel1.ColorTop = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(192)))), ((int)(((byte)(192)))));
+            this.gradientPanel1.Controls.Add(this.pictureBox1);
             this.gradientPanel1.Controls.Add(this.button2);
             this.gradientPanel1.Controls.Add(this.checkBox4);
             this.gradientPanel1.Controls.Add(this.richTextBox1);
@@ -291,6 +350,17 @@ namespace AutoClick
             this.gradientPanel1.Size = new System.Drawing.Size(1525, 153);
             this.gradientPanel1.TabIndex = 32;
             // 
+            // pictureBox1
+            // 
+            this.pictureBox1.BackColor = System.Drawing.Color.Transparent;
+            this.pictureBox1.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox1.Image")));
+            this.pictureBox1.Location = new System.Drawing.Point(584, 106);
+            this.pictureBox1.Name = "pictureBox1";
+            this.pictureBox1.Size = new System.Drawing.Size(51, 44);
+            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.pictureBox1.TabIndex = 37;
+            this.pictureBox1.TabStop = false;
+            // 
             // button2
             // 
             this.button2.Font = new System.Drawing.Font("Microsoft Sans Serif", 13F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -306,7 +376,7 @@ namespace AutoClick
             // checkBox4
             // 
             this.checkBox4.AutoSize = true;
-            this.checkBox4.Location = new System.Drawing.Point(51, 109);
+            this.checkBox4.Location = new System.Drawing.Point(3, 133);
             this.checkBox4.Name = "checkBox4";
             this.checkBox4.Size = new System.Drawing.Size(113, 17);
             this.checkBox4.TabIndex = 35;
@@ -537,18 +607,13 @@ namespace AutoClick
             this.label5.TabIndex = 21;
             this.label5.Text = "YCSX NO";
             // 
-            // xóaYCSXToolStripMenuItem
+            // backgroundWorker1
             // 
-            this.xóaYCSXToolStripMenuItem.Image = global::AutoClick.Properties.Resources.icons8_export_file_58;
-            this.xóaYCSXToolStripMenuItem.Name = "xóaYCSXToolStripMenuItem";
-            this.xóaYCSXToolStripMenuItem.Size = new System.Drawing.Size(199, 22);
-            this.xóaYCSXToolStripMenuItem.Text = "Xóa YCSX";
-            this.xóaYCSXToolStripMenuItem.Click += new System.EventHandler(this.xóaYCSXToolStripMenuItem_Click);
-            // 
-            // toolStripSeparator3
-            // 
-            this.toolStripSeparator3.Name = "toolStripSeparator3";
-            this.toolStripSeparator3.Size = new System.Drawing.Size(196, 6);
+            this.backgroundWorker1.WorkerReportsProgress = true;
+            this.backgroundWorker1.WorkerSupportsCancellation = true;
+            this.backgroundWorker1.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorker1_DoWork);
+            this.backgroundWorker1.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.backgroundWorker1_ProgressChanged);
+            this.backgroundWorker1.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.backgroundWorker1_RunWorkerCompleted);
             // 
             // YCSX_Manager
             // 
@@ -572,6 +637,7 @@ namespace AutoClick
             this.menuStrip1.PerformLayout();
             this.gradientPanel1.ResumeLayout(false);
             this.gradientPanel1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -625,5 +691,11 @@ namespace AutoClick
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
         private System.Windows.Forms.ToolStripMenuItem xóaYCSXToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem testInPdfToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem updataAmazoneToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem uploadDataAmazoneChoYCSXToolStripMenuItem;
+        private System.ComponentModel.BackgroundWorker backgroundWorker1;
+        private System.Windows.Forms.PictureBox pictureBox1;
+        private System.Windows.Forms.ToolStripMenuItem phêtDuyệtYCSXToolStripMenuItem;
     }
 }

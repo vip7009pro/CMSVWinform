@@ -96,6 +96,7 @@
             // dataGridView1
             // 
             this.dataGridView1.AllowDrop = true;
+            this.dataGridView1.AllowUserToAddRows = false;
             this.dataGridView1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
@@ -115,6 +116,7 @@
             this.NGUYEN_CHIEC});
             this.dataGridView1.Location = new System.Drawing.Point(32, 35);
             this.dataGridView1.Name = "dataGridView1";
+            this.dataGridView1.ReadOnly = true;
             this.dataGridView1.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.dataGridView1.Size = new System.Drawing.Size(818, 148);
             this.dataGridView1.TabIndex = 1;
@@ -124,66 +126,77 @@
             this.PROD_REQUEST_DATE.Frozen = true;
             this.PROD_REQUEST_DATE.HeaderText = "YCSX_DATE";
             this.PROD_REQUEST_DATE.Name = "PROD_REQUEST_DATE";
+            this.PROD_REQUEST_DATE.ReadOnly = true;
             // 
             // LOAI_SAN_XUAT
             // 
             this.LOAI_SAN_XUAT.Frozen = true;
             this.LOAI_SAN_XUAT.HeaderText = "LOAI_SAN_XUAT";
             this.LOAI_SAN_XUAT.Name = "LOAI_SAN_XUAT";
+            this.LOAI_SAN_XUAT.ReadOnly = true;
             // 
             // LOAI_XUAT_HANG
             // 
             this.LOAI_XUAT_HANG.Frozen = true;
             this.LOAI_XUAT_HANG.HeaderText = "LOAI_XUAT_HANG";
             this.LOAI_XUAT_HANG.Name = "LOAI_XUAT_HANG";
+            this.LOAI_XUAT_HANG.ReadOnly = true;
             // 
             // G_CODE
             // 
             this.G_CODE.Frozen = true;
             this.G_CODE.HeaderText = "G_CODE";
             this.G_CODE.Name = "G_CODE";
+            this.G_CODE.ReadOnly = true;
             // 
             // G_NAME
             // 
             this.G_NAME.Frozen = true;
             this.G_NAME.HeaderText = "G_NAME";
             this.G_NAME.Name = "G_NAME";
+            this.G_NAME.ReadOnly = true;
             // 
             // PROD_REQUEST_QTY
             // 
             this.PROD_REQUEST_QTY.Frozen = true;
             this.PROD_REQUEST_QTY.HeaderText = "YCSX_QTY";
             this.PROD_REQUEST_QTY.Name = "PROD_REQUEST_QTY";
+            this.PROD_REQUEST_QTY.ReadOnly = true;
             // 
             // CUST_NAME_KD
             // 
             this.CUST_NAME_KD.Frozen = true;
             this.CUST_NAME_KD.HeaderText = "KHACH_HANG";
             this.CUST_NAME_KD.Name = "CUST_NAME_KD";
+            this.CUST_NAME_KD.ReadOnly = true;
             // 
             // CUST_CD
             // 
             this.CUST_CD.Frozen = true;
             this.CUST_CD.HeaderText = "MA_KH";
             this.CUST_CD.Name = "CUST_CD";
+            this.CUST_CD.ReadOnly = true;
             // 
             // EMPL_NO
             // 
             this.EMPL_NO.Frozen = true;
             this.EMPL_NO.HeaderText = "PIC_KD";
             this.EMPL_NO.Name = "EMPL_NO";
+            this.EMPL_NO.ReadOnly = true;
             // 
             // REMK
             // 
             this.REMK.Frozen = true;
             this.REMK.HeaderText = "GHI_CHU";
             this.REMK.Name = "REMK";
+            this.REMK.ReadOnly = true;
             // 
             // DELIVERY_DT
             // 
             this.DELIVERY_DT.Frozen = true;
             this.DELIVERY_DT.HeaderText = "NGAY_GIAO";
             this.DELIVERY_DT.Name = "DELIVERY_DT";
+            this.DELIVERY_DT.ReadOnly = true;
             // 
             // NGUYEN_CHIEC
             // 
@@ -503,6 +516,7 @@
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
             this.Name = "NewYCSX";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "NewYCSX";
             this.Load += new System.EventHandler(this.NewYCSX_Load);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
